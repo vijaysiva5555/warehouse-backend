@@ -9,7 +9,7 @@ require('dotenv').config()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use("/fileuploads", express.static(path.join(__dirname, "/fileuploads"), { etag: false }))
-mongoose.connect("mongodb+srv://disha123:hl6LMcJIED1eCZhr@cluster0.hrerz.mongodb.net/e-malkhan2")
+mongoose.connect(process.env.MONGOURL)
     .then(() => { console.log("mongodb is connected") })
     .catch((err => { console.log(err) }))
 

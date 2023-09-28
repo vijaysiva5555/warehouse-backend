@@ -1,5 +1,6 @@
 const express = require("express")
 const routes = express.Router()
+const {authorized} = require("../models/auth")
 
 //import controller
 const userController = require("../controllers/user")
@@ -21,35 +22,36 @@ const previousDataValidation = require("../validation/previousData")
 //import API
 //User API
 routes.post("/user", userValidation.userValidation, userController.user)
+routes.post("/login", userValidation.loginnCreator, userController.loginUser)
 
 //eMalkhana API
-routes.post("/eMalkhana",eMalkhanaValidation.eMalkhanaValidation,eMalkhanaController.eMalkhanaDetails)
-routes.post("/update",eMalkhanaValidation.checkId,eMalkhanaController.updateEmakhala)
+routes.post("/eMalkhana",authorized,eMalkhanaValidation.eMalkhanaValidation,eMalkhanaController.eMalkhanaDetails)
+routes.post("/update",authorized,eMalkhanaValidation.checkId,eMalkhanaController.updateEmakhala)
 routes.get("/eMalkhana",eMalkhanaController.getEmakhalaDetails )
 
 //receipt API
-routes.post("/receipt",receiptValidation.receiptValidation,receiptController.receiptDetails)
+routes.post("/receipt",authorized,receiptValidation.receiptValidation,receiptController.receiptDetails)
 routes.get("/receipt",receiptController.getReceiptDetails)
-routes.post("/updateReceiptDetails",receiptValidation.checkId,receiptController.updateReceipt)
+routes.post("/updateReceiptDetails",authorized,receiptValidation.checkId,receiptController.updateReceipt)
 
 //disposalDetails API
-routes.post("/disposalDetails",disposalValidation.disposalValidation,disposalController.disposalDataDetails)
+routes.post("/disposalDetails",authorized,disposalValidation.disposalValidation,disposalController.disposalDataDetails)
 routes.get("/disposalDetails",disposalController.getdisposalDetails)
-routes.post("/updateDisposalDetails",disposalValidation.checkId,disposalController.updateDisposalDetails)
+routes.post("/updateDisposalDetails",authorized,disposalValidation.checkId,disposalController.updateDisposalDetails)
 
 //disposalDataRecovery API
-routes.post("/recoveryData",disposalRecoveryValidation.disposalRecoveryValidation,disposalRecovery.disposalRecoveryDetails)
+routes.post("/recoveryData",authorized,disposalRecoveryValidation.disposalRecoveryValidation,disposalRecovery.disposalRecoveryDetails)
 routes.get("/recoveryData",disposalRecovery.getdisposalRecoveryDetails)
-routes.post("/updateRecoveryDataDetails",disposalRecoveryValidation.checkId,disposalRecovery.updateDisposalRecoveryDetails)
+routes.post("/updateRecoveryDataDetails",authorized,disposalRecoveryValidation.checkId,disposalRecovery.updateDisposalRecoveryDetails)
 
 //updateData API
-routes.post("/updateData",updateValidation.updateDataValidation,updateController.insertUpdateData)
+routes.post("/updateData",authorized,updateValidation.updateDataValidation,updateController.insertUpdateData)
 routes.get("/updateData",updateController.getUpdateDataDetails)
-routes.post("/updateDataDetails",updateValidation.checkId,updateController.updateData)
+routes.post("/updateDataDetails",authorized,updateValidation.checkId,updateController.updateData)
 
 //previousData API
-routes.post("/previousData",previousDataValidation.previousDataValidation,previousController.insertPreviousData)
+routes.post("/previousData",authorized,previousDataValidation.previousDataValidation,previousController.insertPreviousData)
 routes.get("/previousData",previousController.getPreviousDataDetails)
-routes.post("/updatePreviousDataDetails",previousDataValidation.checkId,previousController.updatePreviousData)
+routes.post("/updatePreviousDataDetails",authorized,previousDataValidation.checkId,previousController.updatePreviousData)
 
 module.exports = routes
