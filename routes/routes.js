@@ -21,7 +21,7 @@ const previousDataValidation = require("../validation/previousData")
 
 //import API
 //User API
-routes.post("/user", userValidation.userValidation, userController.user)
+routes.post("/register", userValidation.userValidation, userController.register)
 routes.post("/login", userValidation.loginnCreator, userController.loginUser)
 
 //eMalkhana API
