@@ -6,9 +6,6 @@ const user = require("../schemas/user")
 const eMalkhana = require("../schemas/eMalkhana")
 const receipt = require("../schemas/receiptDetails")
 const disposal = require("../schemas/disposalDetails")
-const disposalRecovery = require("../schemas/disposalRecovery")
-const updateData=require("../schemas/updateData")
-const previousData=require("../schemas/previousData")
 const { ObjectId } = require('bson')
 
 //DB Collection Schema
@@ -16,10 +13,7 @@ const db = {
     user,
     receipt,
     eMalkhana,
-    disposal,
-    disposalRecovery,
-    updateData,
-    previousData
+    disposal
 }
 
 /**All mongoose queryfunction and normal functions */

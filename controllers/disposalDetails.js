@@ -41,5 +41,23 @@ const updateDisposalDetails = async (req, res) => {
         return res.send(error.message)
     }
 }
+const disposalDataById = async (req, res) => {
+    try {
+        let disposalId = req.body, disposalData
+        if (!mongoose.isValidObjectId(disposalId  .id)) {
+            return res.send({ status: 0, msg: "invalid id" })
+        }
+        disposalData = await db.findSingleDocument("disposal", { _id: new mongoose.Types.ObjectId( disposalId .id) })
+        if ( disposalData !== null) {
 
-module.exports = { disposalDataDetails, updateDisposalDetails, getdisposalDetails }
+            return res.send({ status: 1, data: disposalData})
+        }{
+
+            return res.send({ status: 1, data:  disposalData })
+        }
+    } catch (error) {
+        return res.send(error.message)
+    }
+}
+
+module.exports = { disposalDataDetails, updateDisposalDetails, getdisposalDetails ,disposalDataById }

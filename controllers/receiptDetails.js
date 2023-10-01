@@ -45,5 +45,24 @@ const updateReceipt = async (req, res) => {
         return res.send(error.message)
     }
 }
+const receiptDataById = async (req, res) => {
+    try {
+        let receiptId = req.body, receiptData
+        if (!mongoose.isValidObjectId( receiptId .id)) {
+            return res.send({ status: 0, msg: "invalid id" })
+        }
+        receiptData = await db.findSingleDocument("receipt", { _id: new mongoose.Types.ObjectId( receiptId .id) })
+        if ( receiptData !== null) {
 
-module.exports = { receiptDetails, updateReceipt, getReceiptDetails }
+            return res.send({ status: 1, data:  receiptData})
+        }{
+
+            return res.send({ status: 1, data:  receiptData })
+        }
+    } catch (error) {
+        return res.send(error.message)
+    }
+}
+
+
+module.exports = { receiptDetails, updateReceipt, getReceiptDetails,receiptDataById }

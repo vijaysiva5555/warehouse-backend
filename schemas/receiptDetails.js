@@ -16,31 +16,31 @@ const receipt = new mongoose.Schema({
         require: true
     },
     packageDetails: {
-        type: String,
+        type: Object,
         require: true
     },
     godownName: {
-        type: String,
+        type: Object,
         require: true
     },
     godownCode: {
-        type: String,
+        type: Object,
         require: true
     },
     locationOfPackageInGodown: {
-        type: String,
+        type: Object,
         require: true
     },
     handingOverOfficerName: {
-        type: String,
+        type: Object,
         require: true
     },
     handingOverOfficerDesignation: {
-        type: String,
+        type: Object,
         require: true
     },
     pendingUnderSection: {
-        type: String,
+        type: Object,
         require: true
     },
     adjucationOrderNo: {

@@ -10,7 +10,7 @@ const eMalkhana = new mongoose.Schema({
         require: true
     },
     seizingUnitName: {
-        type: String,
+        type: Object,
         require: true
     },
     fileNo: {
@@ -30,19 +30,19 @@ const eMalkhana = new mongoose.Schema({
         require: true
     },
     seizedItemName: {
-        type: String,
+        type: Object,
         require: true
     },
     seizedItemWeight: {
-        type: String,
+        type: Object,
         require: true
     },
     seizedItemValue: {
-        type: String,
+        type: Object,
         require: true
     },
     itemDesc: {
-        type: String
+        type:Object
     },
     seizingOfficerName: {
         type: String,
@@ -80,15 +80,15 @@ const eMalkhana = new mongoose.Schema({
         default: null
     },
     newSealNo: {
-        type: String,
+        type: Object,
         default: null
     },
     newOfficerName: {
-        type: String,
+        type: Object,
         default: null
     },
     newOfficerDesignation: {
-        type: String,
+        type: Object,
         default: null
     }
 },

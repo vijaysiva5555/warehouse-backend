@@ -16,4 +16,13 @@ const userValidation = [
         check('email').notEmpty().isEmail().withMessage('Email should be required and in proper format'),
         check('password').notEmpty().withMessage('Password should be required'),
     ]
-module.exports = { userValidation ,loginnCreator }
+    const checkId = [
+        check('id').notEmpty().withMessage('id should be required'),
+        (req, res, next) => {
+            const errors = validationResult(req).array()
+            if (errors.length > 0) {
+                return res.send({ status: 0, response: errors[0].msg })
+            } return next()
+        }
+    ]
+module.exports = { userValidation ,loginnCreator,checkId }
