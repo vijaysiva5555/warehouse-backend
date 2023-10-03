@@ -5,36 +5,27 @@ const moment = require("moment")
 const path = require("path")
 
 const eMalkhanaDetails = async (req, res) => {
+    let eMalkhanaData = req.body, eMalkhanaFiles = req.files.documents, eMalkhanaInputData, eMalkhanaAllData, currentYear, folderPath, documentFolderPath, i = 0,
+        arr = [], fileFolderPath
     try {
-        let eMalkhanaData = req.body, eMalkhanaInputData, eMalkhanaAllData, currentYear, folderPath, documentFolderPath, i = 0,
-            base64String, base64Pdf, arr = [], fileFolderPath
-
         currentYear = moment().year().toString().substring(2)
         eMalkhanaAllData = await db.findDocuments("eMalkhana", { 'eMalkhanaNo': { $regex: currentYear } })
         eMalkhanaData.eMalkhanaNo = process.env.EMALKHANANO + '-' + currentYear + '-' + String(eMalkhanaAllData.length + 1).padStart(4, '0')
 
-        const { documents, ...eMalkhanaDataWithoutFile } = eMalkhanaData
-        eMalkhanaInputData = await db.insertSingleDocument("eMalkhana", eMalkhanaDataWithoutFile)
+        eMalkhanaInputData = await db.insertSingleDocument("eMalkhana", eMalkhanaData)
         if (eMalkhanaInputData) {
-            if (eMalkhanaData.documents) {                              //file
+            if (eMalkhanaFiles.length > 0) {                              //file
                 folderPath = path.resolve(__dirname, '../fileUploads')
                 await common.createDir(folderPath)
                 documentFolderPath = `${folderPath}/${eMalkhanaInputData._id}`
                 await common.createDir(documentFolderPath)
-                for (; i < eMalkhanaData.documents.length; i++) {
-                    fileName = eMalkhanaData.documents[i].fileName;
-                    base64String = eMalkhanaData.documents[i].fileData
-                    base64Pdf = base64String.split(";base64,").pop();
-                    filePath = `${documentFolderPath}/${fileName}`
-                    await common.createFile(
-                        filePath, base64Pdf, "base64"
-                    )
-                    fileFolderPath = filePath.split('\\fileUploads\\').pop();
-                    fileFolderPath = filePath.split('/')[1];
-
+                for (; i < eMalkhanaFiles.length; i++) {
+                    fileName = eMalkhanaFiles[i].name;
+                    fileFolderPath = path.join(__dirname, `../fileUploads/${eMalkhanaInputData._id}/`, fileName)
+                    await eMalkhanaFiles[i].mv(fileFolderPath)
                     filePath = {
-                        fileName: fileName,
-                        filePath: `fileUploads/${fileFolderPath}/${fileName}`
+                        fileName,
+                        filePath: `fileUploads/${eMalkhanaInputData._id}/${fileName}`
                     }
                     arr.push(filePath)
                 }
@@ -43,6 +34,9 @@ const eMalkhanaDetails = async (req, res) => {
             return res.send({ status: 1, msg: "data inserted successfully" })
         }
     } catch (error) {
+        if (eMalkhanaInputData) {
+            await db.deleteOneDocument("eMalkhana", { _id: eMalkhanaInputData._id })
+        }
         return res.send(error.message)
     }
 }
