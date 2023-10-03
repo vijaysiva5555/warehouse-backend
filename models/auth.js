@@ -5,15 +5,13 @@ const db = require('../models/mongo');
 
 const authorized = async (req, res, next) => {
     try {
-        let token, decodedToken, signToken, checkcreator, privateKey
-        token = req.headers.authorization
-        if (!token) {
+        let token, signToken, checkcreator, privateKey
+        token = req.cookies.userToken
+        if (token == null) {
             return res.send("Token is missing")
         }
-        token = token.substring(7)
         privateKey = await fs.readFile('privateKey.key', 'utf8');
         if (token) {
-            // decodedToken=jwt.decode(token)
             signToken = jwt.verify(token, privateKey)
             if (!signToken) {
                 return res.send("you are not an authorized person")
