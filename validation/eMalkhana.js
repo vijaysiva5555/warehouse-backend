@@ -17,7 +17,7 @@ const eMalkhanaValidation = [
     (req, res, next) => {
         const errors = validationResult(req).array()
         if (errors.length > 0) {
-            return res.send({ status: 0, response: errors[0].msg })
+            return res.send({ status: 0, msg: errors[0].msg })
         } return next()
     }]
     const checkId = [
@@ -25,7 +25,7 @@ const eMalkhanaValidation = [
         (req, res, next) => {
             const errors = validationResult(req).array()
             if (errors.length > 0) {
-                return res.send({ status: 0, response: errors[0].msg })
+                return res.send({ status: 0, msg: errors[0].msg })
             } return next()
         }
     ]
