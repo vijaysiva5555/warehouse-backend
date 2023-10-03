@@ -17,7 +17,7 @@ const disposalValidation = require("../validation/disposalDetails")
 
 //import API
 //User API
-routes.post("/register", userValidation.userValidation, userController.register)
+routes.post("/register", userValidation.userValidation, userController.user)
 routes.post("/login", userValidation.loginnCreator, userController.loginUser)
 routes.post("/userDataById", userValidation.checkId, userController.userDataById)
 
