@@ -18,7 +18,9 @@ app.use(cors({
     credentials: true
 }))
 app.use(cookieParser())
-app.use(fileUpload())
+app.use(fileUpload({
+    parseNested: true
+}))
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use("/fileuploads", authorized, express.static(path.join(__dirname, "/fileuploads"), { etag: false }))
