@@ -1,4 +1,6 @@
 const mongoose = require("mongoose")
+const { previousDataSchema } = require("./previousDataSchema")
+
 const eMalkhana = new mongoose.Schema({
     eMalkhanaNo: {
         type: String,
@@ -30,20 +32,33 @@ const eMalkhana = new mongoose.Schema({
         require: true
     },
     seizedItemName: {
-        type: Object,
-        require: true
+        current: {
+            type: String,
+            require: true
+        },
+        previousData: [previousDataSchema(String)]
     },
     seizedItemWeight: {
-        type: Object,
-        require: true
+        current: {
+            type: Number,
+            require: true
+        },
+        previousData: [previousDataSchema(Number)]
     },
-    seizedItemValue: {
-        type: Object,
-        require: true
-    },
-    itemDesc: {
-        type:Object
-    },
+    seizedItemValue: [{
+        current: {
+            type: Number,
+            require: true
+        },
+        previousData: [previousDataSchema(Number)]
+    }],
+    itemDesc: [{
+        current: {
+            type: String,
+            require: true
+        },
+        previousData: [previousDataSchema(String)]
+    }],
     seizingOfficerName: {
         type: String,
         require: true
