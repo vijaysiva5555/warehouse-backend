@@ -1,11 +1,8 @@
 const mongoose = require("mongoose")
 const objectId = mongoose.Schema.Types.ObjectId
+const { previousDataSchema } = require("./previousDataSchema")
+
 const receipt = new mongoose.Schema({
-    id: {
-        type: objectId,
-        ref: "user",
-        require: true
-    },
     eMalkhanaId: {
         type: objectId,
         ref: "eMalkhana",
@@ -16,32 +13,53 @@ const receipt = new mongoose.Schema({
         require: true
     },
     packageDetails: {
-        type: Object,
-        require: true
+        current: {
+            type: String,
+            require: true
+        },
+        previousData: [previousDataSchema(String)]
     },
     godownName: {
-        type: Object,
-        require: true
+        current: {
+            type: String,
+            require: true
+        },
+        previousData: [previousDataSchema(String)]
     },
     godownCode: {
-        type: Object,
-        require: true
+        current: {
+            type: String,
+            require: true
+        },
+        previousData: [previousDataSchema(String)]
     },
     locationOfPackageInGodown: {
-        type: Object,
-        require: true
+        current: {
+            type: String,
+            require: true
+        },
+        previousData: [previousDataSchema(String)]
     },
     handingOverOfficerName: {
-        type: Object,
-        require: true
+        current: {
+            type: String,
+            require: true
+        },
+        previousData: [previousDataSchema(String)]
     },
     handingOverOfficerDesignation: {
-        type: Object,
-        require: true
+        current: {
+            type: String,
+            require: true
+        },
+        previousData: [previousDataSchema(String)]
     },
     pendingUnderSection: {
-        type: Object,
-        require: true
+        current: {
+            type: String,
+            require: true
+        },
+        previousData: [previousDataSchema(String)]
     },
     adjucationOrderNo: {
         type: String,
@@ -52,19 +70,22 @@ const receipt = new mongoose.Schema({
     },
     disposalOrderNo: {
         type: String,
-        
     },
     disposalRejectReason: {
         type: String,
-        
     },
     whAckNo: {
         type: String,
         require: true
     },
-    barcode: {
-        type:String,                           //type: Image,   error image is not defined.
-    }
+    // barcode: {
+    //     type: String,                           //type: Image,   error image is not defined.
+    // },
+    createdBy: {
+        type: objectId,
+        ref: "user",
+        require: true
+    },
 },
     { timestamps: true, versionKey: false }
 )

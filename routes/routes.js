@@ -16,27 +16,82 @@ const eMalkhanaValidation = require("../validation/eMalkhana")
 const disposalValidation = require("../validation/disposalDetails")
 
 //import API
+
 //User API
 routes.post("/register", userValidation.userValidation, userController.register)
 routes.post("/login", userValidation.loginnCreator, userController.loginUser)
 routes.post("/userDataById", userValidation.checkId, userController.userDataById)
 
-//eMalkhana API
-routes.post("/eMalkhana", authorized, eMalkhanaValidation.eMalkhanaValidation, eMalkhanaController.eMalkhanaDetails) // checkAccess([1]),
-routes.post("/update", authorized, eMalkhanaValidation.checkId, eMalkhanaController.updateEmakhala)
+//-------------------------eMalkhana API-------------------------------//
+//post api
+routes.post("/insertEMalkhana", eMalkhanaValidation.eMalkhanaValidation, eMalkhanaController.insertEMalkhanaDetails) // checkAccess([1]),   //done
+
+//get api
 routes.get("/eMalkhana", eMalkhanaController.getEmakhalaDetails)
-routes.post("/eMalkhanaById", authorized, eMalkhanaValidation.checkId, eMalkhanaController.eMalkhanaDataById)
+routes.post("/getDataUsingeMalkhanaById", eMalkhanaValidation.checkId, eMalkhanaController.eMalkhanaDataById)
 
-//receipt API
-routes.post("/receipt", authorized, receiptValidation.receiptValidation, receiptController.receiptDetails)
+//search  GET API
+routes.post("/getDataByeMalkhanaNo", eMalkhanaValidation.checkeMalkhanaNo, eMalkhanaController.searchDataUsingeMalkhanaNo)
+routes.post("/getDataByFileNo", eMalkhanaValidation.fileNo, eMalkhanaController.searchDataUsingfileNo)
+routes.post("/getDataByImporterName", eMalkhanaValidation.importerName, eMalkhanaController.searchDataUsingImporterName)
+routes.post("/getDataByImporterAddress", eMalkhanaValidation.importerAddress, eMalkhanaController.searchDataUsingImporterAddress)
+routes.post("/getDataByItemDesc", eMalkhanaValidation.itemDesc, eMalkhanaController.searchDataUsingItemDesc)
+
+//REPORT GENERATED GET API
+routes.post("/seizedUnitwise", eMalkhanaValidation.SeizingUnitWise, eMalkhanaController.getReportUsingSeizingUnitWise)
+routes.post("/seizedItemName", eMalkhanaValidation.SeizingItemWise, eMalkhanaController.getReportUsingSeizingItemWise)
+
+//updateAPI
+routes.post("/updateEmalkhana",eMalkhanaValidation.checkId, eMalkhanaController.updateMalkhana)
+// routes.post("/feilds", eMalkhanaValidation.checkeMalkhanaNo, eMalkhanaController.updateeMalkhanaDataByFeilds)
+
+//--------------------------REOPEN UPDATE API---------------------------------------------------//
+
+routes.post("/updateApi",eMalkhanaController.updateReopenDataUsingeMalkhanaNo)
+
+
+
+//------------------------------------receipt API---------------------------------//
+//post API
+routes.post("/insertReceipt", receiptValidation.receiptValidation, receiptController.insertReceiptDetails)
+
+//get API
 routes.get("/receipt", receiptController.getReceiptDetails)
-routes.post("/updateReceiptDetails", authorized, receiptValidation.checkId, receiptController.updateReceipt)
-routes.post("/receiptById", receiptValidation.checkId, receiptController.receiptDataById)
+routes.get("/receiptById", receiptValidation.checkId, receiptController.receiptDataById)
 
-//disposalDetails API
+//SEARCH Data get API
+routes.get("/receiptDetailsByeMalkhanaNo", receiptValidation.checkeMalkhanaNo, receiptController.searchDataUsingeMalkhanaNo)
+routes.get("/wackNo", receiptValidation.whAckNo, receiptController.searchDataUsingWackNo)
+routes.get("/adjudiction", receiptController.searchDataByAdjucationOrderNo)
+routes.post("/getAllDataBasedOnEmalkhanaNumber",receiptValidation.checkeMalkhanaNo, receiptController.getAllDataBasedOnEmalkhanaNumber)
+routes.post("/getEmalkhanaDataBasedonWhackNo",receiptValidation.whAckNo, receiptController.getEmalkhanaDataBasedonWhackNo)
+
+
+//REPORT GENERATION get API
+routes.post("/godownName", receiptValidation.godownName, receiptController.getReportDataByGodownName)
+routes.post("/godownCode", receiptValidation.godownCode, receiptController.getReportDataByGodownCode)
+routes.post("/pendingSection", receiptValidation.pendingSection, receiptController.reportOfPendingUnderSection)
+routes.post("/ripeDisposal", receiptValidation.ripeDisposal, receiptController.reportOfRipeForDisposal)
+
+//update API
+// routes.post("/updateAllReceiptDetailsDetails", authorized, receiptValidation.checkId, receiptController.updateAllReceiptDetails)
+routes.post("/updateFeilds", receiptValidation.checkIdFeilds, receiptController.updateReceipt)
+
+//-------------------------------------------DISPOSAL DETAILS API-----------------------------------------//
+// POST API
 routes.post("/disposalDetails", authorized, disposalValidation.disposalValidation, disposalController.disposalDataDetails)
+
+//GET API
 routes.get("/disposalDetails", disposalController.getdisposalDetails)
+routes.post("/disposalById", authorized, disposalValidation.checkId, disposalController.disposalDataById)
+
+//UPDATE API
 routes.post("/updateDisposalDetails", authorized, disposalValidation.checkId, disposalController.updateDisposalDetails)
-routes.get("/disposalById", authorized, disposalValidation.checkId, disposalController.disposalDataById)
+
+//SEARCH DATA GET API
+routes.post("/disposalDataUsingeMalkhanaNo", disposalValidation.checkeMalkhanaNo, disposalController.searchDataUsingeMalkhanaNo)
+routes.post("disposalDetailsByWackNo", disposalValidation.whAckNo, disposalController.searchDataUsingWackNo)
+
+
 
 module.exports = routes

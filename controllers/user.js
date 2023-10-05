@@ -14,7 +14,7 @@ const register = async (req, res) => {
         userRegistration.password = bcrypt.hashSync(userRegistration.password, 10)
         registration = await db.insertSingleDocument("user", userRegistration)
         if (registration) {
-            return res.send({ status: 1, msg: "user successfully register", data: registration })
+            return res.send({ status: 1, msg: "user successfully register" })
         }
     } catch (error) {
         return res.send(error.message)

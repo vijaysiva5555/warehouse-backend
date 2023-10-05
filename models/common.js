@@ -37,4 +37,54 @@ const checkAccess = function (role) {
   }
 }
 
+// const AWS = require('aws-sdk');
+// const fsfile = require('fs');
+
+// // Configure AWS with your access and secret key.
+// AWS.config.update({
+//   accessKeyId: 'YOUR_ACCESS_KEY',
+//   secretAccessKey: 'YOUR_SECRET_KEY',
+//   region: 'YOUR_REGION'
+// });
+
+// const s3 = new AWS.S3();
+
+// async function uploadFilesToS3(folderName, files) {
+//   try {
+//     // Ensure the folder name ends with a trailing slash
+//     const folderKey = folderName.endsWith('/') ? folderName : `${folderName}/`;
+
+//     // Iterate through each file and upload to S3
+//     const uploadPromises = files.map(async file => {
+//       const fileContent = fsfile.readFileSync(file.path);
+
+//       const params = {
+//         Bucket: 'YOUR_S3_BUCKET_NAME',
+//         Key: `${folderKey}${file.originalname}`, // Set the file name in S3
+//         Body: fileContent
+//       };
+
+//       await s3.upload(params).promise();
+//     });
+
+//     // Wait for all uploads to complete
+//     await Promise.all(uploadPromises);
+
+//     console.log('All files uploaded successfully.');
+//   } catch (error) {
+//     console.error('Error uploading files to S3:', error);
+//   }
+// }
+
+// Example usage:
+// const folderName = 'your-folder-name';
+// const files = [
+//   { path: 'path/to/file1.pdf', originalname: 'file1.pdf' },
+//   { path: 'path/to/file2.pdf', originalname: 'file2.pdf' },
+//   // Add more files as needed
+// ];
+
+// uploadFilesToS3(folderName, files);
+
+
 module.exports = { createDir, createFile , checkAccess}

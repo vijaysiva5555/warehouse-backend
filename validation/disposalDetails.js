@@ -9,7 +9,7 @@ const disposalValidation = [
     (req, res, next) => {
         const errors = validationResult(req).array()
         if (errors.length > 0) {
-            return res.send({ status: 0, response: errors[0].msg })
+            return res.send({ status: 0, msg: errors[0].msg })
         } return next()
     }]
     const checkId = [
@@ -17,8 +17,26 @@ const disposalValidation = [
         (req, res, next) => {
             const errors = validationResult(req).array()
             if (errors.length > 0) {
-                return res.send({ status: 0, response: errors[0].msg })
+                return res.send({ status: 0, msg: errors[0].msg })
             } return next()
         }
     ]
-module.exports = {disposalValidation,checkId }
+    const checkeMalkhanaNo = [
+        check('eMalkhanaNo').notEmpty().withMessage('eMalkhanaNo should be required'),
+        (req, res, next) => {
+            const errors = validationResult(req).array()
+            if (errors.length > 0) {
+                return res.send({ status: 0, msg: errors[0].msg })
+            } return next()
+        }
+    ]
+    const whAckNo = [
+        check('whAckNo').notEmpty().withMessage('whAckNo should be required'),
+        (req, res, next) => {
+            const errors = validationResult(req).array()
+            if (errors.length > 0) {
+                return res.send({ status: 0, msg: errors[0].msg })
+            } return next()
+        }
+    ]
+module.exports = {disposalValidation,checkId,checkeMalkhanaNo,whAckNo }
