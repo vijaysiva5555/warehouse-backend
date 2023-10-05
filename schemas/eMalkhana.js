@@ -45,20 +45,20 @@ const eMalkhana = new mongoose.Schema({
         },
         previousData: [previousDataSchema(Number)]
     },
-    seizedItemValue: [{
+    seizedItemValue: {
         current: {
             type: Number,
             require: true
         },
         previousData: [previousDataSchema(Number)]
-    }],
-    itemDesc: [{
+    },
+    itemDesc: {
         current: {
             type: String,
             require: true
         },
         previousData: [previousDataSchema(String)]
-    }],
+    },
     seizingOfficerName: {
         type: String,
         require: true
