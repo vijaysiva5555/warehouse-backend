@@ -49,7 +49,7 @@ const eMalkhanaValidation = [
         }
     ]
     const SeizingItemWise = [
-        check('seizedItemName ').notEmpty().withMessage('seizing Item Name should be required'),
+        check('seizedItemName.current').notEmpty().withMessage('seizing Item Name should be required'),
         (req, res, next) => {
             const errors = validationResult(req).array()
             if (errors.length > 0) {
@@ -67,7 +67,7 @@ const eMalkhanaValidation = [
         }
     ]
     const itemDesc = [
-        check('itemDesc').notEmpty().withMessage('itemDesc should be required'),
+        check('itemDesc.current').notEmpty().withMessage('itemDesc should be required'),
         (req, res, next) => {
             const errors = validationResult(req).array()
             if (errors.length > 0) {

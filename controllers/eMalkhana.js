@@ -192,7 +192,7 @@ const searchDataUsingfileNo = async (req, res) => {
 const searchDataUsingItemDesc = async (req, res) => {
     try {
         let itemDesc = req.body, checkItemDesc
-        checkItemDesc = await db.findSingleDocument("eMalkhana", { itemDesc: itemDesc.itemDesc })
+        checkItemDesc = await db.findSingleDocument("eMalkhana", {"itemDesc.current": itemDesc.itemDesc.current })
         if (checkItemDesc !== null) {
             return res.send({ status: 1, data: checkItemDesc })
         }
@@ -245,7 +245,7 @@ const searchDataUsingImporterAddress = async (req, res) => {
 const getReportUsingSeizingUnitWise = async (req, res) => {
     try {
         let seizingUnitName = req.body, seizedUnit
-        seizedUnit = await db.findDocuments("eMalkhana", { seizingUnitName: seizingUnitName.seizingUnitName })
+        seizedUnit = await db.findSingleDocument("eMalkhana", {seizingUnitName: seizingUnitName.seizingUnitName })
         if (seizedUnit !== null) {
             return res.send({ status: 1, data: seizedUnit })
         }
@@ -262,7 +262,7 @@ const getReportUsingSeizingUnitWise = async (req, res) => {
 const getReportUsingSeizingItemWise = async (req, res) => {
     try {
         let seizedItemName = req.body, seizedItem
-        seizedItem = await db.findDocuments("eMalkhana", { seizedItemName: seizedItemName.seizedItemName })
+        seizedItem = await db.findSingleDocument("eMalkhana", { "seizedItemName.current": seizedItemName.seizedItemName.current })
         if (seizedItem !== null) {
             return res.send({ status: 1, data: seizedItem })
         }
