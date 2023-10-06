@@ -85,7 +85,7 @@ const eMalkhanaValidation = [
         }
     ]
     const importerAddress = [
-        check('seizedItemName ').notEmpty().withMessage('importerAddress should be required'),
+        check('importerAddress').notEmpty().withMessage('importerAddress should be required'),
         (req, res, next) => {
             const errors = validationResult(req).array()
             if (errors.length > 0) {

@@ -24,7 +24,7 @@ routes.post("/userDataById", userValidation.checkId, userController.userDataById
 
 //-------------------------eMalkhana API-------------------------------//
 //post api
-routes.post("/insertEMalkhana", eMalkhanaValidation.eMalkhanaValidation, eMalkhanaController.insertEMalkhanaDetails) // checkAccess([1]),   //done
+routes.post("/insertEMalkhana",eMalkhanaValidation.eMalkhanaValidation, eMalkhanaController.insertEMalkhanaDetails) // checkAccess([2]),   //done
 
 //get api
 routes.get("/eMalkhana", eMalkhanaController.getEmakhalaDetails)
@@ -47,7 +47,7 @@ routes.post("/updateEmalkhana",eMalkhanaValidation.checkId, eMalkhanaController.
 
 //--------------------------REOPEN UPDATE API---------------------------------------------------//
 
-routes.post("/updateApi",eMalkhanaController.updateReopenDataUsingeMalkhanaNo)
+//routes.post("/updateApi",eMalkhanaController.updateReopenDataUsingeMalkhanaNo)
 
 
 

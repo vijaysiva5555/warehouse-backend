@@ -308,35 +308,35 @@ const getReportUsingSeizingItemWise = async (req, res) => {
 
 //---------------Re-open API-----------------------------------------------//
 
-const updateReopenDataUsingeMalkhanaNo = async (req, res) => {
-    try {
-        const { eMalkhanaNo, newSealNo, newOfficerName, newOfficerDesignation } = req.body;
-        const seizureToUpdate = await db.findDocumentExist("eMalkhana", { eMalkhanaNo });
-        if (!seizureToUpdate) {
-            return res.send({ status: 0, msg: "eMalkhana no is not found" });
-        }
-        const updateResult = await db.updateOneDocument(
-            "eMalkhana",
-            { eMalkhanaNo },
-            {
-                $set: {
-                    newSealNo: newSealNo !== undefined ? newSealNo : seizureToUpdate.newSealNo,
-                    newOfficerName: newOfficerName !== undefined ? newOfficerName : seizureToUpdate.newOfficerName,
-                    newOfficerDesignation: newOfficerDesignation !== undefined ? newOfficerDesignation : seizureToUpdate.newOfficerDesignation,
-                },
-            }
-        )
-        if (!req.body.newSealNo && !req.body.newOfficerName && !req.body.newOfficerDesignation) {
-            return res.send('Please insert data need to be updated');
-        }
-        if (updateResult) {
-            return res.send({ status: 1, msg: "data updated successfully" })
-        }
-    }
-    catch (error) {
-        return res.send(error.message)
-    }
-}
+// const updateReopenDataUsingeMalkhanaNo = async (req, res) => {
+//     try {
+//         const { eMalkhanaNo, newSealNo, newOfficerName, newOfficerDesignation } = req.body;
+//         const seizureToUpdate = await db.findDocumentExist("eMalkhana", { eMalkhanaNo });
+//         if (!seizureToUpdate) {
+//             return res.send({ status: 0, msg: "eMalkhana no is not found" });
+//         }
+//         const updateResult = await db.updateOneDocument(
+//             "eMalkhana",
+//             { eMalkhanaNo },
+//             {
+//                 $set: {
+//                     newSealNo: newSealNo !== undefined ? newSealNo : seizureToUpdate.newSealNo,
+//                     newOfficerName: newOfficerName !== undefined ? newOfficerName : seizureToUpdate.newOfficerName,
+//                     newOfficerDesignation: newOfficerDesignation !== undefined ? newOfficerDesignation : seizureToUpdate.newOfficerDesignation,
+//                 },
+//             }
+//         )
+//         if (!req.body.newSealNo && !req.body.newOfficerName && !req.body.newOfficerDesignation) {
+//             return res.send('Please insert data need to be updated');
+//         }
+//         if (updateResult) {
+//             return res.send({ status: 1, msg: "data updated successfully" })
+//         }
+//     }
+//     catch (error) {
+//         return res.send(error.message)
+//     }
+// }
 
 module.exports = {
     insertEMalkhanaDetails,
@@ -351,6 +351,6 @@ module.exports = {
     getReportUsingSeizingItemWise,
     getReportUsingSeizingUnitWise,
     // updateeMalkhanaDataByFeilds,
-    updateReopenDataUsingeMalkhanaNo
+    //updateReopenDataUsingeMalkhanaNo
 
 }
