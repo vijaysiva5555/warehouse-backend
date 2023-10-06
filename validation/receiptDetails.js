@@ -91,7 +91,7 @@ const receiptValidation = [
         }
     ]
     const adjucationOrderNo = [
-        check('adjucationOrderNo ').notEmpty().withMessage('adjucationOrderNo should be required'),
+        check('adjucationOrderNo').notEmpty().withMessage('adjucationOrderNo should be required'),
         (req, res, next) => {
             const errors = validationResult(req).array()
             if (errors.length > 0) {

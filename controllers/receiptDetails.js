@@ -202,7 +202,7 @@ const searchDataUsingWackNo = async (req, res) => {
 const searchDataByAdjucationOrderNo = async (req, res) => {
     try {
         let adjucationOrderNo = req.body, checkAdjucationOrderNo
-        checkwhAckNo = await db.findSingleDocument("receipt", {
+        checkAdjucationOrderNo = await db.findSingleDocument("receipt", {
             adjucationOrderNo: adjucationOrderNo.adjucationOrderNo
         })
         if (checkAdjucationOrderNo !== null) {
@@ -223,7 +223,7 @@ const searchDataByAdjucationOrderNo = async (req, res) => {
 const getReportDataByGodownName = async (req, res) => {
     try {
         let godownName = req.body, godownItem
-        godownItem = await db.findDocuments("receipt", { godownName: godownName.godownName })
+        godownItem = await db.findSingleDocument("receipt", { "godownName.current": godownName.godownName.current })
         if (godownItem !== null) {
             return res.send({ status: 1, data: godownItem })
         }
@@ -240,7 +240,7 @@ const getReportDataByGodownName = async (req, res) => {
 const getReportDataByGodownCode = async (req, res) => {
     try {
         let godownCode = req.body, getGodownCode
-        getGodownCode = await db.findDocuments("receipt", { godownCode: godownCode.godownCode })
+        getGodownCode = await db.findSingleDocument("receipt", { "godownCode.current": godownCode.godownCode.current })
         if (getGodownCode !== null) {
             return res.send({ status: 1, data: getGodownCode })
         }
@@ -257,7 +257,7 @@ const getReportDataByGodownCode = async (req, res) => {
 const reportOfPendingUnderSection = async (req, res) => {
     try {
         let pendingUnderSection = req.body, pendingSection
-        pendingSection = await db.findDocuments("receipt", { pendingUnderSection: pendingUnderSection.pendingUnderSection })
+        pendingSection = await db.findSingleDocument("receipt", { "pendingUnderSection.current": pendingUnderSection.pendingUnderSection.current })
         if (pendingSection !== null) {
             return res.send({ status: 1, data: pendingSection })
         }
@@ -274,7 +274,7 @@ const reportOfPendingUnderSection = async (req, res) => {
 const reportOfRipeForDisposal = async (req, res) => {
     try {
         let ripeForDisposal = req.body, ripeDisposal
-        ripeDisposal = await db.findDocuments("receipt", { ripeForDisposal: ripeForDisposal.ripeForDisposal })
+        ripeDisposal = await db.findSingleDocument("receipt", { ripeForDisposal: ripeForDisposal.ripeForDisposal })
         if (ripeDisposal !== null) {
             return res.send({ status: 1, data: ripeDisposal })
         }

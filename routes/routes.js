@@ -60,9 +60,9 @@ routes.get("/receipt", receiptController.getReceiptDetails)
 routes.get("/receiptById", receiptValidation.checkId, receiptController.receiptDataById)
 
 //SEARCH Data get API
-routes.get("/receiptDetailsByeMalkhanaNo", receiptValidation.checkeMalkhanaNo, receiptController.searchDataUsingeMalkhanaNo)
-routes.get("/wackNo", receiptValidation.whAckNo, receiptController.searchDataUsingWackNo)
-routes.get("/adjudiction", receiptController.searchDataByAdjucationOrderNo)
+routes.post("/receiptDetailsByeMalkhanaNo", receiptValidation.checkeMalkhanaNo, receiptController.searchDataUsingeMalkhanaNo)
+routes.post("/wackNo", receiptValidation.whAckNo, receiptController.searchDataUsingWackNo)
+routes.post("/checkAdjucationOrderNo",receiptValidation.adjucationOrderNo, receiptController.searchDataByAdjucationOrderNo)
 routes.post("/getAllDataBasedOnEmalkhanaNumber",receiptValidation.checkeMalkhanaNo, receiptController.getAllDataBasedOnEmalkhanaNumber)
 routes.post("/getEmalkhanaDataBasedonWhackNo",receiptValidation.whAckNo, receiptController.getEmalkhanaDataBasedonWhackNo)
 
