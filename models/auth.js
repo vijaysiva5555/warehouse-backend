@@ -21,6 +21,7 @@ const authorized = async (req, res, next) => {
                 if (!checkcreator) {
                     return res.send("unauthorized")
                 } else {
+                    res.locals.userData= signToken
                     next()
                 }
             }

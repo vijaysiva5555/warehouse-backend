@@ -24,7 +24,7 @@ routes.post("/userDataById", userValidation.checkId, userController.userDataById
 
 //-------------------------eMalkhana API-------------------------------//
 //post api
-routes.post("/insertEMalkhana",eMalkhanaValidation.eMalkhanaValidation, eMalkhanaController.insertEMalkhanaDetails) // checkAccess([2]),   //done
+routes.post("/insertEMalkhana", authorized, eMalkhanaValidation.eMalkhanaValidation, eMalkhanaController.insertEMalkhanaDetails) // checkAccess([2]),   //done
 
 //get api
 routes.get("/eMalkhana", eMalkhanaController.getEmakhalaDetails)
@@ -42,8 +42,10 @@ routes.post("/seizedUnitwise", eMalkhanaValidation.SeizingUnitWise, eMalkhanaCon
 routes.post("/seizedItemName", eMalkhanaValidation.SeizingItemWise, eMalkhanaController.getReportUsingSeizingItemWise)
 
 //updateAPI
-routes.post("/updateEmalkhana",eMalkhanaValidation.checkId, eMalkhanaController.updateMalkhana)
+routes.post("/updateEmalkhana", eMalkhanaValidation.checkId, eMalkhanaController.updateMalkhana)
 // routes.post("/feilds", eMalkhanaValidation.checkeMalkhanaNo, eMalkhanaController.updateeMalkhanaDataByFeilds)
+routes.post("/deleteDocumentBasedOnEmalkhanaNo", eMalkhanaController.deleteDocumentBasedOnEmalkhanaNo)
+
 
 //--------------------------REOPEN UPDATE API---------------------------------------------------//
 
@@ -53,18 +55,18 @@ routes.post("/updateEmalkhana",eMalkhanaValidation.checkId, eMalkhanaController.
 
 //------------------------------------receipt API---------------------------------//
 //post API
-routes.post("/insertReceipt", receiptValidation.receiptValidation, receiptController.insertReceiptDetails)
+routes.post("/insertReceipt",authorized, receiptValidation.receiptValidation, receiptController.insertReceiptDetails)
 
 //get API
 routes.get("/receipt", receiptController.getReceiptDetails)
-routes.get("/receiptById", receiptValidation.checkId, receiptController.receiptDataById)
+routes.post("/receiptById", receiptValidation.checkId, receiptController.receiptDataById)
 
 //SEARCH Data get API
 routes.post("/receiptDetailsByeMalkhanaNo", receiptValidation.checkeMalkhanaNo, receiptController.searchDataUsingeMalkhanaNo)
 routes.post("/wackNo", receiptValidation.whAckNo, receiptController.searchDataUsingWackNo)
-routes.post("/checkAdjucationOrderNo",receiptValidation.adjucationOrderNo, receiptController.searchDataByAdjucationOrderNo)
-routes.post("/getAllDataBasedOnEmalkhanaNumber",receiptValidation.checkeMalkhanaNo, receiptController.getAllDataBasedOnEmalkhanaNumber)
-routes.post("/getEmalkhanaDataBasedonWhackNo",receiptValidation.whAckNo, receiptController.getEmalkhanaDataBasedonWhackNo)
+routes.post("/checkAdjucationOrderNo", receiptValidation.adjucationOrderNo, receiptController.searchDataByAdjucationOrderNo)
+routes.post("/getAllDataBasedOnEmalkhanaNumber", receiptValidation.checkeMalkhanaNo, receiptController.getAllDataBasedOnEmalkhanaNumber)
+routes.post("/getEmalkhanaDataBasedonWhackNo", receiptValidation.whAckNo, receiptController.getEmalkhanaDataBasedonWhackNo)
 
 
 //REPORT GENERATION get API
@@ -79,18 +81,20 @@ routes.post("/updateFeilds", receiptValidation.checkIdFeilds, receiptController.
 
 //-------------------------------------------DISPOSAL DETAILS API-----------------------------------------//
 // POST API
-routes.post("/disposalDetails", authorized, disposalValidation.disposalValidation, disposalController.disposalDataDetails)
+routes.post("/disposalDetails",authorized, disposalValidation.disposalValidation, disposalController.disposalDataDetails)
 
 //GET API
 routes.get("/disposalDetails", disposalController.getdisposalDetails)
-routes.post("/disposalById", authorized, disposalValidation.checkId, disposalController.disposalDataById)
+routes.post("/disposalById", disposalValidation.checkId, disposalController.disposalDataById)
 
 //UPDATE API
-routes.post("/updateDisposalDetails", authorized, disposalValidation.checkId, disposalController.updateDisposalDetails)
+routes.post("/updateDisposalDetails", disposalValidation.checkId, disposalController.updateDisposalDetails)
 
 //SEARCH DATA GET API
 routes.post("/disposalDataUsingeMalkhanaNo", disposalValidation.checkeMalkhanaNo, disposalController.searchDataUsingeMalkhanaNo)
-routes.post("disposalDetailsByWackNo", disposalValidation.whAckNo, disposalController.searchDataUsingWackNo)
+routes.post("/disposalDetailsByWackNo", disposalValidation.whAckNo, disposalController.searchDataUsingWackNo)
+routes.post("/getAllDataByEmalkhanaNo", disposalValidation.checkeMalkhanaNo, disposalController.getAllDataByEmalkhanaNo)
+routes.post("/getAllDataBasedOnWhackNo", disposalValidation.whAckNo, disposalController.getAllDataBasedOnWhackNo)
 
 
 

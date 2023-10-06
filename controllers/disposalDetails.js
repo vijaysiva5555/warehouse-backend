@@ -5,14 +5,19 @@ const { default: mongoose } = require("mongoose")
 const disposalDataDetails = async (req, res) => {
     try {
         let insertDisposalData = req.body, disposalData, checkingRole
-
-        checkingRole = await db.findDocumentExist("user", { _id: new mongoose.Types.ObjectId(insertDisposalData.id), role: 2 })
-        if (checkingRole === false) {
-            return res.send({ status: 0, msg: "you are not authorized person to enter data" })
+        checkeMalkhanaNo = await db.findOneDocumentExists("disposal", { eMalkhanaNo: insertDisposalData.eMalkhanaNo })
+        if (checkeMalkhanaNo === true) {
+            return res.send({ status: 0, msg: "E-malkhana NO Alreday Exists" })
         }
+        insertDisposalData.createdBy = res.locals.userData.userId
+        
+
         disposalData = await db.insertSingleDocument("disposal", insertDisposalData)
         if (disposalData) {
+            await db.updateOneDocument("eMalkhana", { "eMalkhanaNo": disposalData.eMalkhanaNo }, { status: 3 })
             return res.send({ status: 1, msg: "packages details inserted successfully", data: disposalData })
+        } else {
+            return res.send({ status: 0, msg: "Invalid Request" })
         }
     } catch (error) {
         return res.send(error.message)
@@ -59,9 +64,9 @@ const disposalDataById = async (req, res) => {
         if (disposalData !== null) {
 
             return res.send({ status: 1, data: disposalData })
-        } {
+        } else {
 
-            return res.send({ status: 1, data: disposalData })
+            return res.send({ status: 0, msg: "data Not found" })
         }
     } catch (error) {
         return res.send(error.message)
@@ -77,9 +82,8 @@ const searchDataUsingeMalkhanaNo = async (req, res) => {
         checkeMalkhanaNo = await db.findSingleDocument("disposal", { eMalkhanaNo: eMalkhanaNo.eMalkhanaNo })
         if (checkeMalkhanaNo !== null) {
             return res.send({ status: 1, data: checkeMalkhanaNo })
-        }
-        {
-            return res.send({ status: 1, data: checkeMalkhanaNo })
+        } else {
+            return res.send({ status: 0, msg: "data Not found" })
         }
 
     } catch (error) {
@@ -97,9 +101,8 @@ const searchDataUsingWackNo = async (req, res) => {
         })
         if (checkwhAckNo !== null) {
             return res.send({ status: 1, data: checkwhAckNo })
-        }
-        {
-            return res.send({ status: 1, data: checkwhAckNo })
+        } else {
+            return res.send({ status: 0, msg: "data Not found" })
         }
 
     } catch (error) {
@@ -107,4 +110,53 @@ const searchDataUsingWackNo = async (req, res) => {
     }
 }
 
-module.exports = { disposalDataDetails, updateDisposalDetails, getdisposalDetails, disposalDataById, searchDataUsingeMalkhanaNo, searchDataUsingWackNo }
+const getAllDataByEmalkhanaNo = async (req, res) => {
+    try {
+        let numberData = req.body, getEmalkhanaData, getReceptData, getDisposalData, allData
+
+        getEmalkhanaData = await db.findSingleDocument("eMalkhana", { eMalkhanaNo: numberData.eMalkhanaNo })
+        getReceptData = await db.findSingleDocument("receipt", { eMalkhanaNo: numberData.eMalkhanaNo })
+        getDisposalData = await db.findSingleDocument("disposal", { eMalkhanaNo: numberData.eMalkhanaNo })
+        if (getEmalkhanaData || getReceptData || getDisposalData) {
+            allData = {
+                eMalkhanaData: getEmalkhanaData,
+                receiptData: getReceptData,
+                disposalData: getDisposalData
+            }
+
+            return res.send({ status: 1, data: allData })
+        }
+
+    } catch (error) {
+        return res.send(error.message)
+    }
+}
+const getAllDataBasedOnWhackNo = async (req, res) => {
+    try {
+        let numberData = req.body, getEmalkhanaData, getReceptData, getDisposalData, allData
+
+        getReceptData = await db.findSingleDocument("receipt", { whAckNo: numberData.whAckNo })
+        getEmalkhanaData = await db.findSingleDocument("eMalkhana", { eMalkhanaNo: getReceptData.eMalkhanaNo })
+        getDisposalData = await db.findSingleDocument("disposal", { whAckNo: numberData.whAckNo })
+        if (getEmalkhanaData || getReceptData || getDisposalData) {
+            allData = {
+                eMalkhanaData: getEmalkhanaData,
+                receiptData: getReceptData,
+                disposalData: getDisposalData
+            }
+
+            return res.send({ status: 1, data: allData })
+        }
+        return res.send({ status: 0, msg: "data not found" })
+
+    } catch (error) {
+        return res.send(error.message)
+    }
+}
+
+
+module.exports = {
+    disposalDataDetails, updateDisposalDetails, getdisposalDetails,
+    disposalDataById, searchDataUsingeMalkhanaNo, searchDataUsingWackNo, getAllDataByEmalkhanaNo,
+    getAllDataBasedOnWhackNo
+}

@@ -1,15 +1,11 @@
 const { default: mongoose } = require("mongoose")
 const db = require("../models/mongo")
 const moment = require("moment")
-const { check } = require("express-validator")
-const { checkeMalkhanaNo } = require("../validation/receiptDetails")
-
 //------------------------receipt details post--------------------------//
 
 const insertReceiptDetails = async (req, res) => {
     try {
-        let receiptInput = req.body, receiptData, checkingRole, whAckNoData, currentYear, checkeMalkhanaNo, getPreviousDataByID,
-            malkhanaUpdateData = {}
+        let receiptInput = req.body, receiptData, checkingRole, whAckNoData, currentYear, checkeMalkhanaNo, getPreviousDataByID
         currentYear = moment().year().toString().substring(2)
         whAckNoData = await db.findDocuments("receipt", { 'whAckNo': { $regex: currentYear } })
         receiptInput.whAckNo = process.env.WHACKNO + '-' + currentYear + '-' + String(whAckNoData.length + 1).padStart(4, '0')
@@ -18,6 +14,8 @@ const insertReceiptDetails = async (req, res) => {
         if (checkeMalkhanaNo === true) {
             return res.send({ status: 0, msg: "E-malkhana NO Alreday Exists" })
         }
+        receiptInput.createdBy = res.locals.userData.userId
+        receiptInput.status = 2   // for E-malkhana
 
         //  // BARCODE ----
         //  const options = {
@@ -149,9 +147,9 @@ const receiptDataById = async (req, res) => {
         if (receiptData !== null) {
 
             return res.send({ status: 1, data: receiptData })
-        } {
+        } else {
 
-            return res.send({ status: 1, data: receiptData })
+            return res.send({ status: 0, msg: "data Not found" })
         }
     } catch (error) {
         return res.send(error.message)
@@ -167,9 +165,8 @@ const searchDataUsingeMalkhanaNo = async (req, res) => {
         checkeMalkhanaNo = await db.findSingleDocument("receipt", { eMalkhanaNo: eMalkhanaNo.eMalkhanaNo })
         if (checkeMalkhanaNo !== null) {
             return res.send({ status: 1, data: checkeMalkhanaNo })
-        }
-        {
-            return res.send({ status: 1, data: checkeMalkhanaNo })
+        } else {
+            return res.send({ status: 0, msg: "data Not found" })
         }
 
     } catch (error) {
@@ -187,9 +184,8 @@ const searchDataUsingWackNo = async (req, res) => {
         })
         if (checkwhAckNo !== null) {
             return res.send({ status: 1, data: checkwhAckNo })
-        }
-        {
-            return res.send({ status: 1, data: checkwhAckNo })
+        } else {
+            return res.send({ status: 0, msg: "data Not found" })
         }
 
     } catch (error) {
@@ -207,9 +203,8 @@ const searchDataByAdjucationOrderNo = async (req, res) => {
         })
         if (checkAdjucationOrderNo !== null) {
             return res.send({ status: 1, data: checkAdjucationOrderNo })
-        }
-        {
-            return res.send({ status: 1, data: checkAdjucationOrderNo })
+        } else {
+            return res.send({ status: 0, msg: "data Not found" })
         }
 
     } catch (error) {
@@ -226,9 +221,8 @@ const getReportDataByGodownName = async (req, res) => {
         godownItem = await db.findSingleDocument("receipt", { "godownName.current": godownName.godownName.current })
         if (godownItem !== null) {
             return res.send({ status: 1, data: godownItem })
-        }
-        {
-            return res.send({ status: 1, data: godownItem })
+        } else {
+            return res.send({ status: 0, msg: "data Not found" })
         }
     } catch (error) {
         return res.send(error.message)
@@ -243,9 +237,8 @@ const getReportDataByGodownCode = async (req, res) => {
         getGodownCode = await db.findSingleDocument("receipt", { "godownCode.current": godownCode.godownCode.current })
         if (getGodownCode !== null) {
             return res.send({ status: 1, data: getGodownCode })
-        }
-        {
-            return res.send({ status: 1, data: getGodownCode })
+        } else {
+            return res.send({ status: 0, msg: "data Not found" })
         }
     } catch (error) {
         return res.send(error.message)
@@ -260,9 +253,8 @@ const reportOfPendingUnderSection = async (req, res) => {
         pendingSection = await db.findSingleDocument("receipt", { "pendingUnderSection.current": pendingUnderSection.pendingUnderSection.current })
         if (pendingSection !== null) {
             return res.send({ status: 1, data: pendingSection })
-        }
-        {
-            return res.send({ status: 1, data: pendingSection })
+        } else {
+            return res.send({ status: 0, msg: "data Not found" })
         }
     } catch (error) {
         return res.send(error.message)
@@ -277,9 +269,8 @@ const reportOfRipeForDisposal = async (req, res) => {
         ripeDisposal = await db.findSingleDocument("receipt", { ripeForDisposal: ripeForDisposal.ripeForDisposal })
         if (ripeDisposal !== null) {
             return res.send({ status: 1, data: ripeDisposal })
-        }
-        {
-            return res.send({ status: 1, data: ripeDisposal })
+        } else {
+            return res.send({ status: 0, msg: "data Not found" })
         }
     } catch (error) {
         return res.send(error.message)
@@ -296,8 +287,7 @@ const updateReceipt = async (req, res) => {
         }
         getPreviousDataByID = await db.findSingleDocument("receipt", { _id: new mongoose.Types.ObjectId(updateReceptData.id) })
         if (updateReceptData.packageDetails) {
-            foundObject = getPreviousDataByID.packageDetails.previousData.filter(obj => obj["data"] === updateReceptData.packageDetails.current);
-            if (foundObject.length === 0) {
+            if (getPreviousDataByID.packageDetails.current !== updateReceptData.packageDetails.current) {
                 newPreviousData = {
                     data: getPreviousDataByID.packageDetails.current,
                     date: getPreviousDataByID.updatedAt
@@ -309,8 +299,7 @@ const updateReceipt = async (req, res) => {
         }
 
         if (updateReceptData.godownName) {
-            foundObject = getPreviousDataByID.godownName.previousData.filter(obj => obj["data"] === updateReceptData.godownName.current);
-            if (foundObject.length === 0) {
+            if (getPreviousDataByID.godownName.current !== updateReceptData.godownName.current) {
                 newPreviousData = {
                     data: getPreviousDataByID.godownName.current,
                     date: getPreviousDataByID.updatedAt
@@ -322,8 +311,7 @@ const updateReceipt = async (req, res) => {
         }
 
         if (updateReceptData.godownCode) {
-            foundObject = getPreviousDataByID.godownCode.previousData.filter(obj => obj["data"] === updateReceptData.godownCode.current);
-            if (foundObject.length === 0) {
+            if (getPreviousDataByID.godownCode.current !== updateReceptData.godownCode.current) {
                 newPreviousData = {
                     data: getPreviousDataByID.godownCode.current,
                     date: getPreviousDataByID.updatedAt
@@ -335,8 +323,7 @@ const updateReceipt = async (req, res) => {
         }
 
         if (updateReceptData.locationOfPackageInGodown) {
-            foundObject = getPreviousDataByID.locationOfPackageInGodown.previousData.filter(obj => obj["data"] === updateReceptData.locationOfPackageInGodown.current);
-            if (foundObject.length === 0) {
+            if (getPreviousDataByID.locationOfPackageInGodown.current !== updateReceptData.locationOfPackageInGodown.current) {
                 newPreviousData = {
                     data: getPreviousDataByID.locationOfPackageInGodown.current,
                     date: getPreviousDataByID.updatedAt
@@ -348,8 +335,7 @@ const updateReceipt = async (req, res) => {
         }
 
         if (updateReceptData.handingOverOfficerName) {
-            foundObject = getPreviousDataByID.handingOverOfficerName.previousData.filter(obj => obj["data"] === updateReceptData.handingOverOfficerName.current);
-            if (foundObject.length === 0) {
+            if (getPreviousDataByID.handingOverOfficerName.current !== updateReceptData.handingOverOfficerName.current) {
                 newPreviousData = {
                     data: getPreviousDataByID.handingOverOfficerName.current,
                     date: getPreviousDataByID.updatedAt
@@ -361,8 +347,7 @@ const updateReceipt = async (req, res) => {
         }
 
         if (updateReceptData.handingOverOfficerDesignation) {
-            foundObject = getPreviousDataByID.handingOverOfficerDesignation.previousData.filter(obj => obj["data"] === updateReceptData.handingOverOfficerDesignation.current);
-            if (foundObject.length === 0) {
+            if (getPreviousDataByID.handingOverOfficerDesignation.current !== updateReceptData.handingOverOfficerDesignation.current) {
                 newPreviousData = {
                     data: getPreviousDataByID.handingOverOfficerDesignation.current,
                     date: getPreviousDataByID.updatedAt
@@ -374,8 +359,8 @@ const updateReceipt = async (req, res) => {
         }
 
         if (updateReceptData.pendingUnderSection) {
-            foundObject = getPreviousDataByID.pendingUnderSection.previousData.filter(obj => obj["data"] === updateReceptData.pendingUnderSection.current);
-            if (foundObject.length === 0) {
+
+            if (getPreviousDataByID.pendingUnderSection.current !== updateReceptData.pendingUnderSection.current) {
                 newPreviousData = {
                     data: getPreviousDataByID.pendingUnderSection.current,
                     date: getPreviousDataByID.updatedAt

@@ -2,11 +2,11 @@ const db = require("../models/mongo")
 const mongoose = require("mongoose")
 const common = require("../models/common")
 const moment = require("moment")
-const path = require("path")
-const aws = require('aws-sdk')
+const AWS = require("aws-sdk");
+const { uploadToAws, deleteFile } = require("../models/aws")
+const config = require("../config/config")
 
-//-------------------------------------- eMalkhana details Post--------------------------------------------//
-
+//-------------------------------------- eMalkhana details Insert--------------------------------------------//
 
 const insertEMalkhanaDetails = async (req, res) => {
     let eMalkhanaData = req.body, eMalkhanaInputData, eMalkhanaAllData, currentYear
@@ -14,34 +14,17 @@ const insertEMalkhanaDetails = async (req, res) => {
         currentYear = moment().year().toString().substring(2)
         eMalkhanaAllData = await db.findDocuments("eMalkhana", { 'eMalkhanaNo': { $regex: currentYear } })
         eMalkhanaData.eMalkhanaNo = process.env.EMALKHANANO + '-' + currentYear + '-' + String(eMalkhanaAllData.length + 1).padStart(4, '0')
+        eMalkhanaData.createdBy = res.locals.userData.userId
 
-
+        eMalkhanaData.documents = await uploadToAws(config.EMALKHANADOC, eMalkhanaData.eMalkhanaNo, req.files.documents)
 
         eMalkhanaInputData = await db.insertSingleDocument("eMalkhana", eMalkhanaData)
         if (eMalkhanaInputData) {
-            // if (eMalkhanaFiles.length > 0) {                              //file
-            //     folderPath = path.resolve(__dirname, '../fileUploads')
-            //     await common.createDir(folderPath)
-            //     documentFolderPath = `${folderPath}/${eMalkhanaInputData._id}`
-            //     await common.createDir(documentFolderPath)
-            //     for (; i < eMalkhanaFiles.length; i++) {
-            //         fileName = eMalkhanaFiles[i].name;
-            //         fileFolderPath = path.join(__dirname, `../fileUploads/${eMalkhanaInputData._id}/`, fileName)
-            //         await eMalkhanaFiles[i].mv(fileFolderPath)
-            //         filePath = {
-            //             fileName,
-            //             filePath: `fileUploads/${eMalkhanaInputData._id}/${fileName}`
-            //         }
-            //         arr.push(filePath)
-            //     }
-            //     await db.findByIdAndUpdate("eMalkhana", eMalkhanaInputData._id, { documents: arr })
-            // }
             return res.send({ status: 1, msg: "data inserted successfully" })
+        } else {
+            return res.send({ status: 0, msg: "Invalid request" })
         }
     } catch (error) {
-        // if (eMalkhanaInputData) {
-        //     await db.deleteOneDocument("eMalkhana", { _id: eMalkhanaInputData._id })
-        // }
         return res.send(error.message)
     }
 }
@@ -69,8 +52,7 @@ const updateMalkhana = async (req, res) => {
         }
         getPreviousDataByID = await db.findSingleDocument("eMalkhana", { _id: new mongoose.Types.ObjectId(updateMalkhanData.id) })
         if (updateMalkhanData.seizedItemName) {
-            foundObject = getPreviousDataByID.seizedItemName.previousData.filter(obj => obj["data"] === updateMalkhanData.seizedItemName.current);
-            if (foundObject.length === 0) {
+            if (getPreviousDataByID.seizedItemName.current !== updateMalkhanData.seizedItemName.current) {
                 newPreviousData = {
                     data: getPreviousDataByID.seizedItemName.current,
                     date: getPreviousDataByID.updatedAt
@@ -82,8 +64,8 @@ const updateMalkhana = async (req, res) => {
         }
 
         if (updateMalkhanData.seizedItemWeight) {
-            foundObject = getPreviousDataByID.seizedItemWeight.previousData.filter(obj => obj["data"] === updateMalkhanData.seizedItemWeight.current);
-            if (foundObject.length === 0) {
+
+            if (getPreviousDataByID.seizedItemWeight.current !== updateMalkhanData.seizedItemWeight.current) {
                 newPreviousData = {
                     data: getPreviousDataByID.seizedItemWeight.current,
                     date: getPreviousDataByID.updatedAt
@@ -95,8 +77,7 @@ const updateMalkhana = async (req, res) => {
         }
 
         if (updateMalkhanData.seizedItemValue) {
-            foundObject = getPreviousDataByID.seizedItemValue.previousData.filter(obj => obj["data"] === updateMalkhanData.seizedItemValue.current);
-            if (foundObject.length === 0) {
+            if (getPreviousDataByID.seizedItemValue.current !== updateMalkhanData.seizedItemValue.current) {
                 newPreviousData = {
                     data: getPreviousDataByID.seizedItemValue.current,
                     date: getPreviousDataByID.updatedAt
@@ -109,7 +90,7 @@ const updateMalkhana = async (req, res) => {
 
         if (updateMalkhanData.itemDesc) {
             foundObject = getPreviousDataByID.itemDesc.previousData.filter(obj => obj["data"] === updateMalkhanData.itemDesc.current);
-            if (foundObject.length === 0) {
+            if (getPreviousDataByID.itemDesc.current !== updateMalkhanData.itemDesc.current) {
                 newPreviousData = {
                     data: getPreviousDataByID.itemDesc.current,
                     date: getPreviousDataByID.updatedAt
@@ -141,9 +122,9 @@ const eMalkhanaDataById = async (req, res) => {
         if (eMalkhanaData !== null) {
 
             return res.send({ status: 1, data: eMalkhanaData })
-        } {
+        } else {
 
-            return res.send({ status: 1, data: eMalkhanaData })
+            return res.send({ status: 0, msg: "data not found" })
         }
     } catch (error) {
         return res.send(error.message)
@@ -156,14 +137,12 @@ const eMalkhanaDataById = async (req, res) => {
 const searchDataUsingeMalkhanaNo = async (req, res) => {
     try {
         let eMalkhanaNo = req.body, checkeMalkhanaNo
-        checkeMalkhanaNo = await db.findSingleDocument("eMalkhana", { eMalkhanaNo: eMalkhanaNo.eMalkhanaNo })
+        checkeMalkhanaNo = await db.findSingleDocument("eMalkhana", { eMalkhanaNo: eMalkhanaNo.eMalkhanaNo }, { _id: 1, status: 1 })
         if (checkeMalkhanaNo !== null) {
             return res.send({ status: 1, data: checkeMalkhanaNo })
+        } else {
+            return res.send({ status: 0, msg: "data Not found" })
         }
-        {
-            return res.send({ status: 1, data: checkeMalkhanaNo })
-        }
-
     } catch (error) {
         return res.send(error.message)
     }
@@ -177,9 +156,8 @@ const searchDataUsingfileNo = async (req, res) => {
         checkFileNo = await db.findSingleDocument("eMalkhana", { fileNo: fileNo.fileNo })
         if (checkFileNo !== null) {
             return res.send({ status: 1, data: checkFileNo })
-        }
-        {
-            return res.send({ status: 1, data: checkFileNo })
+        } else {
+            return res.send({ status: 0, msg: "data Not found" })
         }
 
     } catch (error) {
@@ -192,12 +170,11 @@ const searchDataUsingfileNo = async (req, res) => {
 const searchDataUsingItemDesc = async (req, res) => {
     try {
         let itemDesc = req.body, checkItemDesc
-        checkItemDesc = await db.findSingleDocument("eMalkhana", {"itemDesc.current": itemDesc.itemDesc.current })
+        checkItemDesc = await db.findSingleDocument("eMalkhana", { "itemDesc.current": itemDesc.itemDesc.current })
         if (checkItemDesc !== null) {
             return res.send({ status: 1, data: checkItemDesc })
-        }
-        {
-            return res.send({ status: 1, data: checkItemDesc })
+        } else {
+            return res.send({ status: 0, msg: "data Not found" })
         }
 
     } catch (error) {
@@ -213,9 +190,8 @@ const searchDataUsingImporterName = async (req, res) => {
         checkImporterName = await db.findSingleDocument("eMalkhana", { importerName: importerName.importerName })
         if (checkImporterName !== null) {
             return res.send({ status: 1, data: checkImporterName })
-        }
-        {
-            return res.send({ status: 1, data: checkImporterName })
+        } else {
+            return res.send({ status: 0, msg: "data not found" })
         }
 
     } catch (error) {
@@ -229,9 +205,8 @@ const searchDataUsingImporterAddress = async (req, res) => {
         checkImporterAddress = await db.findSingleDocument("eMalkhana", { importerAddress: importerAddress.importerAddress })
         if (checkImporterAddress !== null) {
             return res.send({ status: 1, data: checkImporterAddress })
-        }
-        {
-            return res.send({ status: 1, data: checkImporterAddress })
+        } else {
+            return res.send({ status: 0, msg: "data not found" })
         }
 
     } catch (error) {
@@ -245,12 +220,11 @@ const searchDataUsingImporterAddress = async (req, res) => {
 const getReportUsingSeizingUnitWise = async (req, res) => {
     try {
         let seizingUnitName = req.body, seizedUnit
-        seizedUnit = await db.findSingleDocument("eMalkhana", {seizingUnitName: seizingUnitName.seizingUnitName })
+        seizedUnit = await db.findSingleDocument("eMalkhana", { seizingUnitName: seizingUnitName.seizingUnitName })
         if (seizedUnit !== null) {
             return res.send({ status: 1, data: seizedUnit })
-        }
-        {
-            return res.send({ status: 1, data: seizedUnit })
+        } else {
+            return res.send({ status: 0, msg: "data not found" })
         }
     } catch (error) {
         return res.send(error.message)
@@ -265,9 +239,8 @@ const getReportUsingSeizingItemWise = async (req, res) => {
         seizedItem = await db.findSingleDocument("eMalkhana", { "seizedItemName.current": seizedItemName.seizedItemName.current })
         if (seizedItem !== null) {
             return res.send({ status: 1, data: seizedItem })
-        }
-        {
-            return res.send({ status: 1, data: seizedItem })
+        } else {
+            return res.send({ status: 0, msg: "data not found" })
         }
     } catch (error) {
         return res.send(error.message)
@@ -338,6 +311,26 @@ const getReportUsingSeizingItemWise = async (req, res) => {
 //     }
 // }
 
+//delete file Api
+const deleteDocumentBasedOnEmalkhanaNo = async (req, res) => {
+    try {
+        let filedata = req.body, updatefile
+        updatefile = await db.updateOneDocument("eMalkhana", { "eMalkhanaNo": filedata.eMalkhanaNo }, {
+            $pull: { documents: filedata.documents }
+        })
+        if (updatefile !== null) {
+            await deleteFile(filedata.documents)
+
+            return res.send({ status: 1, msg: "file Deleted Sucessfully" })
+
+        } else {
+            return res.send({ status: 0, msg: "invalid Request" })
+        }
+    } catch (error) {
+        return res.send(error.message)
+    }
+}
+
 module.exports = {
     insertEMalkhanaDetails,
     updateMalkhana,
@@ -351,6 +344,7 @@ module.exports = {
     getReportUsingSeizingItemWise,
     getReportUsingSeizingUnitWise,
     // updateeMalkhanaDataByFeilds,
-    //updateReopenDataUsingeMalkhanaNo
+    //updateReopenDataUsingeMalkhanaNo,
+    deleteDocumentBasedOnEmalkhanaNo
 
 }

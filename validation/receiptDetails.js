@@ -3,15 +3,19 @@ const { check, validationResult } = require('express-validator')
 const receiptValidation = [
     check('eMalkhanaId').notEmpty().withMessage('eMalkhanaId is required'),
     check('eMalkhanaNo').notEmpty().withMessage(' eMalkhanaNo is required'),
-    check('packageDetails').notEmpty().withMessage('packageDetails is required'),
-    check('godownName').notEmpty().withMessage('godownName is required'),
-    check('godownCode').notEmpty().withMessage('godownCode is required'),
-    check('locationOfPackageInGodown').notEmpty().withMessage('locationOfPackageInGodown is required'),
-    check('handingOverOfficerName').notEmpty().withMessage('handingOverOfficerName is required'),
-    check('handingOverOfficerDesignation').notEmpty().withMessage('handingOverOfficerDesignation is required'),
-    check('pendingUnderSection').notEmpty().withMessage('pendingUnderSection is required'),
+    check('packageDetails.current').notEmpty().withMessage('packageDetails is required'),
+    check('godownName.current').notEmpty().withMessage('godownName is required'),
+    check('godownCode.current').notEmpty().withMessage('godownCode is required'),
+    check('locationOfPackageInGodown.current').notEmpty().withMessage('locationOfPackageInGodown is required'),
+    check('handingOverOfficerName.current').notEmpty().withMessage('handingOverOfficerName is required'),
+    check('handingOverOfficerDesignation.current').notEmpty().withMessage('handingOverOfficerDesignation is required'),
+    check('pendingUnderSection.current').notEmpty().withMessage('pendingUnderSection is required'),
     check('ripeForDisposal').notEmpty().withMessage('ripeForDisposal is required'),
-    check('createdBy').notEmpty().withMessage('createdBy is required'),
+    check('itemDesc.current').notEmpty().withMessage('itemDesc-current is required'),
+    check('seizedItemName.current').notEmpty().withMessage('seizedItemName-current is required'),
+    check('seizedItemWeight.current').notEmpty().withMessage('seizedItemWeight-current is required'),
+    check('seizedItemValue.current').notEmpty().withMessage('seizedItemValue-current is required'),
+    
     (req, res, next) => {
         const errors = validationResult(req).array()
         if (errors.length > 0) {

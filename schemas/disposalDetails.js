@@ -1,8 +1,8 @@
 const mongoose = require("mongoose")
-const objectId = mongoose.Schema.Types.ObjectId
+const ObjectId = mongoose.Schema.Types.ObjectId
 const disposalDetails = new mongoose.Schema({
     id: {
-        type: objectId,
+        type: ObjectId,
         ref: "user",
         require: true
     }, 
@@ -12,7 +12,7 @@ const disposalDetails = new mongoose.Schema({
         require: true
     },
     eMalkhanaId: {
-        type: objectId,
+        type: ObjectId,
         ref: "eMalkhana",
         require: true
     },
@@ -38,6 +38,11 @@ const disposalDetails = new mongoose.Schema({
     reOpenUploadOrder: {
         type: Array,
         require: true
+    },
+    createdBy: {
+        type: ObjectId,
+        require: true,
+        ref: "user"
     }
 },
     { timestamps: true, versionKey: false }
