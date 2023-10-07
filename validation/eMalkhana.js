@@ -94,5 +94,16 @@ const importerAddress = [
     }
 ]
 
+const deleteDocumentBasedOnEmalkhanaNo = [
+    check('eMalkhanaNo').notEmpty().withMessage('eMalkhanaNo should be required'),
+    check('documents').notEmpty().withMessage('documents should be required'),
+    (req, res, next) => {
+        const errors = validationResult(req).array()
+        if (errors.length > 0) {
+            return res.send({ status: 0, msg: errors[0].msg })
+        } return next()
+    }
+]
 
-module.exports = { eMalkhanaValidation, checkId, checkeMalkhanaNo, SeizingUnitWise, SeizingItemWise, fileNo, itemDesc, importerName, importerAddress }
+
+module.exports = { eMalkhanaValidation, checkId, checkeMalkhanaNo, SeizingUnitWise, SeizingItemWise, fileNo, itemDesc, importerName, importerAddress , deleteDocumentBasedOnEmalkhanaNo}

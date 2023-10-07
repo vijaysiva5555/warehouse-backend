@@ -5,4 +5,5 @@ fileUploads
 privateKey.key
 apiTextFile.txt
 projectstatus.txt
-rough.txt
+rough.txt\
+barcodeFolder

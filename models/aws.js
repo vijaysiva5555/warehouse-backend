@@ -1,63 +1,27 @@
 const AWS = require("aws-sdk");
 require("dotenv").config();
+const config = require("../config/config")
 
 
 s3 = new AWS.S3({
-    accessKeyId: process.env.ACCESS_KEY,
-    secretAccessKey: process.env.SECRET_KEY,
-  });
-
-//   const uploadToAws = async (folder, files) => {
-//     const filesArray = Array.isArray(files) ? files : [files];
-//     const uploadPromises = filesArray.map((file) => {
-//       const params = {
-//         Bucket: process.env.BUCKET_NAME,
-//         Key: `${folder}/${file.name}`,
-//         Body: file.data,
-//         ACL: "public-read-write",
-//         ContentType: "image/jpg/pdf",
-//       };
-  
-//       return new Promise((resolve, reject) => {
-//         s3.upload(params, (error, data) => {
-//           if (error) {
-//             console.error(error);
-//             reject(error);
-//           } else {
-//             resolve(data.Location);
-//           }
-//         });
-//       });
-//     });
-  
-//     try {
-//       const locations = await Promise.all(uploadPromises);
-//     //   console.log("All files uploaded successfully:", locations);
-
-//     return locations;
-  
-//       // If you need to perform additional actions, like updating a user, do it here
-//       // Example: await user.findByIdAndUpdate({ _id: id }, { $push: { files: locations } });
-//     } catch (error) {
-//       console.error("Error uploading files:", error);
-//       // Handle the error as needed
-//     }
-//   };
+    accessKeyId: config.ACCESS_KEY,
+    secretAccessKey: config.SECRET_KEY,
+});
 
 
 const uploadToAws = async (mainFolder, folder, files) => {
     // Check if the main folder exists
-    const mainFolderExists = await checkIfFolderExists(process.env.BUCKET_NAME, mainFolder);
+    const mainFolderExists = await checkIfFolderExists(config.BUCKET_NAME, mainFolder);
 
     // If the main folder doesn't exist, create it
     if (!mainFolderExists) {
-        await createFolder(process.env.BUCKET_NAME, mainFolder);
+        await createFolder(config.BUCKET_NAME, mainFolder);
     }
 
     const filesArray = Array.isArray(files) ? files : [files];
     const uploadPromises = filesArray.map((file) => {
         const params = {
-            Bucket: process.env.BUCKET_NAME,
+            Bucket: config.BUCKET_NAME,
             Key: `${mainFolder}/${folder}/${file.name}`, // Include the main folder in the Key
             Body: file.data,
             ACL: "public-read-write",
@@ -117,14 +81,16 @@ const createFolder = async (bucketName, folderName) => {
 
 
 const deleteFile = async (fileLocation) => {
-    const bucketName = process.env.BUCKET_NAME;
+    const bucketName = config.BUCKET_NAME;
 
-    // Extracting the key (file path) from the file location URL
-    const key = fileLocation.replace(`https://${bucketName}.s3.amazonaws.com/`, '');
+    const { pathname  } = new URL(fileLocation);
+
+    // Extract the file key from the pathname and replace %20 with spaces
+    const fileKey = decodeURIComponent(pathname.substring(1)).replace(/(%20|\+)/g, ' ');; // Remove the leading slash
 
     const params = {
         Bucket: bucketName,
-        Key: key,
+        Key: fileKey,
     };
 
     try {
@@ -138,5 +104,4 @@ const deleteFile = async (fileLocation) => {
 };
 
 
-  module.exports = { uploadToAws, deleteFile };
-  
+module.exports = { uploadToAws, deleteFile, createFolder };

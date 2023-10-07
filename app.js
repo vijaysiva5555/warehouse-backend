@@ -23,7 +23,7 @@ app.use(fileUpload({
 }))
 
 app.use(bodyParser.urlencoded({ extended: true }))
-app.use("/fileuploads", authorized, express.static(path.join(__dirname, "/fileuploads"), { etag: false }))
+app.use("/barcodeFolder", authorized, express.static(path.join(__dirname, "/barcodeFolder"), { etag: false }))
 mongoose.connect(CONFIG.MONGOURL)
     .then(() => { console.log("mongodb is connected") })
     .catch((err => { console.log(err) }))

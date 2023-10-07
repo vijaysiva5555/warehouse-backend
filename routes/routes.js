@@ -14,6 +14,7 @@ const userValidation = require("../validation/user")
 const receiptValidation = require("../validation/receiptDetails")
 const eMalkhanaValidation = require("../validation/eMalkhana")
 const disposalValidation = require("../validation/disposalDetails")
+const reOpenValidation = require("../validation/reOpenValidation")
 
 //import API
 
@@ -44,12 +45,11 @@ routes.post("/seizedItemName", eMalkhanaValidation.SeizingItemWise, eMalkhanaCon
 //updateAPI
 routes.post("/updateEmalkhana", eMalkhanaValidation.checkId, eMalkhanaController.updateMalkhana)
 // routes.post("/feilds", eMalkhanaValidation.checkeMalkhanaNo, eMalkhanaController.updateeMalkhanaDataByFeilds)
-routes.post("/deleteDocumentBasedOnEmalkhanaNo", eMalkhanaController.deleteDocumentBasedOnEmalkhanaNo)
+routes.post("/deleteDocumentBasedOnEmalkhanaNo",eMalkhanaValidation.deleteDocumentBasedOnEmalkhanaNo, eMalkhanaController.deleteDocumentBasedOnEmalkhanaNo)
 
 
 //--------------------------REOPEN UPDATE API---------------------------------------------------//
-
-//routes.post("/updateApi",eMalkhanaController.updateReopenDataUsingeMalkhanaNo)
+routes.post("/updateReOpenApi",authorized,reOpenValidation.reOpenValidation,eMalkhanaController.reOpenUpdateUsingMultipleeMalkhanaNo)
 
 
 

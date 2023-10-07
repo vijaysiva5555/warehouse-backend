@@ -78,9 +78,9 @@ const receipt = new mongoose.Schema({
         type: String,
         require: true
     },
-    // barcode: {
-    //     type: String,                           //type: Image,   error image is not defined.
-    // },
+    barcode: {
+        type: String,                           //type: Image,   error image is not defined.
+    },
     createdBy: {
         type: objectId,
         ref: "user",

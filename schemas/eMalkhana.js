@@ -75,10 +75,6 @@ const eMalkhana = new mongoose.Schema({
     documents: {
         type: Array,
     },
-    reOpenReasonvareMalkhanaNo: {
-        type: String,
-        default: null
-    },
     reOpenUploadOrder: {
         type: Array,
         default: null

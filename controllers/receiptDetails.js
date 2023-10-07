@@ -1,6 +1,9 @@
 const { default: mongoose } = require("mongoose")
 const db = require("../models/mongo")
 const moment = require("moment")
+const bwipjs = require('bwip-js');
+const fs = require('fs');
+
 //------------------------receipt details post--------------------------//
 
 const insertReceiptDetails = async (req, res) => {
@@ -17,27 +20,35 @@ const insertReceiptDetails = async (req, res) => {
         receiptInput.createdBy = res.locals.userData.userId
         receiptInput.status = 2   // for E-malkhana
 
-        //  // BARCODE ----
-        //  const options = {
-        //     bcid: 'code128', // Barcode type (e.g., code128, qrCode, etc.)
-        //     text:  "Hi there",// receiptInput.whAckNo, // Text/data to encode in the barcode
-        //     scale: 3, // Scaling factor (increase to make the barcode larger)
-        //     height: 5, // Height of the barcode
-        //   };
-
-        //   // Generate the barcode
-        //   let barcodeFilePath = ""
-        //   bwipjs.toBuffer(options, (err, png) => {
-        //     if (err) {
-        //       console.error(err);
-        //     } else {
-        //       // Save the barcode image to a file or send it as a response
-        //       barcodeFilePath = 'barcode.png';
-        //       fs.writeFileSync(barcodeFilePath, png);
-        //       console.log('Barcode generated and saved as barcode.png');
-        //       receiptInput.barcode = barcodeFilePath
-        //     }
-        //   });
+        const options = {
+            bcid: 'code128',
+            text: receiptInput.whAckNo,
+            scale: 3,
+            height: 5,
+          };
+          
+          // Specify the full path to the directory where you want to save the barcode image
+          const barcodeFolderPath = "./barcodeFolder";
+          
+          // Generate the barcode
+          bwipjs.toBuffer(options, (err, png) => {
+            if (err) {
+              console.error(err);
+            } else {
+              // Check if the directory exists, and create it if not
+              if (!fs.existsSync(barcodeFolderPath)) {
+                fs.mkdirSync(barcodeFolderPath, { recursive: true });
+              }
+          
+              // Save the barcode image to a file in the specified directory
+              const barcodeFilePath = `${barcodeFolderPath}/${receiptInput.whAckNo}.png`;
+              fs.writeFileSync(barcodeFilePath, png);
+              console.log('Barcode generated and saved as', barcodeFilePath);
+              receiptInput.barcode = `/${barcodeFilePath.substring(2)}`;
+            }
+          });
+          
+          
         getPreviousDataByID = await db.findSingleDocument("eMalkhana", { eMalkhanaNo: receiptInput.eMalkhanaNo })
         if (getPreviousDataByID === null) {
             return res.send({ status: 0, msg: "Invalid E-Malkhana Number" })

@@ -279,38 +279,6 @@ const getReportUsingSeizingItemWise = async (req, res) => {
 //     }
 // }
 
-//---------------Re-open API-----------------------------------------------//
-
-// const updateReopenDataUsingeMalkhanaNo = async (req, res) => {
-//     try {
-//         const { eMalkhanaNo, newSealNo, newOfficerName, newOfficerDesignation } = req.body;
-//         const seizureToUpdate = await db.findDocumentExist("eMalkhana", { eMalkhanaNo });
-//         if (!seizureToUpdate) {
-//             return res.send({ status: 0, msg: "eMalkhana no is not found" });
-//         }
-//         const updateResult = await db.updateOneDocument(
-//             "eMalkhana",
-//             { eMalkhanaNo },
-//             {
-//                 $set: {
-//                     newSealNo: newSealNo !== undefined ? newSealNo : seizureToUpdate.newSealNo,
-//                     newOfficerName: newOfficerName !== undefined ? newOfficerName : seizureToUpdate.newOfficerName,
-//                     newOfficerDesignation: newOfficerDesignation !== undefined ? newOfficerDesignation : seizureToUpdate.newOfficerDesignation,
-//                 },
-//             }
-//         )
-//         if (!req.body.newSealNo && !req.body.newOfficerName && !req.body.newOfficerDesignation) {
-//             return res.send('Please insert data need to be updated');
-//         }
-//         if (updateResult) {
-//             return res.send({ status: 1, msg: "data updated successfully" })
-//         }
-//     }
-//     catch (error) {
-//         return res.send(error.message)
-//     }
-// }
-
 //delete file Api
 const deleteDocumentBasedOnEmalkhanaNo = async (req, res) => {
     try {
@@ -331,6 +299,50 @@ const deleteDocumentBasedOnEmalkhanaNo = async (req, res) => {
     }
 }
 
+
+//_____Re-open UPDATE API------------------//
+
+const reOpenUpdateUsingMultipleeMalkhanaNo = async (req, res) => {
+    try {
+        let { inputReOpenData, updateInputReOpenData, updateMalkhanasNo = [], reOpenReason, reOpenUploadOrder, reOpenDate, handOverOfficerName
+            , handOverOfficerDesignation, newSealNo, newOfficerName, newOfficerDesignation, updatesGivenData } = req.body
+
+        updatesGivenData = {
+            reOpenReason,
+            reOpenUploadOrder,
+            reOpenDate,
+            handOverOfficerName,
+            handOverOfficerDesignation,
+            newSealNo,
+            newOfficerName,
+            newOfficerDesignation,
+            ...inputReOpenData,
+        }
+        if (req.files) {
+            await Promise.all(updateMalkhanasNo.map(async (ele) => {
+                updatesGivenData.reOpenUploadOrder = await uploadToAws(config.REOPENUPLOADORDERDOC, ele, req.files.reOpenUploadOrder);
+            }));
+        }
+
+        // updatesGivenData.reOpenUploadOrder = await uploadToAws(config.REOPENUPLOADORDERDOC,)
+        updatesGivenData.status = 4
+        updatesGivenData.createdBy = res.locals.userData.userId
+        updateInputReOpenData = await db.updateManyDocuments("eMalkhana", { eMalkhanaNo: { $in: updateMalkhanasNo } }, { $set: updatesGivenData },)
+
+        if (updateInputReOpenData) {
+            res.send({ status: 1, msg: "data updated succesfully" })
+        } else {
+            res.send({ status: 0, msg: "data not found" })
+        }
+
+
+    } catch (error) {
+        return res.send(error.message)
+    }
+
+}
+
+
 module.exports = {
     insertEMalkhanaDetails,
     updateMalkhana,
@@ -345,6 +357,7 @@ module.exports = {
     getReportUsingSeizingUnitWise,
     // updateeMalkhanaDataByFeilds,
     //updateReopenDataUsingeMalkhanaNo,
-    deleteDocumentBasedOnEmalkhanaNo
+    deleteDocumentBasedOnEmalkhanaNo,
+    reOpenUpdateUsingMultipleeMalkhanaNo
 
 }
