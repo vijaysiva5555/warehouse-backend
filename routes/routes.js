@@ -41,6 +41,7 @@ routes.post("/getDataByItemDesc", eMalkhanaValidation.itemDesc, eMalkhanaControl
 //REPORT GENERATED GET API
 routes.post("/seizedUnitwise", eMalkhanaValidation.SeizingUnitWise, eMalkhanaController.getReportUsingSeizingUnitWise)
 routes.post("/seizedItemName", eMalkhanaValidation.SeizingItemWise, eMalkhanaController.getReportUsingSeizingItemWise)
+routes.post("/getYearWiseData",eMalkhanaController.getReportUsingYearWise)
 
 //updateAPI
 routes.post("/updateEmalkhana", eMalkhanaValidation.checkId, eMalkhanaController.updateMalkhana)
