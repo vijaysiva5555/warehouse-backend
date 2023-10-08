@@ -4,6 +4,7 @@ const moment = require("moment")
 const { uploadToAws, deleteFile, getSignedUrl } = require("../models/aws");
 const CONFIG = require("../config/config");
 
+
 //-------------------------------------- eMalkhana details Insert--------------------------------------------//
 
 const insertEMalkhanaDetails = async (req, res) => {
@@ -23,7 +24,7 @@ const insertEMalkhanaDetails = async (req, res) => {
             return res.send({ status: 0, msg: "Invalid request" })
         }
     } catch (error) {
-        return res.send({ status:0,msg: error.message})
+        return res.send({ status: 0, msg: error.message })
     }
 }
 
@@ -49,7 +50,7 @@ const updateMalkhana = async (req, res) => {
             return res.send({ status: 0, msg: "invalid id" })
         }
         getPreviousDataByID = await db.findSingleDocument("eMalkhana", { _id: new mongoose.Types.ObjectId(updateMalkhanData.id) })
-        previousDocuments = getPreviousDataByID.documents 
+        previousDocuments = getPreviousDataByID.documents
         if (updateMalkhanData.seizedItemName) {
             if (getPreviousDataByID.seizedItemName.current !== updateMalkhanData.seizedItemName.current) {
                 newPreviousData = {
@@ -100,11 +101,11 @@ const updateMalkhana = async (req, res) => {
             }
         }
 
-        if(Array.isArray(req.files.documents) || req.files.documents != null){
+        if (Array.isArray(req.files.documents) || req.files.documents != null) {
             updateMalkhanData.documents = await uploadToAws(CONFIG.EMALKHANADOC, updateMalkhanData.eMalkhanaNo, req.files.documents)
-            updateMalkhanData.documents = [...updateMalkhanData.documents,...previousDocuments]
+            updateMalkhanData.documents = [...updateMalkhanData.documents, ...previousDocuments]
         }
-        else{
+        else {
             delete updateMalkhanData.documents
         }
         eMalkhanaUpdateById = await db.findByIdAndUpdate("eMalkhana", updateMalkhanData.id, updateMalkhanData)
@@ -129,10 +130,10 @@ const eMalkhanaDataById = async (req, res) => {
             eMalkhanaData.documents = await Promise.all(eMalkhanaData.documents.map(async (file) => {
                 return {
                     ...file,
-                    actualPath:file.href,
-                    href:await getSignedUrl(file.href)
+                    actualPath: file.href,
+                    href: await getSignedUrl(file.href)
                 }
-            })) 
+            }))
             return res.send({ status: 1, data: eMalkhanaData })
         } else {
 
@@ -329,7 +330,7 @@ const deleteDocumentBasedOnEmalkhanaNo = async (req, res) => {
     try {
         let filedata = req.body, updatefile
         updatefile = await db.updateOneDocument("eMalkhana", { _id: filedata.id }, {
-            $pull: { documents: {href: filedata.href} }
+            $pull: { documents: { href: filedata.href } }
         })
         if (updatefile !== null) {
             await deleteFile(filedata.href)
@@ -340,7 +341,7 @@ const deleteDocumentBasedOnEmalkhanaNo = async (req, res) => {
             return res.send({ status: 0, msg: "invalid Request" })
         }
     } catch (error) {
-        return res.send({ status:0,msg:error.message })
+        return res.send({ status: 0, msg: error.message })
     }
 }
 
@@ -395,6 +396,33 @@ const getReceiptMalkhanaDataById = async (req, res) => {
         getEmalkhanaData = await db.findSingleDocument("eMalkhana", { _id: new mongoose.Types.ObjectId(numberData.id) })
         getReceptData = await db.findSingleDocument("receipt", { eMalkhanaId: new mongoose.Types.ObjectId(numberData.id) })
         if (getEmalkhanaData || getReceptData) {
+            if (getEmalkhanaData.documents.length !== 0) {
+                getEmalkhanaData.documents = await Promise.all(getEmalkhanaData.documents.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
+            if (getEmalkhanaData.reOpenUploadOrder.length !== 0) {
+                getEmalkhanaData.reOpenUploadOrder = await Promise.all(getEmalkhanaData.reOpenUploadOrder.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
+            if (getReceptData.barcode.length !== 0) {
+                getReceptData.barcode = await Promise.all(getReceptData.barcode.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
             allData = {
                 eMalkhanaData: getEmalkhanaData,
                 receiptData: getReceptData
@@ -418,6 +446,34 @@ const getAllDataByEmalkhanaId = async (req, res) => {
         getReceptData = await db.findSingleDocument("receipt", { eMalkhanaId: new mongoose.Types.ObjectId(numberData.id) })
         getDisposalData = await db.findSingleDocument("disposal", { eMalkhanaId: new mongoose.Types.ObjectId(numberData.id) })
         if (getEmalkhanaData || getReceptData || getDisposalData) {
+            if (getEmalkhanaData.documents.length !== 0) {
+                getEmalkhanaData.documents = await Promise.all(getEmalkhanaData.documents.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
+            if (getEmalkhanaData.reOpenUploadOrder.length !== 0) {
+                getEmalkhanaData.reOpenUploadOrder = await Promise.all(getEmalkhanaData.reOpenUploadOrder.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
+
+            if (getReceptData.barcode.length !== 0) {
+                getReceptData.barcode = await Promise.all(getReceptData.barcode.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
             allData = {
                 eMalkhanaData: getEmalkhanaData,
                 receiptData: getReceptData,

@@ -80,7 +80,7 @@ routes.post("/ripeDisposal", receiptValidation.ripeDisposal, receiptController.r
 
 //update API
 // routes.post("/updateAllReceiptDetailsDetails", authorized, receiptValidation.checkId, receiptController.updateAllReceiptDetails)
-routes.post("/updateFeilds", receiptValidation.checkIdFeilds, receiptController.updateReceipt)
+routes.post("/updateReceiptData", receiptValidation.receiptUpdateValidation, receiptController.updateReceipt)
 
 //-------------------------------------------DISPOSAL DETAILS API-----------------------------------------//
 // POST API

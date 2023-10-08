@@ -1,5 +1,6 @@
 const db = require("../models/mongo")
 const { default: mongoose } = require("mongoose")
+const {getSignedUrl } = require("../models/aws");
 
 //---------disposal data details-----------//
 const disposalDataDetails = async (req, res) => {
@@ -29,6 +30,7 @@ const getdisposalDetails = async (req, res) => {
     try {
         let getdisposalDetails = await db.findDocuments("disposal", {})
         if (getdisposalDetails) {
+        
             return res.send({ status: 1, data: getdisposalDetails })
         }
     } catch (error) {
@@ -118,6 +120,34 @@ const getAllDataByEmalkhanaNo = async (req, res) => {
         getReceptData = await db.findSingleDocument("receipt", { eMalkhanaNo: numberData.eMalkhanaNo })
         getDisposalData = await db.findSingleDocument("disposal", { eMalkhanaNo: numberData.eMalkhanaNo })
         if (getEmalkhanaData || getReceptData || getDisposalData) {
+            if (getEmalkhanaData.documents.length !== 0) {
+                getEmalkhanaData.documents = await Promise.all(getEmalkhanaData.documents.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
+            if (getEmalkhanaData.reOpenUploadOrder.length !== 0) {
+                getEmalkhanaData.reOpenUploadOrder = await Promise.all(getEmalkhanaData.reOpenUploadOrder.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
+
+            if (getReceptData.barcode.length !== 0) {
+                getReceptData.barcode = await Promise.all(getReceptData.barcode.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
             allData = {
                 eMalkhanaData: getEmalkhanaData,
                 receiptData: getReceptData,
@@ -139,6 +169,34 @@ const getAllDataBasedOnWhackNo = async (req, res) => {
         getEmalkhanaData = await db.findSingleDocument("eMalkhana", { eMalkhanaNo: getReceptData.eMalkhanaNo })
         getDisposalData = await db.findSingleDocument("disposal", { whAckNo: numberData.whAckNo })
         if (getEmalkhanaData || getReceptData || getDisposalData) {
+            if (getEmalkhanaData.documents.length !== 0) {
+                getEmalkhanaData.documents = await Promise.all(getEmalkhanaData.documents.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
+            if (getEmalkhanaData.reOpenUploadOrder.length !== 0) {
+                getEmalkhanaData.reOpenUploadOrder = await Promise.all(getEmalkhanaData.reOpenUploadOrder.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
+
+            if (getReceptData.barcode.length !== 0) {
+                getReceptData.barcode = await Promise.all(getReceptData.barcode.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
             allData = {
                 eMalkhanaData: getEmalkhanaData,
                 receiptData: getReceptData,
