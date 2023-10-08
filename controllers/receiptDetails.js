@@ -3,12 +3,15 @@ const db = require("../models/mongo")
 const moment = require("moment")
 const bwipjs = require('bwip-js');
 const fs = require('fs');
+const { uploadToAws } = require("../models/aws")
+const config = require("../config/config")
 
 //------------------------receipt details post--------------------------//
 
 const insertReceiptDetails = async (req, res) => {
     try {
-        let receiptInput = req.body, receiptData, checkingRole, whAckNoData, currentYear, checkeMalkhanaNo, getPreviousDataByID
+        let receiptInput = req.body, receiptData, checkingRole, whAckNoData, currentYear, checkeMalkhanaNo,
+         getPreviousDataByID, barcodeFile, barcodeLocation
         currentYear = moment().year().toString().substring(2)
         whAckNoData = await db.findDocuments("receipt", { 'whAckNo': { $regex: currentYear } })
         receiptInput.whAckNo = process.env.WHACKNO + '-' + currentYear + '-' + String(whAckNoData.length + 1).padStart(4, '0')
@@ -25,37 +28,32 @@ const insertReceiptDetails = async (req, res) => {
             text: receiptInput.whAckNo,
             scale: 3,
             height: 5,
-          };
-          
-          // Specify the full path to the directory where you want to save the barcode image
-          const barcodeFolderPath = "./barcodeFolder";
-          
-          // Generate the barcode
-          bwipjs.toBuffer(options, (err, png) => {
-            if (err) {
-              console.error(err);
-            } else {
-              // Check if the directory exists, and create it if not
-              if (!fs.existsSync(barcodeFolderPath)) {
-                fs.mkdirSync(barcodeFolderPath, { recursive: true });
-              }
-          
-              // Save the barcode image to a file in the specified directory
-              const barcodeFilePath = `${barcodeFolderPath}/${receiptInput.whAckNo}.png`;
-              fs.writeFileSync(barcodeFilePath, png);
-              console.log('Barcode generated and saved as', barcodeFilePath);
-              receiptInput.barcode = `/${barcodeFilePath.substring(2)}`;
-            }
-          });
-          
-          
+        };
+
+        const png = await new Promise((resolve, reject) => {
+            bwipjs.toBuffer(options, (err, png) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(png);
+                }
+            });
+        });
+
+        // Upload the barcode file to AWS
+        barcodeFile = {
+            data: png,
+            name: `${receiptInput.whAckNo}.png`
+        };
+
+        barcodeLocation = await uploadToAws(config.BARCODEFILE, receiptInput.whAckNo, barcodeFile);
+        receiptInput.barcode = barcodeLocation[0]
         getPreviousDataByID = await db.findSingleDocument("eMalkhana", { eMalkhanaNo: receiptInput.eMalkhanaNo })
         if (getPreviousDataByID === null) {
             return res.send({ status: 0, msg: "Invalid E-Malkhana Number" })
         }
         if (receiptInput.seizedItemName) {
-            foundObject = getPreviousDataByID.seizedItemName.previousData.filter(obj => obj["data"] === receiptInput.seizedItemName.current);
-            if (foundObject.length === 0) {
+            if (getPreviousDataByID.seizedItemName.current === receiptInput.seizedItemName.current) {
                 newPreviousData = {
                     data: getPreviousDataByID.seizedItemName.current,
                     date: getPreviousDataByID.updatedAt
@@ -67,8 +65,7 @@ const insertReceiptDetails = async (req, res) => {
         }
 
         if (receiptInput.seizedItemWeight) {
-            foundObject = getPreviousDataByID.seizedItemWeight.previousData.filter(obj => obj["data"] === receiptInput.seizedItemWeight.current);
-            if (foundObject.length === 0) {
+            if (getPreviousDataByID.seizedItemWeight.current === receiptInput.seizedItemWeight.current) {
                 newPreviousData = {
                     data: getPreviousDataByID.seizedItemWeight.current,
                     date: getPreviousDataByID.updatedAt
@@ -80,8 +77,7 @@ const insertReceiptDetails = async (req, res) => {
         }
 
         if (receiptInput.seizedItemValue) {
-            foundObject = getPreviousDataByID.seizedItemValue.previousData.filter(obj => obj["data"] === receiptInput.seizedItemValue.current);
-            if (foundObject.length === 0) {
+            if (getPreviousDataByID.seizedItemValue.current === receiptInput.seizedItemValue.current) {
                 newPreviousData = {
                     data: getPreviousDataByID.seizedItemValue.current,
                     date: getPreviousDataByID.updatedAt
@@ -93,8 +89,7 @@ const insertReceiptDetails = async (req, res) => {
         }
 
         if (receiptInput.itemDesc) {
-            foundObject = getPreviousDataByID.itemDesc.previousData.filter(obj => obj["data"] === receiptInput.itemDesc.current);
-            if (foundObject.length === 0) {
+            if (getPreviousDataByID.itemDesc.current === receiptInput.itemDesc.current) {
                 newPreviousData = {
                     data: getPreviousDataByID.itemDesc.current,
                     date: getPreviousDataByID.updatedAt
@@ -404,6 +399,8 @@ const getAllDataBasedOnEmalkhanaNumber = async (req, res) => {
             }
 
             return res.send({ status: 1, data: allData })
+        }else{
+            return res.send({status:0,msg:"no data found"})
         }
 
     } catch (error) {

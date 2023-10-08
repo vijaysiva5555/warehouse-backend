@@ -25,7 +25,7 @@ const uploadToAws = async (mainFolder, folder, files) => {
             Key: `${mainFolder}/${folder}/${file.name}`, // Include the main folder in the Key
             Body: file.data,
             ACL: "public-read-write",
-            ContentType: "image/jpg/pdf/jpeg",
+            ContentType: "image/jpg/pdf/jpeg/png",
         };
 
         return new Promise((resolve, reject) => {

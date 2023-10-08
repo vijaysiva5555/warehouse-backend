@@ -375,7 +375,53 @@ const reOpenUpdateUsingMultipleeMalkhanaNo = async (req, res) => {
 
 }
 
+//=================================emalkhana data & receipt data using emalkhanaid
 
+const getReceiptMalkhanaDataById = async (req, res) => {
+    try {
+        let numberData = req.body, getEmalkhanaData, getReceptData, allData
+
+        getEmalkhanaData = await db.findSingleDocument("eMalkhana", { _id: new mongoose.Types.ObjectId(numberData.id) })
+        getReceptData = await db.findSingleDocument("receipt", { eMalkhanaId: new mongoose.Types.ObjectId(numberData.id) })
+        if (getEmalkhanaData || getReceptData) {
+            allData = {
+                eMalkhanaData: getEmalkhanaData,
+                receiptData: getReceptData
+            }
+
+            return res.send({ status: 1, data: allData })
+        } else {
+            return res.send({ status: 0, msg: "no data found" })
+        }
+
+    } catch (error) {
+        return res.send(error.message)
+    }
+}
+
+const getAllDataByEmalkhanaId = async (req, res) => {
+    try {
+        let numberData = req.body, getEmalkhanaData, getReceptData, getDisposalData, allData
+
+        getEmalkhanaData = await db.findSingleDocument("eMalkhana", { _id: new mongoose.Types.ObjectId(numberData.id) })
+        getReceptData = await db.findSingleDocument("receipt", { eMalkhanaId: new mongoose.Types.ObjectId(numberData.id) })
+        getDisposalData = await db.findSingleDocument("disposal", { eMalkhanaId: new mongoose.Types.ObjectId(numberData.id) })
+        if (getEmalkhanaData || getReceptData) {
+            allData = {
+                eMalkhanaData: getEmalkhanaData,
+                receiptData: getReceptData,
+                DisposalData: getDisposalData
+            }
+
+            return res.send({ status: 1, data: allData })
+        } else {
+            return res.send({ status: 0, msg: "no data found" })
+        }
+
+    } catch (error) {
+        return res.send(error.message)
+    }
+}
 
 
 module.exports = {
@@ -394,6 +440,7 @@ module.exports = {
     //updateReopenDataUsingeMalkhanaNo,
     deleteDocumentBasedOnEmalkhanaNo,
     reOpenUpdateUsingMultipleeMalkhanaNo,
-    getReportUsingYearWise
-
+    getReportUsingYearWise,
+    getReceiptMalkhanaDataById,
+    getAllDataByEmalkhanaId
 }

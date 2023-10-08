@@ -37,6 +37,8 @@ routes.post("/getDataByFileNo", eMalkhanaValidation.fileNo, eMalkhanaController.
 routes.post("/getDataByImporterName", eMalkhanaValidation.importerName, eMalkhanaController.searchDataUsingImporterName)
 routes.post("/getDataByImporterAddress", eMalkhanaValidation.importerAddress, eMalkhanaController.searchDataUsingImporterAddress)
 routes.post("/getDataByItemDesc", eMalkhanaValidation.itemDesc, eMalkhanaController.searchDataUsingItemDesc)
+routes.post("/getReceiptMalkhanaDataById",eMalkhanaValidation.checkId,eMalkhanaController. getReceiptMalkhanaDataById)
+routes.post("/getAllDataByEmalkhanaId",eMalkhanaValidation.checkId,eMalkhanaController. getAllDataByEmalkhanaId)
 
 //REPORT GENERATED GET API
 routes.post("/seizedUnitwise", eMalkhanaValidation.SeizingUnitWise, eMalkhanaController.getReportUsingSeizingUnitWise)
