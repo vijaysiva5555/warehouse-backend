@@ -30,6 +30,7 @@ routes.post("/insertEMalkhana", authorized, eMalkhanaValidation.eMalkhanaValidat
 //get api
 routes.get("/eMalkhana", eMalkhanaController.getEmakhalaDetails)
 routes.post("/getDataUsingeMalkhanaById", eMalkhanaValidation.checkId, eMalkhanaController.eMalkhanaDataById)
+routes.get("/geteMalkhanaNoUsingStatus",eMalkhanaController.getAlleMalkhanaNoUsingStatus)
 
 //search  GET API
 routes.post("/getDataByeMalkhanaNo", eMalkhanaValidation.checkeMalkhanaNo, eMalkhanaController.searchDataUsingeMalkhanaNo)
@@ -39,14 +40,15 @@ routes.post("/getDataByImporterAddress", eMalkhanaValidation.importerAddress, eM
 routes.post("/getDataByItemDesc", eMalkhanaValidation.itemDesc, eMalkhanaController.searchDataUsingItemDesc)
 routes.post("/getReceiptMalkhanaDataById",eMalkhanaValidation.checkId,eMalkhanaController. getReceiptMalkhanaDataById)
 routes.post("/getAllDataByEmalkhanaId",eMalkhanaValidation.checkId,eMalkhanaController. getAllDataByEmalkhanaId)
-routes.post("/getYearWiseData",eMalkhanaController.getReportUsingYearWise)
 
 //REPORT GENERATED GET API
 routes.post("/seizedUnitwise", eMalkhanaValidation.SeizingUnitWise, eMalkhanaController.getReportUsingSeizingUnitWise)
 routes.post("/seizedItemName", eMalkhanaValidation.SeizingItemWise, eMalkhanaController.getReportUsingSeizingItemWise)
+routes.post("/getYearWiseData",eMalkhanaValidation.yearWiseValid,eMalkhanaController.getReportUsingYearWise)
 
 //updateAPI
-routes.post("/updateEmalkhana", eMalkhanaValidation.checkId, eMalkhanaController.updateMalkhana)
+routes.post("/updateSpecficFieldByid",eMalkhanaValidation.eMalkhanaValidationSpecificFeilds, eMalkhanaController.updateSpecficFieldByid)
+routes.post("/updateEmalkhana", eMalkhanaValidation.eMalkhanaValidationSpecificFeilds, eMalkhanaController.updateMalkhana)
 // routes.post("/feilds", eMalkhanaValidation.checkeMalkhanaNo, eMalkhanaController.updateeMalkhanaDataByFeilds)
 routes.post("/deleteDocumentBasedOnEmalkhanaNo",eMalkhanaValidation.deleteDocumentBasedOnEmalkhanaNo, eMalkhanaController.deleteDocumentBasedOnEmalkhanaNo)
 
@@ -79,8 +81,8 @@ routes.post("/pendingSection", receiptValidation.pendingSection, receiptControll
 routes.post("/ripeDisposal", receiptValidation.ripeDisposal, receiptController.reportOfRipeForDisposal)
 
 //update API
-// routes.post("/updateAllReceiptDetailsDetails", authorized, receiptValidation.checkId, receiptController.updateAllReceiptDetails)
 routes.post("/updateReceiptData", receiptValidation.receiptUpdateValidation, receiptController.updateReceipt)
+routes.post("/updateSpecificFeildsReceiptData",receiptValidation.receiptValidationSpecificFeilds,receiptController.updateReceiptSpecificFeilds)
 
 //-------------------------------------------DISPOSAL DETAILS API-----------------------------------------//
 // POST API

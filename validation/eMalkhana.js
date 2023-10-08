@@ -94,6 +94,16 @@ const importerAddress = [
     }
 ]
 
+const yearWiseValid = [
+    check('year').notEmpty().withMessage('year should be required'),
+    (req, res, next) => {
+        const errors = validationResult(req).array()
+        if (errors.length > 0) {
+            return res.send({ status: 0, msg: errors[0].msg })
+        } return next()
+    }
+]
+
 const deleteDocumentBasedOnEmalkhanaNo = [
     check('id').notEmpty().withMessage('ID should be required'),
     check('href').notEmpty().withMessage('File Path should be required'),
@@ -105,5 +115,41 @@ const deleteDocumentBasedOnEmalkhanaNo = [
     }
 ]
 
+const eMalkhanaValidationSpecificFeilds = [
+    check('id').notEmpty().withMessage('id is required'),
+    check('seizedItemWeight.current').notEmpty().withMessage('seizedItemWeight-current is required'),
+    check('seizedItemValue.current').notEmpty().withMessage('seizedItemValue-current is required'),
 
-module.exports = { eMalkhanaValidation, checkId, checkeMalkhanaNo, SeizingUnitWise, SeizingItemWise, fileNo, itemDesc, importerName, importerAddress , deleteDocumentBasedOnEmalkhanaNo}
+    (req, res, next) => {
+        const errors = validationResult(req).array()
+        if (errors.length > 0) {
+            return res.send({ status: 0, msg: errors[0].msg })
+        } return next()
+    }]
+
+// const ValidationSpecificFeilds = [
+//     check('seizedItemWeight.current').notEmpty().withMessage('seizedItemWeight-current is required'),
+//  check('seizedItemValue.current').notEmpty().withMessage('seizedItemValue-current is required'),
+//  check('id').notEmpty().withMessage('id is required'),
+//  // check('eMalkhanaId').notEmpty().withMessage('eMalkhanaId is required'),
+//  // check('eMalkhanaNo').notEmpty().withMessage(' eMalkhanaNo is required'),
+//  check('packageDetails.current').notEmpty().withMessage('packageDetails is required'),
+//  check('godownName.current').notEmpty().withMessage('godownName is required'),
+//  check('godownCode.current').notEmpty().withMessage('godownCode is required'),
+//  check('locationOfPackageInGodown.current').notEmpty().withMessage('locationOfPackageInGodown is required'),
+//  check('handingOverOfficerName.current').notEmpty().withMessage('handingOverOfficerName is required'),
+//  check('handingOverOfficerDesignation.current').notEmpty().withMessage('handingOverOfficerDesignation is required'),
+//  check('pendingUnderSection.current').notEmpty().withMessage('pendingUnderSection is required'),
+
+
+//  (req, res, next) => {
+//      const errors = validationResult(req).array()
+//      if (errors.length > 0) {
+//          return res.send({ status: 0, msg: errors[0].msg })
+//      } return next()
+//  }]
+
+module.exports = {
+    eMalkhanaValidation, checkId, checkeMalkhanaNo, SeizingUnitWise, SeizingItemWise, eMalkhanaValidationSpecificFeilds,
+    fileNo, itemDesc, importerName, importerAddress, deleteDocumentBasedOnEmalkhanaNo,yearWiseValid
+}

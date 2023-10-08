@@ -117,15 +117,7 @@ const getReceiptDetails = async (req, res) => {
     try {
         let getReceiptDetails = await db.findDocuments("receipt", {})
         if (getReceiptDetails) {
-            if (getReceiptDetails.barcode.length !== 0) {
-                getReceiptDetails.barcode = await Promise.all(getReceiptDetails.barcode.map(async (file) => {
-                    return {
-                        ...file,
-                        actualPath: file.href,
-                        href: await getSignedUrl(file.href)
-                    }
-                }))
-            }
+
             return res.send({ status: 1, data: getReceiptDetails })
         }
     } catch (error) {
@@ -133,22 +125,114 @@ const getReceiptDetails = async (req, res) => {
     }
 }
 
-// // ------------------------------update  all receipt details-------------------------------------------//
+// // ------------------------------update specific feilds all receipt details-------------------------------------------//
+const updateReceiptSpecificFeilds = async (req, res) => {
+    try {
+        let updateData = req.body, getPreviousDataByID, updateReceiptData
+        if (!mongoose.isValidObjectId(updateData.id)) {
+            return res.send({ status: 0, msg: "invalid id" })
+        }
+        getPreviousDataByID = await db.findSingleDocument("receipt", { _id: new mongoose.Types.ObjectId(updateData.id) })
+        if (getPreviousDataByID === null) {
+            return res.send({ status: 0, msg: "Invalid ReceiptID" })
+        }
+        if (updateData.packageDetails) {
+            if (getPreviousDataByID.packageDetails.current !== updateData.packageDetails.current) {
+                newPreviousData = {
+                    data: getPreviousDataByID.packageDetails.current,
+                    date: getPreviousDataByID.updatedAt
+                }
+                updateData.packageDetails.previousData = [...getPreviousDataByID.packageDetails.previousData, newPreviousData]
+            } else {
+                delete updateData.packageDetails
+            }
+        }
 
-// const updateAllReceiptDetails = async (req, res) => {
-//     try {
-//         let updateAllReceiptDetails = req.body, receiptUpdateById
-//         if (!mongoose.isValidObjectId(updateAllReceiptDetails.id)) {
-//             return res.send({ status: 0, msg: "invalid id" })
-//         }
-//         receiptUpdateById = await db.findByIdAndUpdate("receipt", updateAllReceiptDetails.id, updateAllReceiptDetails)
-//         if (receiptUpdateById) {
-//             return res.send({ status: 1, msg: "updated successfully" })
-//         }
-//     } catch (error) {
-//         return res.send(error.message)
-//     }
-// }
+        if (updateData.godownName) {
+            if (getPreviousDataByID.godownName.current !== updateData.godownName.current) {
+                newPreviousData = {
+                    data: getPreviousDataByID.godownName.current,
+                    date: getPreviousDataByID.updatedAt
+                }
+                updateData.godownName.previousData = [...getPreviousDataByID.godownName.previousData, newPreviousData]
+            } else {
+                delete updateData.godownName
+            }
+        }
+
+        if (updateData.godownCode) {
+            if (getPreviousDataByID.godownCode.current !== updateData.godownCode.current) {
+                newPreviousData = {
+                    data: getPreviousDataByID.godownCode.current,
+                    date: getPreviousDataByID.updatedAt
+                }
+                updateData.godownCode.previousData = [...getPreviousDataByID.godownCode.previousData, newPreviousData]
+            } else {
+                delete updateData.godownCode
+            }
+        }
+
+        if (updateData.locationOfPackageInGodown) {
+            if (getPreviousDataByID.locationOfPackageInGodown.current !== updateData.locationOfPackageInGodown.current) {
+                newPreviousData = {
+                    data: getPreviousDataByID.locationOfPackageInGodown.current,
+                    date: getPreviousDataByID.updatedAt
+                }
+                updateData.locationOfPackageInGodown.previousData = [...getPreviousDataByID.locationOfPackageInGodown.previousData, newPreviousData]
+            } else {
+                delete updateData.locationOfPackageInGodown
+            }
+        }
+
+        if (updateData.handingOverOfficerName) {
+            if (getPreviousDataByID.handingOverOfficerName.current !== updateData.handingOverOfficerName.current) {
+                newPreviousData = {
+                    data: getPreviousDataByID.handingOverOfficerName.current,
+                    date: getPreviousDataByID.updatedAt
+                }
+                updateData.handingOverOfficerName.previousData = [...getPreviousDataByID.handingOverOfficerName.previousData, newPreviousData]
+            } else {
+                delete updateData.handingOverOfficerName
+            }
+        }
+
+        if (updateData.handingOverOfficerDesignation) {
+            if (getPreviousDataByID.handingOverOfficerDesignation.current !== updateData.handingOverOfficerDesignation.current) {
+                newPreviousData = {
+                    data: getPreviousDataByID.handingOverOfficerDesignation.current,
+                    date: getPreviousDataByID.updatedAt
+                }
+                updateData.handingOverOfficerDesignation.previousData = [...getPreviousDataByID.handingOverOfficerDesignation.previousData, newPreviousData]
+            } else {
+                delete updateData.handingOverOfficerDesignation
+            }
+        }
+
+        if (updateData.pendingUnderSection) {
+
+            if (getPreviousDataByID.pendingUnderSection.current !== updateData.pendingUnderSection.current) {
+                newPreviousData = {
+                    data: getPreviousDataByID.pendingUnderSection.current,
+                    date: getPreviousDataByID.updatedAt
+                }
+                updateData.pendingUnderSection.previousData = [...getPreviousDataByID.pendingUnderSection.previousData, newPreviousData]
+            } else {
+                delete updateData.pendingUnderSection
+            }
+        }
+
+        updateReceiptData = await db.findByIdAndUpdate("receipt",updateData.id, updateData)
+        if (updateReceiptData) {
+            
+            return res.send({ status: 1, msg: "Updateted Sucessfully"})
+        }
+
+    } catch (error) {
+        return res.send(error.message)
+    }
+}
+
+
 
 // ----------------------get Receipt details using id--------------------------------------------------------------------
 
@@ -636,5 +720,6 @@ module.exports = {
     reportOfRipeForDisposal,
     updateReceipt,
     getAllDataBasedOnEmalkhanaNumber,
-    getEmalkhanaDataBasedonWhackNo
+    getEmalkhanaDataBasedonWhackNo,
+    updateReceiptSpecificFeilds
 }

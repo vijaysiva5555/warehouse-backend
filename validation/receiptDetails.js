@@ -128,10 +128,25 @@ const receiptUpdateValidation = [
         } return next()
     }]
 
-
+    const receiptValidationSpecificFeilds = [
+        check('id').notEmpty().withMessage('id is required'),
+        check('packageDetails.current').notEmpty().withMessage('packageDetails is required'),
+        check('godownName.current').notEmpty().withMessage('godownName is required'),
+        check('godownCode.current').notEmpty().withMessage('godownCode is required'),
+        check('locationOfPackageInGodown.current').notEmpty().withMessage('locationOfPackageInGodown is required'),
+        check('handingOverOfficerName.current').notEmpty().withMessage('handingOverOfficerName is required'),
+        check('handingOverOfficerDesignation.current').notEmpty().withMessage('handingOverOfficerDesignation is required'),
+        check('pendingUnderSection.current').notEmpty().withMessage('pendingUnderSection is required'),
+    
+        (req, res, next) => {
+            const errors = validationResult(req).array()
+            if (errors.length > 0) {
+                return res.send({ status: 0, msg: errors[0].msg })
+            } return next()
+        }]
 
 module.exports = {
     receiptValidation, checkId, godownCode, godownName,
     pendingSection, ripeDisposal, checkIdFeilds, checkeMalkhanaNo,
-    whAckNo, adjucationOrderNo, receiptUpdateValidation
+    whAckNo, adjucationOrderNo, receiptUpdateValidation,receiptValidationSpecificFeilds
 }

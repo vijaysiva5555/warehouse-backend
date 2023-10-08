@@ -152,6 +152,24 @@ const searchDataUsingeMalkhanaNo = async (req, res) => {
         let eMalkhanaNo = req.body, checkeMalkhanaNo
         checkeMalkhanaNo = await db.findSingleDocument("eMalkhana", { eMalkhanaNo: eMalkhanaNo.eMalkhanaNo }, { _id: 1, status: 1 })
         if (checkeMalkhanaNo !== null) {
+            if (checkeMalkhanaNo.documents.length !== 0) {
+                checkeMalkhanaNo.documents = await Promise.all(checkeMalkhanaNo.documents.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
+            if (checkeMalkhanaNo.checkeMalkhanaNo.length !== 0) {
+                checkeMalkhanaNo.reOpenUploadOrder = await Promise.all(checkeMalkhanaNo.reOpenUploadOrder.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
             return res.send({ status: 1, data: checkeMalkhanaNo })
         } else {
             return res.send({ status: 0, msg: "data Not found" })
@@ -168,6 +186,24 @@ const searchDataUsingfileNo = async (req, res) => {
         let fileNo = req.body, checkFileNo
         checkFileNo = await db.findSingleDocument("eMalkhana", { fileNo: fileNo.fileNo })
         if (checkFileNo !== null) {
+            if (checkFileNo.documents.length !== 0) {
+                checkFileNo.documents = await Promise.all(checkFileNo.documents.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
+            if (checkFileNo.checkeMalkhanaNo.length !== 0) {
+                checkFileNo.reOpenUploadOrder = await Promise.all(checkFileNo.reOpenUploadOrder.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
             return res.send({ status: 1, data: checkFileNo })
         } else {
             return res.send({ status: 0, msg: "data Not found" })
@@ -185,6 +221,24 @@ const searchDataUsingItemDesc = async (req, res) => {
         let itemDesc = req.body, checkItemDesc
         checkItemDesc = await db.findSingleDocument("eMalkhana", { "itemDesc.current": itemDesc.itemDesc.current })
         if (checkItemDesc !== null) {
+            if (checkItemDesc.documents.length !== 0) {
+                checkItemDesc.documents = await Promise.all(checkItemDesc.documents.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
+            if (checkItemDesc.checkeMalkhanaNo.length !== 0) {
+                checkItemDesc.reOpenUploadOrder = await Promise.all(checkItemDesc.reOpenUploadOrder.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
             return res.send({ status: 1, data: checkItemDesc })
         } else {
             return res.send({ status: 0, msg: "data Not found" })
@@ -202,6 +256,24 @@ const searchDataUsingImporterName = async (req, res) => {
         let importerName = req.body, checkImporterName
         checkImporterName = await db.findSingleDocument("eMalkhana", { importerName: importerName.importerName })
         if (checkImporterName !== null) {
+            if (checkImporterName.documents.length !== 0) {
+                checkImporterName.documents = await Promise.all(checkImporterName.documents.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
+            if (checkImporterName.checkeMalkhanaNo.length !== 0) {
+                checkImporterName.reOpenUploadOrder = await Promise.all(checkImporterName.reOpenUploadOrder.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
             return res.send({ status: 1, data: checkImporterName })
         } else {
             return res.send({ status: 0, msg: "data not found" })
@@ -217,6 +289,24 @@ const searchDataUsingImporterAddress = async (req, res) => {
         let importerAddress = req.body, checkImporterAddress
         checkImporterAddress = await db.findSingleDocument("eMalkhana", { importerAddress: importerAddress.importerAddress })
         if (checkImporterAddress !== null) {
+            if (checkImporterAddress.documents.length !== 0) {
+                checkImporterAddress.documents = await Promise.all(checkImporterAddress.documents.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
+            if (checkImporterAddress.checkeMalkhanaNo.length !== 0) {
+                checkImporterAddress.reOpenUploadOrder = await Promise.all(checkImporterAddress.reOpenUploadOrder.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
             return res.send({ status: 1, data: checkImporterAddress })
         } else {
             return res.send({ status: 0, msg: "data not found" })
@@ -235,6 +325,24 @@ const getReportUsingSeizingUnitWise = async (req, res) => {
         let seizingUnitName = req.body, seizedUnit
         seizedUnit = await db.findSingleDocument("eMalkhana", { seizingUnitName: seizingUnitName.seizingUnitName })
         if (seizedUnit !== null) {
+            if (seizedUnit.documents.length !== 0) {
+                seizedUnit.documents = await Promise.all(seizedUnit.documents.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
+            if (seizedUnit.checkeMalkhanaNo.length !== 0) {
+                seizedUnit.reOpenUploadOrder = await Promise.all(seizedUnit.reOpenUploadOrder.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
             return res.send({ status: 1, data: seizedUnit })
         } else {
             return res.send({ status: 0, msg: "data not found" })
@@ -251,6 +359,24 @@ const getReportUsingSeizingItemWise = async (req, res) => {
         let seizedItemName = req.body, seizedItem
         seizedItem = await db.findSingleDocument("eMalkhana", { "seizedItemName.current": seizedItemName.seizedItemName.current })
         if (seizedItem !== null) {
+            if (seizedItem.documents.length !== 0) {
+                seizedItem.documents = await Promise.all(seizedItem.documents.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
+            if (seizedItem.checkeMalkhanaNo.length !== 0) {
+                seizedItem.reOpenUploadOrder = await Promise.all(seizedItem.reOpenUploadOrder.map(async (file) => {
+                    return {
+                        ...file,
+                        actualPath: file.href,
+                        href: await getSignedUrl(file.href)
+                    }
+                }))
+            }
             return res.send({ status: 1, data: seizedItem })
         } else {
             return res.send({ status: 0, msg: "data not found" })
@@ -263,7 +389,7 @@ const getReportUsingSeizingItemWise = async (req, res) => {
 //----------------------get Report using Yearwise------------------------------------//
 const getReportUsingYearWise = async (req, res) => {
     try {
-        const inputYear = req.body.createdAt;
+        const inputYear = req.body.year;
 
         if (!inputYear) {
             return res.send({ status: 0, msg: "Missing 'createdAt' field in the request body" });
@@ -295,35 +421,64 @@ const getReportUsingYearWise = async (req, res) => {
 
 // //------     update data of emalkhana using particular feilds seizedItemWeight, seizedItemValue, itemDesc      --------// 
 
-// const updateeMalkhanaDataByFeilds = async (req, res) => {
-//     try {
-//         const { eMalkhanaNo, seizedItemWeight, seizedItemValue, itemDesc } = req.body;
-//         const seizureToUpdate = await db.findDocumentExist("eMalkhana", { eMalkhanaNo });
-//         if (!seizureToUpdate) {
-//             return res.send({ status: 0, msg: "eMalkhana no is not found" });
-//         }
-//         const updateResult = await db.updateOneDocument(
-//             "eMalkhana",
-//             { eMalkhanaNo },
-//             {
-//                 $set: {
-//                     seizedItemWeight: seizedItemWeight !== undefined ? seizedItemWeight : seizureToUpdate.seizedItemWeight,
-//                     seizedItemValue: seizedItemValue !== undefined ? seizedItemValue : seizureToUpdate.seizedItemValue,
-//                     itemDesc: itemDesc !== undefined ? itemDesc : seizureToUpdate.itemDesc,
-//                 },
-//             }
-//         )
-//         if (!req.body.seizedItemWeight && !req.body.seizedItemValue && !req.body.itemDesc) {
-//             return res.send('Please insert data need to be updated');
-//         }
-//         if (updateResult) {
-//             return res.send({ status: 1, msg: "data updated successfully" })
-//         }
-//     }
-//     catch (error) {
-//         return res.send(error.message)
-//     }
-// }
+const updateSpecficFieldByid = async (req, res) => {
+    try {
+        let updateData = req.body, eMalkhanaUpdateById, getPreviousDataByID
+
+        if (!mongoose.isValidObjectId(updateData.id)) {
+            return res.send({ status: 0, msg: "invalid id" })
+        }
+        getPreviousDataByID = await db.findSingleDocument("eMalkhana", { _id: new mongoose.Types.ObjectId(updateData.id) })
+
+
+        if (updateData.seizedItemWeight) {
+
+            if (getPreviousDataByID.seizedItemWeight.current !== updateData.seizedItemWeight.current) {
+                newPreviousData = {
+                    data: getPreviousDataByID.seizedItemWeight.current,
+                    date: getPreviousDataByID.updatedAt
+                }
+                updateData.seizedItemWeight.previousData = [...getPreviousDataByID.seizedItemWeight.previousData, newPreviousData]
+            } else {
+                delete updateData.seizedItemWeight
+            }
+        }
+
+        if (updateData.seizedItemValue) {
+            if (getPreviousDataByID.seizedItemValue.current !== updateData.seizedItemValue.current) {
+                newPreviousData = {
+                    data: getPreviousDataByID.seizedItemValue.current,
+                    date: getPreviousDataByID.updatedAt
+                }
+                updateData.seizedItemValue.previousData = [...getPreviousDataByID.seizedItemValue.previousData, newPreviousData]
+            } else {
+                delete updateData.seizedItemValue
+            }
+        }
+
+        if (updateData.itemDesc) {
+            foundObject = getPreviousDataByID.itemDesc.previousData.filter(obj => obj["data"] === updateData.itemDesc.current);
+            if (getPreviousDataByID.itemDesc.current !== updateData.itemDesc.current) {
+                newPreviousData = {
+                    data: getPreviousDataByID.itemDesc.current,
+                    date: getPreviousDataByID.updatedAt
+                }
+                updateData.itemDesc.previousData = [...getPreviousDataByID.itemDesc.previousData, newPreviousData]
+            } else {
+                delete updateData.itemDesc
+            }
+        }
+
+        eMalkhanaUpdateById = await db.findByIdAndUpdate("eMalkhana", updateData.id, updateData)
+        if (eMalkhanaUpdateById) {
+            return res.send({ status: 1, msg: "updated successfully" })
+        }
+
+    }
+    catch (error) {
+        return res.send(error.message)
+    }
+}
 
 //delete file Api
 const deleteDocumentBasedOnEmalkhanaNo = async (req, res) => {
@@ -490,6 +645,22 @@ const getAllDataByEmalkhanaId = async (req, res) => {
     }
 }
 
+//------------ Get emalkhana number using status -----------------//
+const getAlleMalkhanaNoUsingStatus = async (req, res) => {
+    try {
+        let inputData = req.query, getData
+        getData = await db.findDocuments("eMalkhana", { status: inputData.status }, { _id: 0, eMalkhanaNo: 1 })
+        if (getData.length !== 0) {
+            return res.send({ status: 1, msg: "get data successfully", data: getData })
+        } else {
+            return res.send({ status: 0, msg: "data not found" })
+        }
+    } catch (error) {
+        return res.send(error.message)
+    }
+}
+
+
 
 module.exports = {
     insertEMalkhanaDetails,
@@ -507,5 +678,7 @@ module.exports = {
     reOpenUpdateUsingMultipleeMalkhanaNo,
     getReportUsingYearWise,
     getReceiptMalkhanaDataById,
-    getAllDataByEmalkhanaId
+    getAllDataByEmalkhanaId,
+    updateSpecficFieldByid,
+    getAlleMalkhanaNoUsingStatus
 }
