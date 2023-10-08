@@ -4,7 +4,7 @@ const moment = require("moment")
 const bwipjs = require('bwip-js');
 const fs = require('fs');
 const { uploadToAws, getSignedUrl } = require("../models/aws")
-const config = require("../config/config")
+const CONFIG = require("../config/config")
 
 //------------------------receipt details post--------------------------//
 
@@ -14,7 +14,7 @@ const insertReceiptDetails = async (req, res) => {
             getPreviousDataByID, barcodeFile, barcodeLocation
         currentYear = moment().year().toString().substring(2)
         whAckNoData = await db.findDocuments("receipt", { 'whAckNo': { $regex: currentYear } })
-        receiptInput.whAckNo = process.env.WHACKNO + '-' + currentYear + '-' + String(whAckNoData.length + 1).padStart(4, '0')
+        receiptInput.whAckNo = CONFIG.WHACKNO + '-' + currentYear + '-' + String(whAckNoData.length + 1).padStart(4, '0')
 
         checkeMalkhanaNo = await db.findOneDocumentExists("receipt", { eMalkhanaNo: receiptInput.eMalkhanaNo })
         if (checkeMalkhanaNo === true) {
@@ -46,7 +46,7 @@ const insertReceiptDetails = async (req, res) => {
             name: `${receiptInput.whAckNo}.png`
         };
 
-        barcodeLocation = await uploadToAws(config.BARCODEFILE, receiptInput.whAckNo, barcodeFile);
+        barcodeLocation = await uploadToAws(CONFIG.BARCODEFILE, receiptInput.whAckNo, barcodeFile);
         receiptInput.barcode = barcodeLocation[0]
         getPreviousDataByID = await db.findSingleDocument("eMalkhana", { eMalkhanaNo: receiptInput.eMalkhanaNo })
         if (getPreviousDataByID === null) {
