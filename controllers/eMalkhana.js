@@ -259,6 +259,39 @@ const getReportUsingSeizingItemWise = async (req, res) => {
     }
 }
 
+//----------------------get Report using Yearwise------------------------------------//
+const getReportUsingYearWise = async (req, res) => {
+    try {
+        const inputYear = req.body.createdAt;
+
+        if (!inputYear) {
+            return res.send({ status: 0, msg: "Missing 'createdAt' field in the request body" });
+        }
+
+        const yearWiseDataRequest = await db.getAggregation("eMalkhana", [
+            {
+                $addFields: {
+                    extractedYear: { $year: "$createdAt" }
+                }
+            },
+            {
+                $match: {
+                    extractedYear: parseInt(inputYear)
+                }
+            }
+        ]);
+
+        if (yearWiseDataRequest !== null && yearWiseDataRequest.length > 0) {
+            return res.send({ status: 1, data: yearWiseDataRequest });
+        } else {
+            return res.send({ status: 0, msg: "Data not found for the specified year" });
+        }
+    } catch (error) {
+        return res.send({ status: 0, msg: error.message });
+    }
+};
+
+
 // //------     update data of emalkhana using particular feilds seizedItemWeight, seizedItemValue, itemDesc      --------// 
 
 // const updateeMalkhanaDataByFeilds = async (req, res) => {
@@ -354,6 +387,8 @@ const reOpenUpdateUsingMultipleeMalkhanaNo = async (req, res) => {
 }
 
 
+
+
 module.exports = {
     insertEMalkhanaDetails,
     updateMalkhana,
@@ -367,5 +402,7 @@ module.exports = {
     getReportUsingSeizingItemWise,
     getReportUsingSeizingUnitWise,
     deleteDocumentBasedOnEmalkhanaNo,
-    reOpenUpdateUsingMultipleeMalkhanaNo
+    reOpenUpdateUsingMultipleeMalkhanaNo,
+    getReportUsingYearWise
+
 }
