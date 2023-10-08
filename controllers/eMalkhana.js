@@ -152,24 +152,6 @@ const searchDataUsingeMalkhanaNo = async (req, res) => {
         let eMalkhanaNo = req.body, checkeMalkhanaNo
         checkeMalkhanaNo = await db.findSingleDocument("eMalkhana", { eMalkhanaNo: eMalkhanaNo.eMalkhanaNo }, { _id: 1, status: 1 })
         if (checkeMalkhanaNo !== null) {
-            if (checkeMalkhanaNo.documents.length !== 0) {
-                checkeMalkhanaNo.documents = await Promise.all(checkeMalkhanaNo.documents.map(async (file) => {
-                    return {
-                        ...file,
-                        actualPath: file.href,
-                        href: await getSignedUrl(file.href)
-                    }
-                }))
-            }
-            if (checkeMalkhanaNo.checkeMalkhanaNo.length !== 0) {
-                checkeMalkhanaNo.reOpenUploadOrder = await Promise.all(checkeMalkhanaNo.reOpenUploadOrder.map(async (file) => {
-                    return {
-                        ...file,
-                        actualPath: file.href,
-                        href: await getSignedUrl(file.href)
-                    }
-                }))
-            }
             return res.send({ status: 1, data: checkeMalkhanaNo })
         } else {
             return res.send({ status: 0, msg: "data Not found" })
@@ -195,7 +177,7 @@ const searchDataUsingfileNo = async (req, res) => {
                     }
                 }))
             }
-            if (checkFileNo.checkeMalkhanaNo.length !== 0) {
+            if (checkFileNo.reOpenUploadOrder.length !== 0) {
                 checkFileNo.reOpenUploadOrder = await Promise.all(checkFileNo.reOpenUploadOrder.map(async (file) => {
                     return {
                         ...file,
@@ -230,7 +212,7 @@ const searchDataUsingItemDesc = async (req, res) => {
                     }
                 }))
             }
-            if (checkItemDesc.checkeMalkhanaNo.length !== 0) {
+            if (checkItemDesc.reOpenUploadOrder.length !== 0) {
                 checkItemDesc.reOpenUploadOrder = await Promise.all(checkItemDesc.reOpenUploadOrder.map(async (file) => {
                     return {
                         ...file,
@@ -265,7 +247,7 @@ const searchDataUsingImporterName = async (req, res) => {
                     }
                 }))
             }
-            if (checkImporterName.checkeMalkhanaNo.length !== 0) {
+            if (checkImporterName.reOpenUploadOrder.length !== 0) {
                 checkImporterName.reOpenUploadOrder = await Promise.all(checkImporterName.reOpenUploadOrder.map(async (file) => {
                     return {
                         ...file,
@@ -298,7 +280,7 @@ const searchDataUsingImporterAddress = async (req, res) => {
                     }
                 }))
             }
-            if (checkImporterAddress.checkeMalkhanaNo.length !== 0) {
+            if (checkImporterAddress.reOpenUploadOrder.length !== 0) {
                 checkImporterAddress.reOpenUploadOrder = await Promise.all(checkImporterAddress.reOpenUploadOrder.map(async (file) => {
                     return {
                         ...file,
@@ -334,7 +316,7 @@ const getReportUsingSeizingUnitWise = async (req, res) => {
                     }
                 }))
             }
-            if (seizedUnit.checkeMalkhanaNo.length !== 0) {
+            if (seizedUnit.reOpenUploadOrder.length !== 0) {
                 seizedUnit.reOpenUploadOrder = await Promise.all(seizedUnit.reOpenUploadOrder.map(async (file) => {
                     return {
                         ...file,
@@ -368,7 +350,7 @@ const getReportUsingSeizingItemWise = async (req, res) => {
                     }
                 }))
             }
-            if (seizedItem.checkeMalkhanaNo.length !== 0) {
+            if (seizedItem.reOpenUploadOrder.length !== 0) {
                 seizedItem.reOpenUploadOrder = await Promise.all(seizedItem.reOpenUploadOrder.map(async (file) => {
                     return {
                         ...file,
