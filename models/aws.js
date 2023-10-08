@@ -1,107 +1,117 @@
 const AWS = require("aws-sdk");
-require("dotenv").config();
-const config = require("../config/config")
+const config = require("../config/config");
 
+AWS.config.update({ region: config.REGION });
 
-s3 = new AWS.S3({
+const s3 = new AWS.S3({
+  credentials: {
     accessKeyId: config.ACCESS_KEY,
     secretAccessKey: config.SECRET_KEY,
+  },
 });
 
-
 const uploadToAws = async (mainFolder, folder, files) => {
-    // Check if the main folder exists
-    const mainFolderExists = await checkIfFolderExists(config.BUCKET_NAME, mainFolder);
+  // Check if the main folder exists
+  const mainFolderExists = await checkIfFolderExists(
+    config.BUCKET_NAME,
+    mainFolder
+  );
 
-    // If the main folder doesn't exist, create it
-    if (!mainFolderExists) {
-        await createFolder(config.BUCKET_NAME, mainFolder);
-    }
+  // If the main folder doesn't exist, create it
+  if (!mainFolderExists) {
+    await createFolder(config.BUCKET_NAME, mainFolder);
+  }
 
-    const filesArray = Array.isArray(files) ? files : [files];
-    const uploadPromises = filesArray.map((file) => {
-        const params = {
-            Bucket: config.BUCKET_NAME,
-            Key: `${mainFolder}/${folder}/${file.name}`, // Include the main folder in the Key
-            Body: file.data,
-            ACL: "public-read-write",
-            ContentType: "image/jpg/pdf/jpeg/png",
-        };
+  const filesArray = Array.isArray(files) ? files : [files];
+  const uploadPromises = filesArray.map((file) => {
+    const params = {
+      Bucket: config.BUCKET_NAME,
+      Key: `${mainFolder}/${folder}/${file.name}`, // Include the main folder in the Key
+      Body: file.data,
+      ContentType: "image/jpg/pdf/jpeg",
+    };
 
-        return new Promise((resolve, reject) => {
-            s3.upload(params, (error, data) => {
-                if (error) {
-                    console.error(error);
-                    reject(error);
-                } else {
-                    resolve(data.Location);
-                }
-            });
-        });
+    return new Promise((resolve, reject) => {
+      s3.upload(params, (error, data) => {
+        if (error) {
+          console.error(error);
+          reject(false);
+        } else {
+          resolve({
+            href: `${mainFolder}/${folder}/${file.name}`,
+            name: file.name,
+            size: file.size,
+          });
+        }
+      });
     });
+  });
 
-    try {
-        const locations = await Promise.all(uploadPromises);
-        return locations;
-    } catch (error) {
-        console.error("Error uploading files:", error);
-        // Handle the error as needed
-    }
+  try {
+    const locations = await Promise.all(uploadPromises);
+    return locations.filter(Boolean);
+  } catch (error) {
+    console.error("Error uploading files:", error);
+    // Handle the error as needed
+    throw new Error(error.message);
+  }
 };
 
 // Function to check if a folder exists
 const checkIfFolderExists = async (bucketName, folderName) => {
-    try {
-        await s3.headObject({ Bucket: bucketName, Key: folderName }).promise();
-        return true; // Folder exists
-    } catch (error) {
-        if (error.code === "NotFound") {
-            return false; // Folder does not exist
-        } else {
-            throw error; // Other error occurred
-        }
+  try {
+    await s3.headObject({ Bucket: bucketName, Key: folderName }).promise();
+    return true; // Folder exists
+  } catch (error) {
+    if (error.code === "NotFound") {
+      return false; // Folder does not exist
+    } else {
+      throw error; // Other error occurred
     }
+  }
 };
 
 // Function to create a folder
 const createFolder = async (bucketName, folderName) => {
-    const params = {
-        Bucket: bucketName,
-        Key: folderName + "/", // Add trailing slash to indicate it's a folder
-        Body: "", // Empty body for creating a folder
-    };
+  const params = {
+    Bucket: bucketName,
+    Key: folderName + "/", // Add trailing slash to indicate it's a folder
+    Body: "", // Empty body for creating a folder
+  };
 
-    try {
-        await s3.upload(params).promise();
-    } catch (error) {
-        console.error("Error creating folder:", error);
-        // Handle the error as needed
-    }
+  try {
+    await s3.upload(params).promise();
+  } catch (error) {
+    console.error("Error creating folder:", error);
+    // Handle the error as needed
+    throw new Error(error.message);
+  }
 };
 
+async function getSignedUrl(fileName) {
+  try {
+    return await s3.getSignedUrlPromise("getObject", {
+      Bucket: config.BUCKET_NAME,
+      Key: fileName,
+      Expires: 60 * 60, // Set the expiration time to 1 hour (in seconds)
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
 
 const deleteFile = async (fileLocation) => {
-    const bucketName = config.BUCKET_NAME;
-
-    const { pathname  } = new URL(fileLocation);
-
-    // Extract the file key from the pathname and replace %20 with spaces
-    const fileKey = decodeURIComponent(pathname.substring(1)).replace(/(%20|\+)/g, ' ');; // Remove the leading slash
-
-    const params = {
-        Bucket: bucketName,
-        Key: fileKey,
-    };
-
-    try {
-        await s3.deleteObject(params).promise();
-        console.log("File deleted successfully:", fileLocation);
-    } catch (error) {
-        console.error("Error deleting file:", error.message);
-        console.error("Error details:", error.stack);
-        // Handle the error as needed
-    }
+  try {
+    await s3
+      .deleteObject({
+        Bucket: config.BUCKET_NAME,
+        Key: fileLocation,
+      })
+      .promise();
+    console.log("File deleted successfully");
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
-
-module.exports = { uploadToAws, deleteFile, createFolder };
+module.exports = { uploadToAws, deleteFile, createFolder, getSignedUrl };

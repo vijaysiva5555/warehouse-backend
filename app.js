@@ -1,5 +1,4 @@
 const express = require("express")
-const bodyParser = require("body-parser")
 const mongoose = require("mongoose")
 const routes = require("./routes/routes")
 const app = express()
@@ -10,9 +9,7 @@ const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
 const { authorized } = require("./models/auth")
 
-require('dotenv').config()
-
-app.use(bodyParser.json())
+app.use(express.json())
 app.use(cors({
     origin: "http://localhost:3000",
     credentials: true
@@ -22,7 +19,7 @@ app.use(fileUpload({
     parseNested: true
 }))
 
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }))
 app.use("/barcodeFolder", authorized, express.static(path.join(__dirname, "/barcodeFolder"), { etag: false }))
 mongoose.connect(CONFIG.MONGOURL)
     .then(() => { console.log("mongodb is connected") })

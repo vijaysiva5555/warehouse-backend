@@ -8,5 +8,7 @@ CONFIG.BARCODEFILE = process.env.BARCODEFILE
 CONFIG.ACCESS_KEY = process.env.ACCESS_KEY
 CONFIG.SECRET_KEY = process.env.SECRET_KEY
 CONFIG.BUCKET_NAME = process.env.BUCKET_NAME
+CONFIG.EMALKHANANO = process.env.EMALKHANANO;
+CONFIG.REGION = process.env.REGION;
 
-module.exports=CONFIG
+module.exports = CONFIG;

@@ -1,10 +1,8 @@
 const db = require("../models/mongo")
 const mongoose = require("mongoose")
-const common = require("../models/common")
 const moment = require("moment")
-const AWS = require("aws-sdk");
-const { uploadToAws, deleteFile } = require("../models/aws")
-const config = require("../config/config")
+const { uploadToAws, deleteFile, getSignedUrl } = require("../models/aws");
+const CONFIG = require("../config/config");
 
 //-------------------------------------- eMalkhana details Insert--------------------------------------------//
 
@@ -13,19 +11,19 @@ const insertEMalkhanaDetails = async (req, res) => {
     try {
         currentYear = moment().year().toString().substring(2)
         eMalkhanaAllData = await db.findDocuments("eMalkhana", { 'eMalkhanaNo': { $regex: currentYear } })
-        eMalkhanaData.eMalkhanaNo = process.env.EMALKHANANO + '-' + currentYear + '-' + String(eMalkhanaAllData.length + 1).padStart(4, '0')
+        eMalkhanaData.eMalkhanaNo = CONFIG.EMALKHANANO + '-' + currentYear + '-' + String(eMalkhanaAllData.length + 1).padStart(4, '0')
         eMalkhanaData.createdBy = res.locals.userData.userId
 
-        eMalkhanaData.documents = await uploadToAws(config.EMALKHANADOC, eMalkhanaData.eMalkhanaNo, req.files.documents)
+        eMalkhanaData.documents = await uploadToAws(CONFIG.EMALKHANADOC, eMalkhanaData.eMalkhanaNo, req.files.documents)
 
         eMalkhanaInputData = await db.insertSingleDocument("eMalkhana", eMalkhanaData)
         if (eMalkhanaInputData) {
-            return res.send({ status: 1, msg: "data inserted successfully" })
+            return res.send({ status: 1, msg: `E Malkhana ${eMalkhanaData.eMalkhanaNo} Generated Successfully` })
         } else {
             return res.send({ status: 0, msg: "Invalid request" })
         }
     } catch (error) {
-        return res.send(error.message)
+        return res.send({ status:0,msg: error.message})
     }
 }
 
@@ -46,11 +44,12 @@ const getEmakhalaDetails = async (req, res) => {
 
 const updateMalkhana = async (req, res) => {
     try {
-        let updateMalkhanData = req.body, eMalkhanaUpdateById, getPreviousDataByID, foundObject
+        let updateMalkhanData = req.body, eMalkhanaUpdateById, getPreviousDataByID, foundObject, previousDocuments
         if (!mongoose.isValidObjectId(updateMalkhanData.id)) {
             return res.send({ status: 0, msg: "invalid id" })
         }
         getPreviousDataByID = await db.findSingleDocument("eMalkhana", { _id: new mongoose.Types.ObjectId(updateMalkhanData.id) })
+        previousDocuments = getPreviousDataByID.documents 
         if (updateMalkhanData.seizedItemName) {
             if (getPreviousDataByID.seizedItemName.current !== updateMalkhanData.seizedItemName.current) {
                 newPreviousData = {
@@ -101,6 +100,13 @@ const updateMalkhana = async (req, res) => {
             }
         }
 
+        if(Array.isArray(req.files.documents) || req.files.documents != null){
+            updateMalkhanData.documents = await uploadToAws(CONFIG.EMALKHANADOC, updateMalkhanData.eMalkhanaNo, req.files.documents)
+            updateMalkhanData.documents = [...updateMalkhanData.documents,...previousDocuments]
+        }
+        else{
+            delete updateMalkhanData.documents
+        }
         eMalkhanaUpdateById = await db.findByIdAndUpdate("eMalkhana", updateMalkhanData.id, updateMalkhanData)
         if (eMalkhanaUpdateById) {
             return res.send({ status: 1, msg: "updated successfully" })
@@ -120,11 +126,17 @@ const eMalkhanaDataById = async (req, res) => {
         }
         eMalkhanaData = await db.findSingleDocument("eMalkhana", { _id: new mongoose.Types.ObjectId(eMalkhanaId.id) })
         if (eMalkhanaData !== null) {
-
+            eMalkhanaData.documents = await Promise.all(eMalkhanaData.documents.map(async (file) => {
+                return {
+                    ...file,
+                    actualPath:file.href,
+                    href:await getSignedUrl(file.href)
+                }
+            })) 
             return res.send({ status: 1, data: eMalkhanaData })
         } else {
 
-            return res.send({ status: 0, msg: "data not found" })
+            return res.send({ status: 0, msg: "E Malkhana Not found" })
         }
     } catch (error) {
         return res.send(error.message)
@@ -316,11 +328,11 @@ const getReportUsingYearWise = async (req, res) => {
 const deleteDocumentBasedOnEmalkhanaNo = async (req, res) => {
     try {
         let filedata = req.body, updatefile
-        updatefile = await db.updateOneDocument("eMalkhana", { "eMalkhanaNo": filedata.eMalkhanaNo }, {
-            $pull: { documents: filedata.documents }
+        updatefile = await db.updateOneDocument("eMalkhana", { _id: filedata.id }, {
+            $pull: { documents: {href: filedata.href} }
         })
         if (updatefile !== null) {
-            await deleteFile(filedata.documents)
+            await deleteFile(filedata.href)
 
             return res.send({ status: 1, msg: "file Deleted Sucessfully" })
 
@@ -328,7 +340,7 @@ const deleteDocumentBasedOnEmalkhanaNo = async (req, res) => {
             return res.send({ status: 0, msg: "invalid Request" })
         }
     } catch (error) {
-        return res.send(error.message)
+        return res.send({ status:0,msg:error.message })
     }
 }
 
@@ -353,11 +365,10 @@ const reOpenUpdateUsingMultipleeMalkhanaNo = async (req, res) => {
         }
         if (req.files) {
             await Promise.all(updateMalkhanasNo.map(async (ele) => {
-                updatesGivenData.reOpenUploadOrder = await uploadToAws(config.REOPENUPLOADORDERDOC, ele, req.files.reOpenUploadOrder);
+                updatesGivenData.reOpenUploadOrder = await uploadToAws(CONFIG.REOPENUPLOADORDERDOC, ele, req.files.reOpenUploadOrder);
             }));
         }
 
-        // updatesGivenData.reOpenUploadOrder = await uploadToAws(config.REOPENUPLOADORDERDOC,)
         updatesGivenData.status = 4
         updatesGivenData.createdBy = res.locals.userData.userId
         updateInputReOpenData = await db.updateManyDocuments("eMalkhana", { eMalkhanaNo: { $in: updateMalkhanasNo } }, { $set: updatesGivenData },)
@@ -406,7 +417,7 @@ const getAllDataByEmalkhanaId = async (req, res) => {
         getEmalkhanaData = await db.findSingleDocument("eMalkhana", { _id: new mongoose.Types.ObjectId(numberData.id) })
         getReceptData = await db.findSingleDocument("receipt", { eMalkhanaId: new mongoose.Types.ObjectId(numberData.id) })
         getDisposalData = await db.findSingleDocument("disposal", { eMalkhanaId: new mongoose.Types.ObjectId(numberData.id) })
-        if (getEmalkhanaData || getReceptData) {
+        if (getEmalkhanaData || getReceptData || getDisposalData) {
             allData = {
                 eMalkhanaData: getEmalkhanaData,
                 receiptData: getReceptData,
@@ -436,8 +447,6 @@ module.exports = {
     searchDataUsingImporterAddress,
     getReportUsingSeizingItemWise,
     getReportUsingSeizingUnitWise,
-    // updateeMalkhanaDataByFeilds,
-    //updateReopenDataUsingeMalkhanaNo,
     deleteDocumentBasedOnEmalkhanaNo,
     reOpenUpdateUsingMultipleeMalkhanaNo,
     getReportUsingYearWise,

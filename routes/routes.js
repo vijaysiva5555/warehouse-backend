@@ -39,11 +39,11 @@ routes.post("/getDataByImporterAddress", eMalkhanaValidation.importerAddress, eM
 routes.post("/getDataByItemDesc", eMalkhanaValidation.itemDesc, eMalkhanaController.searchDataUsingItemDesc)
 routes.post("/getReceiptMalkhanaDataById",eMalkhanaValidation.checkId,eMalkhanaController. getReceiptMalkhanaDataById)
 routes.post("/getAllDataByEmalkhanaId",eMalkhanaValidation.checkId,eMalkhanaController. getAllDataByEmalkhanaId)
+routes.post("/getYearWiseData",eMalkhanaController.getReportUsingYearWise)
 
 //REPORT GENERATED GET API
 routes.post("/seizedUnitwise", eMalkhanaValidation.SeizingUnitWise, eMalkhanaController.getReportUsingSeizingUnitWise)
 routes.post("/seizedItemName", eMalkhanaValidation.SeizingItemWise, eMalkhanaController.getReportUsingSeizingItemWise)
-routes.post("/getYearWiseData",eMalkhanaController.getReportUsingYearWise)
 
 //updateAPI
 routes.post("/updateEmalkhana", eMalkhanaValidation.checkId, eMalkhanaController.updateMalkhana)

@@ -95,8 +95,8 @@ const importerAddress = [
 ]
 
 const deleteDocumentBasedOnEmalkhanaNo = [
-    check('eMalkhanaNo').notEmpty().withMessage('eMalkhanaNo should be required'),
-    check('documents').notEmpty().withMessage('documents should be required'),
+    check('id').notEmpty().withMessage('ID should be required'),
+    check('href').notEmpty().withMessage('File Path should be required'),
     (req, res, next) => {
         const errors = validationResult(req).array()
         if (errors.length > 0) {
