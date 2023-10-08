@@ -1,155 +1,193 @@
-const { check, validationResult } = require('express-validator')
+const { check, validationResult } = require("express-validator");
 
 const eMalkhanaValidation = [
-    check('status').notEmpty().withMessage('status is required'),
-    check('seizingUnitName').notEmpty().withMessage('seizingUnitName is required'),
-    check('fileNo').notEmpty().withMessage('fileNo is required'),
-    check('importerName').notEmpty().withMessage('importerName is required'),
-    check('importerAddress').notEmpty().withMessage('importerAddress is required'),
-    check('placeOfSeizure').notEmpty().withMessage(' placeOfSeizure is required'),
-    check('itemDesc.current').notEmpty().withMessage('itemDesc-current is required'),
-    check('seizedItemName.current').notEmpty().withMessage('seizedItemName-current is required'),
-    check('seizedItemWeight.current').notEmpty().withMessage('seizedItemWeight-current is required'),
-    check('seizedItemValue.current').notEmpty().withMessage('seizedItemValue-current is required'),
-    check('seizingOfficerName').notEmpty().withMessage('seizingOfficerName is required'),
-    check('seizingOfficerDesignation').notEmpty().withMessage('seizingOfficerDesignation is required'),
-    check('seizingOfficerSealNo').notEmpty().withMessage('seizingOfficerSealNo is required'),
+	check("status").notEmpty().withMessage("status is required"),
+	check("seizingUnitName")
+		.notEmpty()
+		.withMessage("seizingUnitName is required"),
+	check("fileNo").notEmpty().withMessage("fileNo is required"),
+	check("importerName").notEmpty().withMessage("importerName is required"),
+	check("importerAddress")
+		.notEmpty()
+		.withMessage("importerAddress is required"),
+	check("placeOfSeizure")
+		.notEmpty()
+		.withMessage(" placeOfSeizure is required"),
+	check("itemDesc.current")
+		.notEmpty()
+		.withMessage("itemDesc-current is required"),
+	check("seizedItemName.current")
+		.notEmpty()
+		.withMessage("seizedItemName-current is required"),
+	check("seizedItemWeight.current")
+		.notEmpty()
+		.withMessage("seizedItemWeight-current is required"),
+	check("seizedItemValue.current")
+		.notEmpty()
+		.withMessage("seizedItemValue-current is required"),
+	check("seizingOfficerName")
+		.notEmpty()
+		.withMessage("seizingOfficerName is required"),
+	check("seizingOfficerDesignation")
+		.notEmpty()
+		.withMessage("seizingOfficerDesignation is required"),
+	check("seizingOfficerSealNo")
+		.notEmpty()
+		.withMessage("seizingOfficerSealNo is required"),
 
-    (req, res, next) => {
-        const errors = validationResult(req).array()
-        if (errors.length > 0) {
-            return res.send({ status: 0, msg: errors[0].msg })
-        } return next()
-    }]
+	(req, res, next) => {
+		const errors = validationResult(req).array();
+		if (errors.length > 0) {
+			return res.send({ status: 0, msg: errors[0].msg });
+		}
+		return next();
+	},
+];
 const checkId = [
-    check('id').notEmpty().withMessage('id should be required'),
-    (req, res, next) => {
-        const errors = validationResult(req).array()
-        if (errors.length > 0) {
-            return res.send({ status: 0, msg: errors[0].msg })
-        } return next()
-    }
-]
+	check("id").notEmpty().withMessage("id should be required"),
+	(req, res, next) => {
+		const errors = validationResult(req).array();
+		if (errors.length > 0) {
+			return res.send({ status: 0, msg: errors[0].msg });
+		}
+		return next();
+	},
+];
 const checkeMalkhanaNo = [
-    check('eMalkhanaNo').notEmpty().withMessage('eMalkhanaNo should be required'),
-    (req, res, next) => {
-        const errors = validationResult(req).array()
-        if (errors.length > 0) {
-            return res.send({ status: 0, msg: errors[0].msg })
-        } return next()
-    }
-]
+	check("eMalkhanaNo")
+		.notEmpty()
+		.withMessage("eMalkhanaNo should be required"),
+	(req, res, next) => {
+		const errors = validationResult(req).array();
+		if (errors.length > 0) {
+			return res.send({ status: 0, msg: errors[0].msg });
+		}
+		return next();
+	},
+];
 const SeizingUnitWise = [
-    check('seizingUnitName').notEmpty().withMessage('seizing Unit Name should be required'),
-    (req, res, next) => {
-        const errors = validationResult(req).array()
-        if (errors.length > 0) {
-            return res.send({ status: 0, msg: errors[0].msg })
-        } return next()
-    }
-]
+	check("seizingUnitName")
+		.notEmpty()
+		.withMessage("seizing Unit Name should be required"),
+	(req, res, next) => {
+		const errors = validationResult(req).array();
+		if (errors.length > 0) {
+			return res.send({ status: 0, msg: errors[0].msg });
+		}
+		return next();
+	},
+];
 const SeizingItemWise = [
-    check('seizedItemName.current').notEmpty().withMessage('seizing Item Name should be required'),
-    (req, res, next) => {
-        const errors = validationResult(req).array()
-        if (errors.length > 0) {
-            return res.send({ status: 0, msg: errors[0].msg })
-        } return next()
-    }
-]
+	check("seizedItemName.current")
+		.notEmpty()
+		.withMessage("seizing Item Name should be required"),
+	(req, res, next) => {
+		const errors = validationResult(req).array();
+		if (errors.length > 0) {
+			return res.send({ status: 0, msg: errors[0].msg });
+		}
+		return next();
+	},
+];
 const fileNo = [
-    check('fileNo').notEmpty().withMessage('file No should be required'),
-    (req, res, next) => {
-        const errors = validationResult(req).array()
-        if (errors.length > 0) {
-            return res.send({ status: 0, msg: errors[0].msg })
-        } return next()
-    }
-]
+	check("fileNo").notEmpty().withMessage("file No should be required"),
+	(req, res, next) => {
+		const errors = validationResult(req).array();
+		if (errors.length > 0) {
+			return res.send({ status: 0, msg: errors[0].msg });
+		}
+		return next();
+	},
+];
 const itemDesc = [
-    check('itemDesc.current').notEmpty().withMessage('itemDesc should be required'),
-    (req, res, next) => {
-        const errors = validationResult(req).array()
-        if (errors.length > 0) {
-            return res.send({ status: 0, msg: errors[0].msg })
-        } return next()
-    }
-]
+	check("itemDesc.current")
+		.notEmpty()
+		.withMessage("itemDesc should be required"),
+	(req, res, next) => {
+		const errors = validationResult(req).array();
+		if (errors.length > 0) {
+			return res.send({ status: 0, msg: errors[0].msg });
+		}
+		return next();
+	},
+];
 const importerName = [
-    check('importerName').notEmpty().withMessage('importerName should be required'),
-    (req, res, next) => {
-        const errors = validationResult(req).array()
-        if (errors.length > 0) {
-            return res.send({ status: 0, msg: errors[0].msg })
-        } return next()
-    }
-]
+	check("importerName")
+		.notEmpty()
+		.withMessage("importerName should be required"),
+	(req, res, next) => {
+		const errors = validationResult(req).array();
+		if (errors.length > 0) {
+			return res.send({ status: 0, msg: errors[0].msg });
+		}
+		return next();
+	},
+];
 const importerAddress = [
-    check('importerAddress').notEmpty().withMessage('importerAddress should be required'),
-    (req, res, next) => {
-        const errors = validationResult(req).array()
-        if (errors.length > 0) {
-            return res.send({ status: 0, msg: errors[0].msg })
-        } return next()
-    }
-]
+	check("importerAddress")
+		.notEmpty()
+		.withMessage("importerAddress should be required"),
+	(req, res, next) => {
+		const errors = validationResult(req).array();
+		if (errors.length > 0) {
+			return res.send({ status: 0, msg: errors[0].msg });
+		}
+		return next();
+	},
+];
 
 const yearWiseValid = [
-    check('year').notEmpty().withMessage('year should be required'),
-    (req, res, next) => {
-        const errors = validationResult(req).array()
-        if (errors.length > 0) {
-            return res.send({ status: 0, msg: errors[0].msg })
-        } return next()
-    }
-]
+	check("year").notEmpty().withMessage("year should be required"),
+	(req, res, next) => {
+		const errors = validationResult(req).array();
+		if (errors.length > 0) {
+			return res.send({ status: 0, msg: errors[0].msg });
+		}
+		return next();
+	},
+];
 
 const deleteDocumentBasedOnEmalkhanaNo = [
-    check('id').notEmpty().withMessage('ID should be required'),
-    check('href').notEmpty().withMessage('File Path should be required'),
-    (req, res, next) => {
-        const errors = validationResult(req).array()
-        if (errors.length > 0) {
-            return res.send({ status: 0, msg: errors[0].msg })
-        } return next()
-    }
-]
+	check("id").notEmpty().withMessage("ID should be required"),
+	check("href").notEmpty().withMessage("File Path should be required"),
+	(req, res, next) => {
+		const errors = validationResult(req).array();
+		if (errors.length > 0) {
+			return res.send({ status: 0, msg: errors[0].msg });
+		}
+		return next();
+	},
+];
 
 const eMalkhanaValidationSpecificFeilds = [
-    check('id').notEmpty().withMessage('id is required'),
-    check('seizedItemWeight.current').notEmpty().withMessage('seizedItemWeight-current is required'),
-    check('seizedItemValue.current').notEmpty().withMessage('seizedItemValue-current is required'),
+	check("id").notEmpty().withMessage("id is required"),
+	check("seizedItemWeight.current")
+		.notEmpty()
+		.withMessage("seizedItemWeight-current is required"),
+	check("seizedItemValue.current")
+		.notEmpty()
+		.withMessage("seizedItemValue-current is required"),
 
-    (req, res, next) => {
-        const errors = validationResult(req).array()
-        if (errors.length > 0) {
-            return res.send({ status: 0, msg: errors[0].msg })
-        } return next()
-    }]
-
-// const ValidationSpecificFeilds = [
-//     check('seizedItemWeight.current').notEmpty().withMessage('seizedItemWeight-current is required'),
-//  check('seizedItemValue.current').notEmpty().withMessage('seizedItemValue-current is required'),
-//  check('id').notEmpty().withMessage('id is required'),
-//  // check('eMalkhanaId').notEmpty().withMessage('eMalkhanaId is required'),
-//  // check('eMalkhanaNo').notEmpty().withMessage(' eMalkhanaNo is required'),
-//  check('packageDetails.current').notEmpty().withMessage('packageDetails is required'),
-//  check('godownName.current').notEmpty().withMessage('godownName is required'),
-//  check('godownCode.current').notEmpty().withMessage('godownCode is required'),
-//  check('locationOfPackageInGodown.current').notEmpty().withMessage('locationOfPackageInGodown is required'),
-//  check('handingOverOfficerName.current').notEmpty().withMessage('handingOverOfficerName is required'),
-//  check('handingOverOfficerDesignation.current').notEmpty().withMessage('handingOverOfficerDesignation is required'),
-//  check('pendingUnderSection.current').notEmpty().withMessage('pendingUnderSection is required'),
-
-
-//  (req, res, next) => {
-//      const errors = validationResult(req).array()
-//      if (errors.length > 0) {
-//          return res.send({ status: 0, msg: errors[0].msg })
-//      } return next()
-//  }]
+	(req, res, next) => {
+		const errors = validationResult(req).array();
+		if (errors.length > 0) {
+			return res.send({ status: 0, msg: errors[0].msg });
+		}
+		return next();
+	},
+];
 
 module.exports = {
-    eMalkhanaValidation, checkId, checkeMalkhanaNo, SeizingUnitWise, SeizingItemWise, eMalkhanaValidationSpecificFeilds,
-    fileNo, itemDesc, importerName, importerAddress, deleteDocumentBasedOnEmalkhanaNo,yearWiseValid
-}
+	eMalkhanaValidation,
+	checkId,
+	checkeMalkhanaNo,
+	SeizingUnitWise,
+	SeizingItemWise,
+	eMalkhanaValidationSpecificFeilds,
+	fileNo,
+	itemDesc,
+	importerName,
+	importerAddress,
+	deleteDocumentBasedOnEmalkhanaNo,
+	yearWiseValid,
+};
