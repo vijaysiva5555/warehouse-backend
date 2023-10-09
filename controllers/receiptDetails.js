@@ -65,6 +65,22 @@ const insertReceiptDetails = async (req, res) => {
 		if (getPreviousDataByID === null) {
 			return res.send({ status: 0, msg: "Invalid E-Malkhana Number" });
 		}
+
+		if (Array.isArray(req.files.documents) || req.files.documents != null) {
+			const previousDocuments = getPreviousDataByID.documents;
+			receiptInput.documents = await uploadToAws(
+				CONFIG.EMALKHANADOC,
+				receiptInput.eMalkhanaNo,
+				req.files.documents
+			);
+			receiptInput.documents = [
+				...receiptInput.documents,
+				...previousDocuments,
+			];
+		} else {
+			delete receiptInput.documents;
+		}
+
 		if (receiptInput.seizedItemName) {
 			if (
 				getPreviousDataByID.seizedItemName.current !==
@@ -580,6 +596,9 @@ const updateReceipt = async (req, res) => {
 		if (getPreviousDataByID === null) {
 			return res.send({ status: 0, msg: "Invalid ReceiptID" });
 		}
+
+		delete updateReceptData.barcode
+		
 		if (updateReceptData.packageDetails) {
 			if (
 				getPreviousDataByID.packageDetails.current !==
@@ -716,6 +735,22 @@ const updateReceipt = async (req, res) => {
 		if (getEmalkhanaPreviousData === null) {
 			return res.send({ status: 0, msg: "Invalid E-Malkhana Number" });
 		}
+
+		if (Array.isArray(req.files.documents) || req.files.documents != null) {
+			const previousDocuments = getEmalkhanaPreviousData.documents;
+			updateReceptData.documents = await uploadToAws(
+				CONFIG.EMALKHANADOC,
+				updateReceptData.eMalkhanaNo,
+				req.files.documents
+			);
+			updateReceptData.documents = [
+				...updateReceptData.documents,
+				...previousDocuments,
+			];
+		} else {
+			delete updateReceptData.documents;
+		}
+
 		if (updateReceptData.seizedItemName) {
 			if (
 				getEmalkhanaPreviousData.seizedItemName.current !==
