@@ -782,7 +782,7 @@ const getAllDataByEmalkhanaId = async (req, res) => {
 			return res.send({ status: 0, msg: "no data found" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({status:0, msg:error.message});
 	}
 };
 
