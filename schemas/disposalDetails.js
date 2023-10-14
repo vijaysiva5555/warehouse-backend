@@ -32,7 +32,7 @@ const disposalDetails = new mongoose.Schema({
     },
     reOpenUploadOrder: {
         type: Array,
-        
+        require: true
     },
     createdBy: {
         type: ObjectId,

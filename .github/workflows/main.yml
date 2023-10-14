@@ -1,0 +1,44 @@
+name: deploy-warehouse-backend
+
+on: 
+  push:
+    branches: 
+      main
+
+jobs:
+    deploy-frontend:
+      runs-on: self-hosted
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+          
+        - name: Run App
+          env: 
+            EMALKNO: ${{ secrets.EMALKHANANO }}
+            WACKNO: ${{ secrets.WHACKNO }}
+            DB_URL: ${{ secrets.MONGOURL }}
+            AWS_BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+            AWS_ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
+            AWS_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+            AWS_REGION: ${{ secrets.REGION }}
+            EMALK_DOC: ${{ secrets.EMALKHANADOC }}
+            REOPEN_DOC: ${{ secrets.REOPENUPLOADORDERDOC }}
+            UI_URL: ${{ secrets.UIURL }}
+            BARCODE_FILE: ${{ secrets.BARCODEFILE }}
+          run : |
+            touch .env
+            echo EMALKHANANO="$EMALKNO" >> .env
+            echo WHACKNO="$WACKNO" >> .env
+            echo MONGOURL="$DB_URL" >> .env
+            echo BUCKET_NAME="$AWS_BUCKET_NAME" >> .env
+            echo ACCESS_KEY="$AWS_ACCESS_KEY" >> .env
+            echo SECRET_KEY="$AWS_SECRET_KEY" >> .env
+            echo REGION="$AWS_REGION" >> .env
+            echo EMALKHANADOC="$EMALK_DOC" >> .env
+            echo REOPENUPLOADORDERDOC="$REOPEN_DOC" >> .env
+            echo UIURL="$UI_URL" >> .env
+            echo BARCODEFILE="$BARCODE_FILE" >> .env
+            echo NODE_ENV="production" >> .env
+            echo PORT=3008 >> .env
+            chmod +x script.sh
+            ./script.sh

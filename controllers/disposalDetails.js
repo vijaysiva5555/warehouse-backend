@@ -3,7 +3,7 @@ const { default: mongoose } = require("mongoose")
 const { uploadToAws, getSignedUrl } = require("../models/aws");
 const CONFIG = require("../config/config");
 
-//---------disposal data details-----------//
+// ---------disposal data details-----------//
 const disposalDataDetails = async (req, res) => {
     try {
         let insertDisposalData = req.body, disposalData
@@ -14,19 +14,30 @@ const disposalDataDetails = async (req, res) => {
         insertDisposalData.createdBy = res.locals.userData.userId
         insertDisposalData.reOpenUploadOrder = await uploadToAws(CONFIG.DISPOSALDOC, insertDisposalData.eMalkhanaNo, req.files.reOpenUploadOrder)
 
-        disposalData = await db.insertSingleDocument("disposal", insertDisposalData)
-        if (disposalData) {
-            await db.updateOneDocument("eMalkhana", { "eMalkhanaNo": disposalData.eMalkhanaNo }, { status: 3 })
-            return res.send({ status: 1, msg: "packages details inserted successfully", data: disposalData })
-        } else {
-            return res.send({ status: 0, msg: "Invalid Request" })
-        }
-    } catch (error) {
-        return res.send(error.message)
-    }
-}
+		 disposalData = await db.insertSingleDocument(
+			"disposal",
+			insertDisposalData
+		);
+		if (disposalData) {
+			await db.updateOneDocument(
+				"eMalkhana",
+				{ eMalkhanaNo: disposalData.eMalkhanaNo },
+				{ status: 3 }
+			);
+			return res.send({
+				status: 1,
+				msg: "packages details inserted successfully",
+				data: disposalData,
+			});
+		} else {
+			return res.send({ status: 0, msg: "Invalid Request" });
+		}
+	} catch (error) {
+		return res.send(error.message);
+	}
+};
 
-//--------------get all disposal data----------------//
+// --------------get all disposal data----------------//
 const getdisposalDetails = async (req, res) => {
     try {
         let getdisposalDetails = await db.findDocuments("disposal", {})
@@ -39,7 +50,7 @@ const getdisposalDetails = async (req, res) => {
     }
 }
 
-//----------------update all disposal data----------------//
+// ----------------update all disposal data----------------//
 const updateDisposalDetails = async (req, res) => {
     try {
         let updateDisposalDetails = req.body, disposalDetailsUpdateById, previousData
@@ -63,8 +74,7 @@ const updateDisposalDetails = async (req, res) => {
     }
 }
 
-
-//-------------------get disposal data by id----------------//
+// -------------------get disposal data by id----------------//
 const disposalDataById = async (req, res) => {
     try {
         let disposalId = req.body, disposalData
@@ -109,13 +119,12 @@ const searchDataUsingeMalkhanaNo = async (req, res) => {
         } else {
             return res.send({ status: 0, msg: "data Not found" })
         }
-
     } catch (error) {
         return res.send(error.message)
     }
 }
 
-//search details by WackNo 
+// search details by WackNo
 
 const searchDataUsingWackNo = async (req, res) => {
     try {
@@ -142,108 +151,134 @@ const searchDataUsingWackNo = async (req, res) => {
 }
 
 const getAllDataByEmalkhanaNo = async (req, res) => {
-    try {
-        let numberData = req.body, getEmalkhanaData, getReceptData, getDisposalData, allData
+	try {
+		const numberData = req.body;
 
-        getEmalkhanaData = await db.findSingleDocument("eMalkhana", { eMalkhanaNo: numberData.eMalkhanaNo })
-        getReceptData = await db.findSingleDocument("receipt", { eMalkhanaNo: numberData.eMalkhanaNo })
-        getDisposalData = await db.findSingleDocument("disposal", { eMalkhanaNo: numberData.eMalkhanaNo })
-        if (getEmalkhanaData || getReceptData || getDisposalData) {
-            if (getEmalkhanaData.documents.length !== 0) {
-                getEmalkhanaData.documents = await Promise.all(getEmalkhanaData.documents.map(async (file) => {
-                    return {
-                        ...file,
-                        actualPath: file.href,
-                        href: await getSignedUrl(file.href)
-                    }
-                }))
-            }
-            if (getEmalkhanaData.reOpenUploadOrder.length !== 0) {
-                getEmalkhanaData.reOpenUploadOrder = await Promise.all(getEmalkhanaData.reOpenUploadOrder.map(async (file) => {
-                    return {
-                        ...file,
-                        actualPath: file.href,
-                        href: await getSignedUrl(file.href)
-                    }
-                }))
-            }
+		const getEmalkhanaData = await db.findSingleDocument("eMalkhana", {
+			eMalkhanaNo: numberData.eMalkhanaNo,
+		});
+		const getReceptData = await db.findSingleDocument("receipt", {
+			eMalkhanaNo: numberData.eMalkhanaNo,
+		});
+		const getDisposalData = await db.findSingleDocument("disposal", {
+			eMalkhanaNo: numberData.eMalkhanaNo,
+		});
+		if (getEmalkhanaData || getReceptData || getDisposalData) {
+			if (getEmalkhanaData.documents.length !== 0) {
+				getEmalkhanaData.documents = await Promise.all(
+					getEmalkhanaData.documents.map(async (file) => {
+						return {
+							...file,
+							actualPath: file.href,
+							href: await getSignedUrl(file.href),
+						};
+					})
+				);
+			}
+			if (getEmalkhanaData.reOpenUploadOrder.length !== 0) {
+				getEmalkhanaData.reOpenUploadOrder = await Promise.all(
+					getEmalkhanaData.reOpenUploadOrder.map(async (file) => {
+						return {
+							...file,
+							actualPath: file.href,
+							href: await getSignedUrl(file.href),
+						};
+					})
+				);
+			}
 
-            if (getReceptData.barcode.length !== 0) {
-                getReceptData.barcode = await Promise.all(getReceptData.barcode.map(async (file) => {
-                    return {
-                        ...file,
-                        actualPath: file.href,
-                        href: await getSignedUrl(file.href)
-                    }
-                }))
-            }
-            allData = {
-                eMalkhanaData: getEmalkhanaData,
-                receiptData: getReceptData,
-                disposalData: getDisposalData
-            }
+			if (getReceptData.barcode.length !== 0) {
+				getReceptData.barcode = await Promise.all(
+					getReceptData.barcode.map(async (file) => {
+						return {
+							...file,
+							actualPath: file.href,
+							href: await getSignedUrl(file.href),
+						};
+					})
+				);
+			}
+			const allData = {
+				eMalkhanaData: getEmalkhanaData,
+				receiptData: getReceptData,
+				disposalData: getDisposalData,
+			};
 
-            return res.send({ status: 1, data: allData })
-        }
-
-    } catch (error) {
-        return res.send(error.message)
-    }
-}
+			return res.send({ status: 1, data: allData });
+		}
+	} catch (error) {
+		return res.send(error.message);
+	}
+};
 const getAllDataBasedOnWhackNo = async (req, res) => {
-    try {
-        let numberData = req.body, getEmalkhanaData, getReceptData, getDisposalData, allData
+	try {
+		const numberData = req.body;
 
-        getReceptData = await db.findSingleDocument("receipt", { whAckNo: numberData.whAckNo })
-        getEmalkhanaData = await db.findSingleDocument("eMalkhana", { eMalkhanaNo: getReceptData.eMalkhanaNo })
-        getDisposalData = await db.findSingleDocument("disposal", { whAckNo: numberData.whAckNo })
-        if (getEmalkhanaData || getReceptData || getDisposalData) {
-            if (getEmalkhanaData.documents.length !== 0) {
-                getEmalkhanaData.documents = await Promise.all(getEmalkhanaData.documents.map(async (file) => {
-                    return {
-                        ...file,
-                        actualPath: file.href,
-                        href: await getSignedUrl(file.href)
-                    }
-                }))
-            }
-            if (getEmalkhanaData.reOpenUploadOrder.length !== 0) {
-                getEmalkhanaData.reOpenUploadOrder = await Promise.all(getEmalkhanaData.reOpenUploadOrder.map(async (file) => {
-                    return {
-                        ...file,
-                        actualPath: file.href,
-                        href: await getSignedUrl(file.href)
-                    }
-                }))
-            }
+		const getReceptData = await db.findSingleDocument("receipt", {
+			whAckNo: numberData.whAckNo,
+		});
+		const getEmalkhanaData = await db.findSingleDocument("eMalkhana", {
+			eMalkhanaNo: getReceptData.eMalkhanaNo,
+		});
+		const getDisposalData = await db.findSingleDocument("disposal", {
+			whAckNo: numberData.whAckNo,
+		});
+		if (getEmalkhanaData || getReceptData || getDisposalData) {
+			if (getEmalkhanaData.documents.length !== 0) {
+				getEmalkhanaData.documents = await Promise.all(
+					getEmalkhanaData.documents.map(async (file) => {
+						return {
+							...file,
+							actualPath: file.href,
+							href: await getSignedUrl(file.href),
+						};
+					})
+				);
+			}
+			if (getEmalkhanaData.reOpenUploadOrder.length !== 0) {
+				getEmalkhanaData.reOpenUploadOrder = await Promise.all(
+					getEmalkhanaData.reOpenUploadOrder.map(async (file) => {
+						return {
+							...file,
+							actualPath: file.href,
+							href: await getSignedUrl(file.href),
+						};
+					})
+				);
+			}
 
-            if (getReceptData.barcode.length !== 0) {
-                getReceptData.barcode = await Promise.all(getReceptData.barcode.map(async (file) => {
-                    return {
-                        ...file,
-                        actualPath: file.href,
-                        href: await getSignedUrl(file.href)
-                    }
-                }))
-            }
-            allData = {
-                eMalkhanaData: getEmalkhanaData,
-                receiptData: getReceptData,
-                disposalData: getDisposalData
-            }
+			if (getReceptData.barcode.length !== 0) {
+				getReceptData.barcode = await Promise.all(
+					getReceptData.barcode.map(async (file) => {
+						return {
+							...file,
+							actualPath: file.href,
+							href: await getSignedUrl(file.href),
+						};
+					})
+				);
+			}
+			const allData = {
+				eMalkhanaData: getEmalkhanaData,
+				receiptData: getReceptData,
+				disposalData: getDisposalData,
+			};
 
-            return res.send({ status: 1, data: allData })
-        }
-        return res.send({ status: 0, msg: "data not found" })
-
-    } catch (error) {
-        return res.send(error.message)
-    }
-}
-
+			return res.send({ status: 1, data: allData });
+		}
+		return res.send({ status: 0, msg: "data not found" });
+	} catch (error) {
+		return res.send(error.message);
+	}
+};
 
 module.exports = {
-    disposalDataDetails, updateDisposalDetails, getdisposalDetails,
-    disposalDataById, searchDataUsingeMalkhanaNo, searchDataUsingWackNo, getAllDataByEmalkhanaNo,
-    getAllDataBasedOnWhackNo
-}
+	disposalDataDetails,
+	updateDisposalDetails,
+	getdisposalDetails,
+	disposalDataById,
+	searchDataUsingeMalkhanaNo,
+	searchDataUsingWackNo,
+	getAllDataByEmalkhanaNo,
+	getAllDataBasedOnWhackNo,
+};
