@@ -1,17 +1,18 @@
 const db = require("../models/mongo")
 const { default: mongoose } = require("mongoose")
-const {getSignedUrl } = require("../models/aws");
+const { uploadToAws, getSignedUrl } = require("../models/aws");
+const CONFIG = require("../config/config");
 
 //---------disposal data details-----------//
 const disposalDataDetails = async (req, res) => {
     try {
-        let insertDisposalData = req.body, disposalData, checkingRole
+        let insertDisposalData = req.body, disposalData
         checkeMalkhanaNo = await db.findOneDocumentExists("disposal", { eMalkhanaNo: insertDisposalData.eMalkhanaNo })
         if (checkeMalkhanaNo === true) {
             return res.send({ status: 0, msg: "E-malkhana NO Alreday Exists" })
         }
         insertDisposalData.createdBy = res.locals.userData.userId
-        
+        insertDisposalData.reOpenUploadOrder = await uploadToAws(CONFIG.DISPOSALDOC, insertDisposalData.eMalkhanaNo, req.files.reOpenUploadOrder)
 
         disposalData = await db.insertSingleDocument("disposal", insertDisposalData)
         if (disposalData) {
@@ -30,7 +31,7 @@ const getdisposalDetails = async (req, res) => {
     try {
         let getdisposalDetails = await db.findDocuments("disposal", {})
         if (getdisposalDetails) {
-        
+
             return res.send({ status: 1, data: getdisposalDetails })
         }
     } catch (error) {
@@ -41,9 +42,17 @@ const getdisposalDetails = async (req, res) => {
 //----------------update all disposal data----------------//
 const updateDisposalDetails = async (req, res) => {
     try {
-        let updateDisposalDetails = req.body, disposalDetailsUpdateById
+        let updateDisposalDetails = req.body, disposalDetailsUpdateById, previousData
         if (!mongoose.isValidObjectId(updateDisposalDetails.id)) {
             return res.send({ status: 0, msg: "invalid id" })
+        }
+        previousData = await db.findSingleDocument("disposal", { _id: new mongoose.Types.ObjectId(updateDisposalDetails.id) })
+        if (Array.isArray(req.files.reOpenUploadOrder) || req.files.reOpenUploadOrder != null) {
+            updateDisposalDetails.reOpenUploadOrder = await uploadToAws(CONFIG.DISPOSALDOC, previousData.eMalkhanaNo, req.files.reOpenUploadOrder)
+            updateDisposalDetails.reOpenUploadOrder = [...updateDisposalDetails.reOpenUploadOrder, ...previousData.reOpenUploadOrder]
+        }
+        else {
+            delete updateDisposalDetails.reOpenUploadOrder
         }
         disposalDetailsUpdateById = await db.findByIdAndUpdate("disposal", updateDisposalDetails.id, updateDisposalDetails)
         if (disposalDetailsUpdateById) {
@@ -64,7 +73,13 @@ const disposalDataById = async (req, res) => {
         }
         disposalData = await db.findSingleDocument("disposal", { _id: new mongoose.Types.ObjectId(disposalId.id) })
         if (disposalData !== null) {
-
+            disposalData.reOpenUploadOrder = await Promise.all(disposalData.reOpenUploadOrder.map(async (file) => {
+                return {
+                    ...file,
+                    actualPath: file.href,
+                    href: await getSignedUrl(file.href)
+                }
+            }))
             return res.send({ status: 1, data: disposalData })
         } else {
 
@@ -83,6 +98,13 @@ const searchDataUsingeMalkhanaNo = async (req, res) => {
         let eMalkhanaNo = req.body, checkeMalkhanaNo
         checkeMalkhanaNo = await db.findSingleDocument("disposal", { eMalkhanaNo: eMalkhanaNo.eMalkhanaNo })
         if (checkeMalkhanaNo !== null) {
+            checkeMalkhanaNo.reOpenUploadOrder = await Promise.all(checkeMalkhanaNo.reOpenUploadOrder.map(async (file) => {
+                return {
+                    ...file,
+                    actualPath: file.href,
+                    href: await getSignedUrl(file.href)
+                }
+            }))
             return res.send({ status: 1, data: checkeMalkhanaNo })
         } else {
             return res.send({ status: 0, msg: "data Not found" })
@@ -102,6 +124,13 @@ const searchDataUsingWackNo = async (req, res) => {
             whAckNo: whAckNo.whAckNo
         })
         if (checkwhAckNo !== null) {
+            checkwhAckNo.reOpenUploadOrder = await Promise.all(checkwhAckNo.reOpenUploadOrder.map(async (file) => {
+                return {
+                    ...file,
+                    actualPath: file.href,
+                    href: await getSignedUrl(file.href)
+                }
+            }))
             return res.send({ status: 1, data: checkwhAckNo })
         } else {
             return res.send({ status: 0, msg: "data Not found" })
