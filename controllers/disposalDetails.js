@@ -163,16 +163,18 @@ const getAllDataByEmalkhanaNo = async (req, res) => {
 				);
 			}
 
-			if (getReceptData.barcode.length !== 0) {
-				getReceptData.barcode = await Promise.all(
-					getReceptData.barcode.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
+			if (getReceptData != null && Object.keys(getReceptData).length > 0) {
+				if (getReceptData.barcode.length !== 0) {
+					getReceptData.barcode = await Promise.all(
+						getReceptData.barcode.map(async (file) => {
+							return {
+								...file,
+								actualPath: file.href,
+								href: await getSignedUrl(file.href),
+							};
+						})
+					);
+				}
 			}
 			const allData = {
 				eMalkhanaData: getEmalkhanaData,
@@ -183,7 +185,7 @@ const getAllDataByEmalkhanaNo = async (req, res) => {
 			return res.send({ status: 1, data: allData });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 const getAllDataBasedOnWhackNo = async (req, res) => {
