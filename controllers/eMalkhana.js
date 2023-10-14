@@ -603,11 +603,12 @@ const deleteDocumentBasedOnEmalkhanaNo = async (req, res) => {
 
 // _____Re-open UPDATE API------------------//
 
-const reOpenUpdateUsingMultipleeMalkhanaNo = async (req, res) => {
+const reOpenUpdateUsingMultipleWhAckNo = async (req, res) => {
 	try {
 		let {
 			inputReOpenData,
 			updateInputReOpenData,
+			updateWhAckNos = [],
 			updateMalkhanasNo = [],
 			reOpenReason,
 			reOpenUploadOrder,
@@ -631,6 +632,11 @@ const reOpenUpdateUsingMultipleeMalkhanaNo = async (req, res) => {
 			newOfficerDesignation,
 			...inputReOpenData,
 		};
+
+		updateMalkhanasNo = db.findDocuments("receipt", {
+			wckAckNo: { $in: updateWhAckNos }
+		}, { eMalkhanaNo: 1 })
+
 		if (req.files) {
 			await Promise.all(
 				updateMalkhanasNo.map(async (ele) => {
@@ -760,16 +766,18 @@ const getAllDataByEmalkhanaId = async (req, res) => {
 				);
 			}
 
-			if (getReceptData.barcode.length !== 0) {
-				getReceptData.barcode = await Promise.all(
-					getReceptData.barcode.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
+			if (getReceptData != null && Object.keys(getReceptData).length > 0) {
+				if (getReceptData.barcode.length !== 0) {
+					getReceptData.barcode = await Promise.all(
+						getReceptData.barcode.map(async (file) => {
+							return {
+								...file,
+								actualPath: file.href,
+								href: await getSignedUrl(file.href),
+							};
+						})
+					);
+				}
 			}
 			allData = {
 				eMalkhanaData: getEmalkhanaData,
@@ -782,7 +790,7 @@ const getAllDataByEmalkhanaId = async (req, res) => {
 			return res.send({ status: 0, msg: "no data found" });
 		}
 	} catch (error) {
-		return res.send({status:0, msg:error.message});
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -795,17 +803,35 @@ const getAlleMalkhanaNoUsingStatus = async (req, res) => {
 			{ status: inputData.status },
 			{ _id: 0, eMalkhanaNo: 1 }
 		);
-		if (getData.length !== 0) {
-			return res.send({
-				status: 1,
-				msg: "get data successfully",
-				data: getData,
-			});
-		} else {
-			return res.send({ status: 0, msg: "data not found" });
-		}
+		return res.send({
+			status: 1,
+			msg: "get data successfully",
+			data: getData,
+		});
+
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
+	}
+};
+
+const getAllWhNoUsingStatus = async (req, res) => {
+	try {
+		const inputData = req.query;
+		const getMalkhanaData = await db.findDocuments(
+			"eMalkhana",
+			{ status: inputData.status },
+			{ eMalkhanaNo: 1 }
+		);
+		const getData = await db.findDocuments("receipt", {
+			eMalkhanNo: { $in: getMalkhanaData }
+		}, { whAckNo: 1 })
+		return res.send({
+			status: 1,
+			msg: "get data successfully",
+			data: getData,
+		});
+	} catch (error) {
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -822,10 +848,11 @@ module.exports = {
 	getReportUsingSeizingItemWise,
 	getReportUsingSeizingUnitWise,
 	deleteDocumentBasedOnEmalkhanaNo,
-	reOpenUpdateUsingMultipleeMalkhanaNo,
+	reOpenUpdateUsingMultipleWhAckNo,
 	getReportUsingYearWise,
 	getReceiptMalkhanaDataById,
 	getAllDataByEmalkhanaId,
 	updateSpecficFieldByid,
 	getAlleMalkhanaNoUsingStatus,
+	getAllWhNoUsingStatus
 };
