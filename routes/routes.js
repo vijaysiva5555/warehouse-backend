@@ -30,7 +30,8 @@ routes.post("/insertEMalkhana", authorized, eMalkhanaValidation.eMalkhanaValidat
 // get api
 routes.get("/eMalkhana", eMalkhanaController.getEmakhalaDetails)
 routes.post("/getDataUsingeMalkhanaById", eMalkhanaValidation.checkId, eMalkhanaController.eMalkhanaDataById)
-routes.get("/geteMalkhanaNoUsingStatus",eMalkhanaController.getAlleMalkhanaNoUsingStatus)
+routes.get("/geteMalkhanaNoUsingStatus", eMalkhanaController.getAlleMalkhanaNoUsingStatus)
+routes.get("/geteWhNoUsingStatus", eMalkhanaController.getAllWhNoUsingStatus)
 
 // search  GET API
 routes.post("/getDataByeMalkhanaNo", eMalkhanaValidation.checkeMalkhanaNo, eMalkhanaController.searchDataUsingeMalkhanaNo)
@@ -38,29 +39,27 @@ routes.post("/getDataByFileNo", eMalkhanaValidation.fileNo, eMalkhanaController.
 routes.post("/getDataByImporterName", eMalkhanaValidation.importerName, eMalkhanaController.searchDataUsingImporterName)
 routes.post("/getDataByImporterAddress", eMalkhanaValidation.importerAddress, eMalkhanaController.searchDataUsingImporterAddress)
 routes.post("/getDataByItemDesc", eMalkhanaValidation.itemDesc, eMalkhanaController.searchDataUsingItemDesc)
-routes.post("/getReceiptMalkhanaDataById",eMalkhanaValidation.checkId,eMalkhanaController. getReceiptMalkhanaDataById)
-routes.post("/getAllDataByEmalkhanaId",eMalkhanaValidation.checkId,eMalkhanaController. getAllDataByEmalkhanaId)
+routes.post("/getReceiptMalkhanaDataById", eMalkhanaValidation.checkId, eMalkhanaController.getReceiptMalkhanaDataById)
+routes.post("/getAllDataByEmalkhanaId", eMalkhanaValidation.checkId, eMalkhanaController.getAllDataByEmalkhanaId)
 
 // REPORT GENERATED GET API
 routes.post("/seizedUnitwise", eMalkhanaValidation.SeizingUnitWise, eMalkhanaController.getReportUsingSeizingUnitWise)
 routes.post("/seizedItemName", eMalkhanaValidation.SeizingItemWise, eMalkhanaController.getReportUsingSeizingItemWise)
-routes.post("/getYearWiseData",eMalkhanaValidation.yearWiseValid,eMalkhanaController.getReportUsingYearWise)
+routes.post("/getYearWiseData", eMalkhanaValidation.yearWiseValid, eMalkhanaController.getReportUsingYearWise)
 
 // updateAPI
-routes.post("/updateSpecficFieldByid",eMalkhanaValidation.eMalkhanaValidationSpecificFeilds, eMalkhanaController.updateSpecficFieldByid)
+routes.post("/updateSpecficFieldByid", eMalkhanaValidation.eMalkhanaValidationSpecificFeilds, eMalkhanaController.updateSpecficFieldByid)
 routes.post("/updateEmalkhana", eMalkhanaValidation.eMalkhanaValidationSpecificFeilds, eMalkhanaController.updateMalkhana)
 // routes.post("/feilds", eMalkhanaValidation.checkeMalkhanaNo, eMalkhanaController.updateeMalkhanaDataByFeilds)
-routes.post("/deleteDocumentBasedOnEmalkhanaNo",eMalkhanaValidation.deleteDocumentBasedOnEmalkhanaNo, eMalkhanaController.deleteDocumentBasedOnEmalkhanaNo)
+routes.post("/deleteDocumentBasedOnEmalkhanaNo", eMalkhanaValidation.deleteDocumentBasedOnEmalkhanaNo, eMalkhanaController.deleteDocumentBasedOnEmalkhanaNo)
 
 
 // --------------------------REOPEN UPDATE API---------------------------------------------------//
-routes.post("/updateReOpenApi",authorized,reOpenValidation.reOpenValidation,eMalkhanaController.reOpenUpdateUsingMultipleeMalkhanaNo)
-
-
+routes.post("/updateReOpenApi", authorized, reOpenValidation.reOpenValidation, eMalkhanaController.reOpenUpdateUsingMultipleWhAckNo)
 
 // ------------------------------------receipt API---------------------------------//
 // post API
-routes.post("/insertReceipt",authorized, receiptValidation.receiptValidation, receiptController.insertReceiptDetails)
+routes.post("/insertReceipt", authorized, receiptValidation.receiptValidation, receiptController.insertReceiptDetails)
 
 // get API
 routes.get("/receipt", receiptController.getReceiptDetails)
@@ -82,11 +81,11 @@ routes.post("/ripeDisposal", receiptValidation.ripeDisposal, receiptController.r
 
 // update API
 routes.post("/updateReceiptData", receiptValidation.receiptUpdateValidation, receiptController.updateReceipt)
-routes.post("/updateSpecificFeildsReceiptData",receiptValidation.receiptValidationSpecificFeilds,receiptController.updateReceiptSpecificFeilds)
+routes.post("/updateSpecificFeildsReceiptData", receiptValidation.receiptValidationSpecificFeilds, receiptController.updateReceiptSpecificFeilds)
 
 // -------------------------------------------DISPOSAL DETAILS API-----------------------------------------//
 // POST API
-routes.post("/disposalDetails",authorized, disposalValidation.disposalValidation, disposalController.disposalDataDetails)
+routes.post("/disposalDetails", authorized, disposalValidation.disposalValidation, disposalController.disposalDataDetails)
 
 // GET API
 routes.get("/disposalDetails", disposalController.getdisposalDetails)
