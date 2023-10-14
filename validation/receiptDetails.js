@@ -116,6 +116,24 @@ const checkIdFeilds = [
 		return next();
 	},
 ];
+const searchItem = [
+	check("searchItem")
+		.notEmpty()
+		.withMessage("searchItem should be required"),
+		check("page")
+		.notEmpty()
+		.withMessage("page should be required"),
+		check("limit")
+		.notEmpty()
+		.withMessage("limit should be required"),
+	(req, res, next) => {
+		const errors = validationResult(req).array();
+		if (errors.length > 0) {
+			return res.send({ status: 0, msg: errors[0].msg });
+		}
+		return next();
+	},
+];
 const checkeMalkhanaNo = [
 	check("eMalkhanaNo")
 		.notEmpty()
@@ -245,4 +263,5 @@ module.exports = {
 	adjucationOrderNo,
 	receiptUpdateValidation,
 	receiptValidationSpecificFeilds,
+	searchItem
 };

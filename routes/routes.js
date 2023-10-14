@@ -69,16 +69,16 @@ routes.post("/receiptById", receiptValidation.checkId, receiptController.receipt
 // SEARCH Data get API
 routes.post("/receiptDetailsByeMalkhanaNo", receiptValidation.checkeMalkhanaNo, receiptController.searchDataUsingeMalkhanaNo)
 routes.post("/wackNo", receiptValidation.whAckNo, receiptController.searchDataUsingWackNo)
-routes.post("/checkAdjucationOrderNo", receiptValidation.adjucationOrderNo, receiptController.searchDataByAdjucationOrderNo)
+routes.post("/checkAdjucationOrderNo", receiptValidation.searchItem, receiptController.searchDataByAdjucationOrderNo)
 routes.post("/getAllDataBasedOnEmalkhanaNumber", receiptValidation.checkeMalkhanaNo, receiptController.getAllDataBasedOnEmalkhanaNumber)
 routes.post("/getEmalkhanaDataBasedonWhackNo", receiptValidation.whAckNo, receiptController.getEmalkhanaDataBasedonWhackNo)
 
 
 // REPORT GENERATION get API
-routes.post("/godownName", receiptValidation.godownName, receiptController.getReportDataByGodownName)
-routes.post("/godownCode", receiptValidation.godownCode, receiptController.getReportDataByGodownCode)
-routes.post("/pendingSection", receiptValidation.pendingSection, receiptController.reportOfPendingUnderSection)
-routes.post("/ripeDisposal", receiptValidation.ripeDisposal, receiptController.reportOfRipeForDisposal)
+routes.post("/godownName", receiptValidation.searchItem, receiptController.getReportDataByGodownName)
+routes.post("/godownCode", receiptValidation.searchItem, receiptController.getReportDataByGodownCode)
+routes.post("/pendingSection", receiptValidation.searchItem, receiptController.reportOfPendingUnderSection)
+routes.post("/ripeDisposal", receiptValidation.searchItem, receiptController.reportOfRipeForDisposal)
 
 // update API
 routes.post("/updateReceiptData", receiptValidation.receiptUpdateValidation, receiptController.updateReceipt)

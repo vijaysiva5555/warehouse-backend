@@ -440,21 +440,10 @@ const searchDataUsingWackNo = async (req, res) => {
 const searchDataByAdjucationOrderNo = async (req, res) => {
 	try {
 		const adjucationOrderNo = req.body;
-		const checkAdjucationOrderNo = await db.findSingleDocument("receipt", {
-			adjucationOrderNo: adjucationOrderNo.adjucationOrderNo,
-		});
-		if (checkAdjucationOrderNo !== null) {
-			if (checkAdjucationOrderNo.barcode.length !== 0) {
-				checkAdjucationOrderNo.barcode = await Promise.all(
-					checkAdjucationOrderNo.barcode.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
-			}
+		const checkAdjucationOrderNo = await db.performCaseInsensitiveSearch("receipt", { whAckNo: 1, adjucationOrderNo: 1 },
+			"adjucationOrderNo", adjucationOrderNo.searchItem, adjucationOrderNo.page, adjucationOrderNo.limit);
+		if (checkAdjucationOrderNo) {
+
 			return res.send({ status: 1, data: checkAdjucationOrderNo });
 		} else {
 			return res.send({ status: 0, msg: "data Not found" });
@@ -470,21 +459,9 @@ const searchDataByAdjucationOrderNo = async (req, res) => {
 const getReportDataByGodownName = async (req, res) => {
 	try {
 		const godownName = req.body;
-		const godownItem = await db.findSingleDocument("receipt", {
-			"godownName.current": godownName.godownName.current,
-		});
-		if (godownItem !== null) {
-			if (godownItem.barcode.length !== 0) {
-				godownItem.barcode = await Promise.all(
-					godownItem.barcode.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
-			}
+		const godownItem = await db.performCaseInsensitiveSearch("receipt", { barcode: 0 },
+			"godownName.current", godownName.searchItem, godownName.page, godownName.limit);
+		if (godownItem) {
 			return res.send({ status: 1, data: godownItem });
 		} else {
 			return res.send({ status: 0, msg: "data Not found" });
@@ -499,21 +476,9 @@ const getReportDataByGodownName = async (req, res) => {
 const getReportDataByGodownCode = async (req, res) => {
 	try {
 		const godownCode = req.body;
-		const getGodownCode = await db.findSingleDocument("receipt", {
-			"godownCode.current": godownCode.godownCode.current,
-		});
-		if (getGodownCode !== null) {
-			if (getGodownCode.barcode.length !== 0) {
-				getGodownCode.barcode = await Promise.all(
-					getGodownCode.barcode.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
-			}
+		const getGodownCode = await db.performCaseInsensitiveSearch("receipt", { barcode: 0 },
+			"godownCode.current", godownCode.searchItem, godownCode.page, godownCode.limit);
+		if (getGodownCode) {
 			return res.send({ status: 1, data: getGodownCode });
 		} else {
 			return res.send({ status: 0, msg: "data Not found" });
@@ -528,22 +493,9 @@ const getReportDataByGodownCode = async (req, res) => {
 const reportOfPendingUnderSection = async (req, res) => {
 	try {
 		const pendingUnderSection = req.body;
-		const pendingSection = await db.findSingleDocument("receipt", {
-			"pendingUnderSection.current":
-				pendingUnderSection.pendingUnderSection.current,
-		});
-		if (pendingSection !== null) {
-			if (pendingSection.barcode.length !== 0) {
-				pendingSection.barcode = await Promise.all(
-					pendingSection.barcode.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
-			}
+		const pendingSection = await db.performCaseInsensitiveSearch("receipt", { barcode: 0 },
+			"pendingUnderSection.current", pendingUnderSection.searchItem, pendingUnderSection.page, pendingUnderSection.limit);
+		if (pendingSection) {
 			return res.send({ status: 1, data: pendingSection });
 		} else {
 			return res.send({ status: 0, msg: "data Not found" });
@@ -558,21 +510,9 @@ const reportOfPendingUnderSection = async (req, res) => {
 const reportOfRipeForDisposal = async (req, res) => {
 	try {
 		const ripeForDisposal = req.body;
-		const ripeDisposal = await db.findSingleDocument("receipt", {
-			ripeForDisposal: ripeForDisposal.ripeForDisposal,
-		});
-		if (ripeDisposal !== null) {
-			if (ripeDisposal.barcode.length !== 0) {
-				ripeDisposal.barcode = await Promise.all(
-					ripeDisposal.barcode.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
-			}
+		const ripeDisposal = await db.performCaseInsensitiveSearch("receipt", { barcode: 0 },
+			"ripeForDisposal", ripeForDisposal.searchItem, ripeForDisposal.page, ripeForDisposal.limit);
+		if (ripeDisposal) {
 			return res.send({ status: 1, data: ripeDisposal });
 		} else {
 			return res.send({ status: 0, msg: "data Not found" });
@@ -598,7 +538,7 @@ const updateReceipt = async (req, res) => {
 		}
 
 		delete updateReceptData.barcode
-		
+
 		if (updateReceptData.packageDetails) {
 			if (
 				getPreviousDataByID.packageDetails.current !==
