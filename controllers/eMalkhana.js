@@ -225,36 +225,14 @@ const searchDataUsingeMalkhanaNo = async (req, res) => {
 
 const searchDataUsingfileNo = async (req, res) => {
 	try {
-		const fileNo = req.body;
-		const checkFileNo = await db.findSingleDocument("eMalkhana", {
-			fileNo: fileNo.fileNo,
-		});
-		if (checkFileNo !== null) {
-			if (checkFileNo.documents.length !== 0) {
-				checkFileNo.documents = await Promise.all(
-					checkFileNo.documents.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
-			}
-			if (checkFileNo.reOpenUploadOrder.length !== 0) {
-				checkFileNo.reOpenUploadOrder = await Promise.all(
-					checkFileNo.reOpenUploadOrder.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
-			}
-			return res.send({ status: 1, data: checkFileNo });
+		let fileNo = req.body, checkFileNo
+		checkFileNo = await db.performCaseInsensitiveSearch("eMalkhana", { fileNo: 1, eMalkhanaNo: 1, importerName: 1, importerAddress: 1, itemDesc: 1 },
+			"fileNo", fileNo.searchItem, fileNo.page, fileNo.limit);
+		if (checkFileNo) {
+
+			return res.send({ status: 1, data: checkFileNo })
 		} else {
-			return res.send({ status: 0, msg: "data Not found" });
+			return res.send({ status: 0, msg: "data Not found" })
 		}
 	} catch (error) {
 		return res.send(error.message);
@@ -266,32 +244,10 @@ const searchDataUsingfileNo = async (req, res) => {
 const searchDataUsingItemDesc = async (req, res) => {
 	try {
 		const itemDesc = req.body;
-		const checkItemDesc = await db.findSingleDocument("eMalkhana", {
-			"itemDesc.current": itemDesc.itemDesc.current,
-		});
-		if (checkItemDesc !== null) {
-			if (checkItemDesc.documents.length !== 0) {
-				checkItemDesc.documents = await Promise.all(
-					checkItemDesc.documents.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
-			}
-			if (checkItemDesc.reOpenUploadOrder.length !== 0) {
-				checkItemDesc.reOpenUploadOrder = await Promise.all(
-					checkItemDesc.reOpenUploadOrder.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
-			}
+		const checkItemDesc = await db.performCaseInsensitiveSearch("eMalkhana", { fileNo: 1, eMalkhanaNo: 1, importerName: 1, importerAddress: 1, itemDesc: 1 },
+			"itemDesc.current", itemDesc.searchItem, itemDesc.page, itemDesc.limit);
+
+		if (checkItemDesc) {
 			return res.send({ status: 1, data: checkItemDesc });
 		} else {
 			return res.send({ status: 0, msg: "data Not found" });
@@ -306,32 +262,10 @@ const searchDataUsingItemDesc = async (req, res) => {
 const searchDataUsingImporterName = async (req, res) => {
 	try {
 		const importerName = req.body;
-		const checkImporterName = await db.findSingleDocument("eMalkhana", {
-			importerName: importerName.importerName,
-		});
-		if (checkImporterName !== null) {
-			if (checkImporterName.documents.length !== 0) {
-				checkImporterName.documents = await Promise.all(
-					checkImporterName.documents.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
-			}
-			if (checkImporterName.reOpenUploadOrder.length !== 0) {
-				checkImporterName.reOpenUploadOrder = await Promise.all(
-					checkImporterName.reOpenUploadOrder.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
-			}
+		const checkImporterName = await db.performCaseInsensitiveSearch("eMalkhana", { fileNo: 1, eMalkhanaNo: 1, importerName: 1, importerAddress: 1, itemDesc: 1 },
+			"importerName", importerName.searchItem, importerName.page, importerName.limit);
+
+		if (checkImporterName) {
 			return res.send({ status: 1, data: checkImporterName });
 		} else {
 			return res.send({ status: 0, msg: "data not found" });
@@ -344,32 +278,11 @@ const searchDataUsingImporterName = async (req, res) => {
 const searchDataUsingImporterAddress = async (req, res) => {
 	try {
 		const importerAddress = req.body;
-		const checkImporterAddress = await db.findSingleDocument("eMalkhana", {
-			importerAddress: importerAddress.importerAddress,
-		});
+		const checkImporterAddress = await db.performCaseInsensitiveSearch("eMalkhana", { fileNo: 1, eMalkhanaNo: 1, importerName: 1, importerAddress: 1, itemDesc: 1 },
+			"importerAddress", importerAddress.searchItem, importerAddress.page, importerAddress.limit);
+
 		if (checkImporterAddress !== null) {
-			if (checkImporterAddress.documents.length !== 0) {
-				checkImporterAddress.documents = await Promise.all(
-					checkImporterAddress.documents.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
-			}
-			if (checkImporterAddress.reOpenUploadOrder.length !== 0) {
-				checkImporterAddress.reOpenUploadOrder = await Promise.all(
-					checkImporterAddress.reOpenUploadOrder.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
-			}
+
 			return res.send({ status: 1, data: checkImporterAddress });
 		} else {
 			return res.send({ status: 0, msg: "data not found" });
@@ -385,32 +298,9 @@ const searchDataUsingImporterAddress = async (req, res) => {
 const getReportUsingSeizingUnitWise = async (req, res) => {
 	try {
 		const seizingUnitName = req.body;
-		const seizedUnit = await db.findSingleDocument("eMalkhana", {
-			seizingUnitName: seizingUnitName.seizingUnitName,
-		});
+		const seizedUnit = await db.performCaseInsensitiveSearch("eMalkhana", {reOpenUploadOrder: 0, documents: 0 },
+			"seizingUnitName", seizingUnitName.searchItem, seizingUnitName.page, seizingUnitName.limit);
 		if (seizedUnit !== null) {
-			if (seizedUnit.documents.length !== 0) {
-				seizedUnit.documents = await Promise.all(
-					seizedUnit.documents.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
-			}
-			if (seizedUnit.reOpenUploadOrder.length !== 0) {
-				seizedUnit.reOpenUploadOrder = await Promise.all(
-					seizedUnit.reOpenUploadOrder.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
-			}
 			return res.send({ status: 1, data: seizedUnit });
 		} else {
 			return res.send({ status: 0, msg: "data not found" });
@@ -425,32 +315,10 @@ const getReportUsingSeizingUnitWise = async (req, res) => {
 const getReportUsingSeizingItemWise = async (req, res) => {
 	try {
 		const seizedItemName = req.body;
-		const seizedItem = await db.findSingleDocument("eMalkhana", {
-			"seizedItemName.current": seizedItemName.seizedItemName.current,
-		});
+		const seizedItem = await db.performCaseInsensitiveSearch("eMalkhana", { reOpenUploadOrder: 0, documents: 0 },
+			"seizedItemName.current", seizedItemName.searchItem, seizedItemName.page, seizedItemName.limit);
 		if (seizedItem !== null) {
-			if (seizedItem.documents.length !== 0) {
-				seizedItem.documents = await Promise.all(
-					seizedItem.documents.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
-			}
-			if (seizedItem.reOpenUploadOrder.length !== 0) {
-				seizedItem.reOpenUploadOrder = await Promise.all(
-					seizedItem.reOpenUploadOrder.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
-			}
+
 			return res.send({ status: 1, data: seizedItem });
 		} else {
 			return res.send({ status: 0, msg: "data not found" });
@@ -782,7 +650,7 @@ const getAllDataByEmalkhanaId = async (req, res) => {
 			return res.send({ status: 0, msg: "no data found" });
 		}
 	} catch (error) {
-		return res.send({status:0, msg:error.message});
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 

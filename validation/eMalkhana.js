@@ -99,10 +99,16 @@ const fileNo = [
 		return next();
 	},
 ];
-const itemDesc = [
-	check("itemDesc.current")
+const searchItem = [
+	check("searchItem")
 		.notEmpty()
-		.withMessage("itemDesc should be required"),
+		.withMessage("searchItem should be required"),
+		check("page")
+		.notEmpty()
+		.withMessage("page should be required"),
+		check("limit")
+		.notEmpty()
+		.withMessage("limit should be required"),
 	(req, res, next) => {
 		const errors = validationResult(req).array();
 		if (errors.length > 0) {
@@ -185,7 +191,7 @@ module.exports = {
 	SeizingItemWise,
 	eMalkhanaValidationSpecificFeilds,
 	fileNo,
-	itemDesc,
+	searchItem,
 	importerName,
 	importerAddress,
 	deleteDocumentBasedOnEmalkhanaNo,

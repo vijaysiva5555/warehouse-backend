@@ -960,7 +960,6 @@ const getEmalkhanaDataBasedonWhackNo = async (req, res) => {
 
 module.exports = {
 	insertReceiptDetails,
-	// updateAllReceiptDetails,
 	getReceiptDetails,
 	receiptDataById,
 	searchDataUsingeMalkhanaNo,
