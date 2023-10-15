@@ -35,16 +35,19 @@ routes.get("/geteWhNoUsingStatus", eMalkhanaController.getAllWhNoUsingStatus)
 
 // search  GET API
 routes.post("/getDataByeMalkhanaNo", eMalkhanaValidation.checkeMalkhanaNo, eMalkhanaController.searchDataUsingeMalkhanaNo)
-routes.post("/getDataByFileNo", eMalkhanaValidation.fileNo, eMalkhanaController.searchDataUsingfileNo)
-routes.post("/getDataByImporterName", eMalkhanaValidation.importerName, eMalkhanaController.searchDataUsingImporterName)
-routes.post("/getDataByImporterAddress", eMalkhanaValidation.importerAddress, eMalkhanaController.searchDataUsingImporterAddress)
-routes.post("/getDataByItemDesc", eMalkhanaValidation.itemDesc, eMalkhanaController.searchDataUsingItemDesc)
+
+// search  GET API
+routes.post("/getDataByeMalkhanaNo", eMalkhanaValidation.checkeMalkhanaNo, eMalkhanaController.searchDataUsingeMalkhanaNo)
+routes.post("/getDataByFileNo", eMalkhanaValidation.searchItem, eMalkhanaController.searchDataUsingfileNo)
+routes.post("/getDataByImporterName", eMalkhanaValidation.searchItem, eMalkhanaController.searchDataUsingImporterName)
+routes.post("/getDataByImporterAddress", eMalkhanaValidation.searchItem, eMalkhanaController.searchDataUsingImporterAddress)
+routes.post("/getDataByItemDesc", eMalkhanaValidation.searchItem, eMalkhanaController.searchDataUsingItemDesc)
 routes.post("/getReceiptMalkhanaDataById", eMalkhanaValidation.checkId, eMalkhanaController.getReceiptMalkhanaDataById)
 routes.post("/getAllDataByEmalkhanaId", eMalkhanaValidation.checkId, eMalkhanaController.getAllDataByEmalkhanaId)
 
 // REPORT GENERATED GET API
-routes.post("/seizedUnitwise", eMalkhanaValidation.SeizingUnitWise, eMalkhanaController.getReportUsingSeizingUnitWise)
-routes.post("/seizedItemName", eMalkhanaValidation.SeizingItemWise, eMalkhanaController.getReportUsingSeizingItemWise)
+routes.post("/seizedUnitwise", eMalkhanaValidation.searchItem, eMalkhanaController.getReportUsingSeizingUnitWise)
+routes.post("/seizedItemName", eMalkhanaValidation.searchItem, eMalkhanaController.getReportUsingSeizingItemWise)
 routes.post("/getYearWiseData", eMalkhanaValidation.yearWiseValid, eMalkhanaController.getReportUsingYearWise)
 
 // updateAPI
@@ -67,16 +70,16 @@ routes.post("/receiptById", receiptValidation.checkId, receiptController.receipt
 // SEARCH Data get API
 routes.post("/receiptDetailsByeMalkhanaNo", receiptValidation.checkeMalkhanaNo, receiptController.searchDataUsingeMalkhanaNo)
 routes.post("/wackNo", receiptValidation.whAckNo, receiptController.searchDataUsingWackNo)
-routes.post("/checkAdjucationOrderNo", receiptValidation.adjucationOrderNo, receiptController.searchDataByAdjucationOrderNo)
+routes.post("/checkAdjucationOrderNo", receiptValidation.searchItem, receiptController.searchDataByAdjucationOrderNo)
 routes.post("/getAllDataBasedOnEmalkhanaNumber", receiptValidation.checkeMalkhanaNo, receiptController.getAllDataBasedOnEmalkhanaNumber)
 routes.post("/getEmalkhanaDataBasedonWhackNo", receiptValidation.whAckNo, receiptController.getEmalkhanaDataBasedonWhackNo)
 
 
 // REPORT GENERATION get API
-routes.post("/godownName", receiptValidation.godownName, receiptController.getReportDataByGodownName)
-routes.post("/godownCode", receiptValidation.godownCode, receiptController.getReportDataByGodownCode)
-routes.post("/pendingSection", receiptValidation.pendingSection, receiptController.reportOfPendingUnderSection)
-routes.post("/ripeDisposal", receiptValidation.ripeDisposal, receiptController.reportOfRipeForDisposal)
+routes.post("/godownName", receiptValidation.searchItem, receiptController.getReportDataByGodownName)
+routes.post("/godownCode", receiptValidation.searchItem, receiptController.getReportDataByGodownCode)
+routes.post("/pendingSection", receiptValidation.searchItem, receiptController.reportOfPendingUnderSection)
+routes.post("/ripeDisposal", receiptValidation.searchItem, receiptController.reportOfRipeForDisposal)
 
 // update API
 routes.post("/updateReceiptData", receiptValidation.receiptUpdateValidation, receiptController.updateReceipt)
