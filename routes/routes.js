@@ -50,7 +50,6 @@ routes.post("/getYearWiseData", eMalkhanaValidation.yearWiseValid, eMalkhanaCont
 // updateAPI
 routes.post("/updateSpecficFieldByid", eMalkhanaValidation.eMalkhanaValidationSpecificFeilds, eMalkhanaController.updateSpecficFieldByid)
 routes.post("/updateEmalkhana", eMalkhanaValidation.eMalkhanaValidationSpecificFeilds, eMalkhanaController.updateMalkhana)
-// routes.post("/feilds", eMalkhanaValidation.checkeMalkhanaNo, eMalkhanaController.updateeMalkhanaDataByFeilds)
 routes.post("/deleteDocumentBasedOnEmalkhanaNo", eMalkhanaValidation.deleteDocumentBasedOnEmalkhanaNo, eMalkhanaController.deleteDocumentBasedOnEmalkhanaNo)
 
 
