@@ -83,7 +83,7 @@ routes.post("/ripeDisposal", receiptValidation.searchItem, receiptController.rep
 
 // update API
 routes.post("/updateReceiptData", receiptValidation.receiptUpdateValidation, receiptController.updateReceipt)
-routes.post("/updateSpecificFeildsReceiptData", receiptValidation.receiptValidationSpecificFeilds, receiptController.updateReceiptSpecificFeilds)
+routes.post("/updateSpecificFieldsReceiptData", receiptValidation.receiptValidationSpecificFeilds, receiptController.updateReceiptSpecificFields)
 
 // -------------------------------------------DISPOSAL DETAILS API-----------------------------------------//
 // POST API
