@@ -605,39 +605,36 @@ const deleteDocumentBasedOnEmalkhanaNo = async (req, res) => {
 
 const reOpenUpdateUsingMultipleWhAckNo = async (req, res) => {
 	try {
-		let {
-			inputReOpenData,
-			updateInputReOpenData,
-			updateWhAckNos = [],
-			updateMalkhanasNo = [],
+		const {
 			reOpenReason,
-			reOpenUploadOrder,
+			updateWhAckNos,
 			reOpenDate,
 			handOverOfficerName,
 			handOverOfficerDesignation,
-			newSealNo,
-			newOfficerName,
-			newOfficerDesignation,
-			updatesGivenData,
 		} = req.body;
 
-		updatesGivenData = {
+		let updateMalkhanasNo = [];
+
+		const updatesGivenData = {
 			reOpenReason,
-			reOpenUploadOrder,
 			reOpenDate,
 			handOverOfficerName,
 			handOverOfficerDesignation,
-			newSealNo,
-			newOfficerName,
-			newOfficerDesignation,
-			...inputReOpenData,
 		};
 
-		updateMalkhanasNo = db.findDocuments("receipt", {
-			wckAckNo: { $in: updateWhAckNos }
-		}, { eMalkhanaNo: 1 })
+		updateMalkhanasNo = await db.findDocuments(
+			"receipt",
+			{
+				whAckNo: { $in: updateWhAckNos },
+			},
+			{ eMalkhanaNo: 1 }
+		);
 
-		if (req.files) {
+		updateMalkhanasNo = updateMalkhanasNo.map(
+			(element) => element.eMalkhanaNo
+		);
+
+		if (req.files.reOpenUploadOrder != null) {
 			await Promise.all(
 				updateMalkhanasNo.map(async (ele) => {
 					updatesGivenData.reOpenUploadOrder = await uploadToAws(
@@ -651,7 +648,7 @@ const reOpenUpdateUsingMultipleWhAckNo = async (req, res) => {
 
 		updatesGivenData.status = 4;
 		updatesGivenData.createdBy = res.locals.userData.userId;
-		updateInputReOpenData = await db.updateManyDocuments(
+		const updateInputReOpenData = await db.updateManyDocuments(
 			"eMalkhana",
 			{ eMalkhanaNo: { $in: updateMalkhanasNo } },
 			{ $set: updatesGivenData }
@@ -766,7 +763,10 @@ const getAllDataByEmalkhanaId = async (req, res) => {
 				);
 			}
 
-			if (getReceptData != null && Object.keys(getReceptData).length > 0) {
+			if (
+				getReceptData != null &&
+				Object.keys(getReceptData).length > 0
+			) {
 				if (getReceptData.barcode.length !== 0) {
 					getReceptData.barcode = await Promise.all(
 						getReceptData.barcode.map(async (file) => {
@@ -806,9 +806,8 @@ const getAlleMalkhanaNoUsingStatus = async (req, res) => {
 		return res.send({
 			status: 1,
 			msg: "get data successfully",
-			data: getData,
+			data: getData.map((element) => element.eMalkhanaNo),
 		});
-
 	} catch (error) {
 		return res.send({ status: 0, msg: error.message });
 	}
@@ -822,14 +821,27 @@ const getAllWhNoUsingStatus = async (req, res) => {
 			{ status: inputData.status },
 			{ eMalkhanaNo: 1 }
 		);
-		const getData = await db.findDocuments("receipt", {
-			eMalkhanNo: { $in: getMalkhanaData }
-		}, { whAckNo: 1 })
-		return res.send({
-			status: 1,
-			msg: "get data successfully",
-			data: getData,
-		});
+		if (getMalkhanaData != null && getMalkhanaData.length > 0) {
+			const malkhanaNumbers = getMalkhanaData.map(
+				(element) => element.eMalkhanaNo
+			);
+			const getData = await db.findDocuments(
+				"receipt",
+				{
+					eMalkhanaNo: { $in: malkhanaNumbers },
+				},
+				{ whAckNo: 1 }
+			);
+			return res.send({
+				status: 1,
+				data: getData.map((element) => element.whAckNo),
+			});
+		} else {
+			return res.send({
+				status: 1,
+				data: [],
+			});
+		}
 	} catch (error) {
 		return res.send({ status: 0, msg: error.message });
 	}
@@ -854,5 +866,5 @@ module.exports = {
 	getAllDataByEmalkhanaId,
 	updateSpecficFieldByid,
 	getAlleMalkhanaNoUsingStatus,
-	getAllWhNoUsingStatus
+	getAllWhNoUsingStatus,
 };
