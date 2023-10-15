@@ -166,8 +166,7 @@ const insertReceiptDetails = async (req, res) => {
 
 			return res.send({
 				status: 1,
-				msg: "receipt details inserted successfully",
-				data: receiptData,
+				msg: `Warehouse Acknowledgement number ${receiptInput.whAckNo} generated Successfully`,
 			});
 		}
 	} catch (error) {
@@ -597,8 +596,8 @@ const updateReceipt = async (req, res) => {
 			return res.send({ status: 0, msg: "Invalid ReceiptID" });
 		}
 
-		delete updateReceptData.barcode
-		
+		delete updateReceptData.barcode;
+
 		if (updateReceptData.packageDetails) {
 			if (
 				getPreviousDataByID.packageDetails.current !==
@@ -832,7 +831,7 @@ const updateReceipt = async (req, res) => {
 			await db.findOneAndUpdate(
 				"eMalkhana",
 				{ eMalkhanaNo: getEmalkhanaPreviousData.eMalkhanaNo },
-				updateReceptData
+				{ ...updateReceptData, status: 2 }
 			);
 
 			return res.send({ status: 1, msg: "updated successfully" });
@@ -960,7 +959,6 @@ const getEmalkhanaDataBasedonWhackNo = async (req, res) => {
 
 module.exports = {
 	insertReceiptDetails,
-	// updateAllReceiptDetails,
 	getReceiptDetails,
 	receiptDataById,
 	searchDataUsingeMalkhanaNo,
