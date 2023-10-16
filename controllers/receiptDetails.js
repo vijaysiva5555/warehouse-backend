@@ -2,7 +2,7 @@ const { default: mongoose } = require("mongoose");
 const db = require("../models/mongo");
 const moment = require("moment");
 const bwipjs = require("bwip-js");
-const { uploadToAws, getSignedUrl } = require("../models/aws");
+const { uploadToAws, getSignedUrl, deleteFile } = require("../models/aws");
 const CONFIG = require("../config/config");
 
 // ------------------------receipt details post--------------------------//
@@ -200,6 +200,9 @@ const updateReceiptSpecificFields = async (req, res) => {
 		if (getPreviousDataByID === null) {
 			return res.send({ status: 0, msg: "Invalid Receipt ID" });
 		}
+
+		delete updateData.barcode;
+
 		if (updateData.packageDetails) {
 			if (
 				getPreviousDataByID.packageDetails.current !==
@@ -700,6 +703,18 @@ const updateReceipt = async (req, res) => {
 		);
 		if (getEmalkhanaPreviousData === null) {
 			return res.send({ status: 0, msg: "Invalid E-Malkhana Number" });
+		}
+
+		if (getEmalkhanaPreviousData.status === 4) {
+			for (
+				let index = 0;
+				index < getEmalkhanaPreviousData.reOpenUploadOrder.length;
+				index++
+			) {
+				const file = getEmalkhanaPreviousData.reOpenUploadOrder[index];
+				await deleteFile(file.href);
+			}
+			updateReceptData.reOpenUploadOrder = [];
 		}
 
 		if (Array.isArray(req.files.documents) || req.files.documents != null) {
