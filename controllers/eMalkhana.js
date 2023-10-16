@@ -481,6 +481,8 @@ const updateSpecficFieldByid = async (req, res) => {
 		}
 
 		delete updateData.status;
+		delete updateData.documents;
+		delete updateData.reOpenUploadOrder;
 
 		const eMalkhanaUpdateById = await db.findByIdAndUpdate(
 			"eMalkhana",
@@ -696,10 +698,28 @@ const getAllDataByEmalkhanaId = async (req, res) => {
 					);
 				}
 			}
+
+			if (
+				getDisposalData != null &&
+				Object.keys(getDisposalData).length > 0
+			) {
+				if (getDisposalData.reOpenUploadOrder.length !== 0) {
+					getDisposalData.reOpenUploadOrder = await Promise.all(
+						getDisposalData.reOpenUploadOrder.map(async (file) => {
+							return {
+								...file,
+								actualPath: file.href,
+								href: await getSignedUrl(file.href),
+							};
+						})
+					);
+				}
+			}
+
 			allData = {
 				eMalkhanaData: getEmalkhanaData,
 				receiptData: getReceptData,
-				DisposalData: getDisposalData,
+				disposalData: getDisposalData,
 			};
 
 			return res.send({ status: 1, data: allData });
