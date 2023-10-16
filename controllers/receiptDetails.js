@@ -2,7 +2,7 @@ const { default: mongoose } = require("mongoose");
 const db = require("../models/mongo");
 const moment = require("moment");
 const bwipjs = require("bwip-js");
-const { uploadToAws, getSignedUrl } = require("../models/aws");
+const { uploadToAws, getSignedUrl, deleteFile } = require("../models/aws");
 const CONFIG = require("../config/config");
 
 // ------------------------receipt details post--------------------------//
@@ -166,8 +166,7 @@ const insertReceiptDetails = async (req, res) => {
 
 			return res.send({
 				status: 1,
-				msg: "receipt details inserted successfully",
-				data: receiptData,
+				msg: `Warehouse Acknowledgement number ${receiptInput.whAckNo} generated Successfully`,
 			});
 		}
 	} catch (error) {
@@ -189,7 +188,7 @@ const getReceiptDetails = async (req, res) => {
 };
 
 // // ------------------------------update specific feilds all receipt details-------------------------------------------//
-const updateReceiptSpecificFeilds = async (req, res) => {
+const updateReceiptSpecificFields = async (req, res) => {
 	try {
 		const updateData = req.body;
 		if (!mongoose.isValidObjectId(updateData.id)) {
@@ -199,8 +198,11 @@ const updateReceiptSpecificFeilds = async (req, res) => {
 			_id: new mongoose.Types.ObjectId(updateData.id),
 		});
 		if (getPreviousDataByID === null) {
-			return res.send({ status: 0, msg: "Invalid ReceiptID" });
+			return res.send({ status: 0, msg: "Invalid Receipt ID" });
 		}
+
+		delete updateData.barcode;
+
 		if (updateData.packageDetails) {
 			if (
 				getPreviousDataByID.packageDetails.current !==
@@ -440,10 +442,18 @@ const searchDataUsingWackNo = async (req, res) => {
 const searchDataByAdjucationOrderNo = async (req, res) => {
 	try {
 		const adjucationOrderNo = req.body;
-		const checkAdjucationOrderNo = await db.performCaseInsensitiveSearch("receipt", { whAckNo: 1, adjucationOrderNo: 1 },
-			"adjucationOrderNo", adjucationOrderNo.searchItem, adjucationOrderNo.page, adjucationOrderNo.limit);
+		const checkAdjucationOrderNo = await db.performCaseInsensitiveSearch(
+			"receipt",
+			{
+				whAckNo: 1,
+				adjucationOrderNo: 1,
+				eMalkhanaNo: 1,
+				eMalkhanaId: 1,
+			},
+			"adjucationOrderNo",
+			adjucationOrderNo.searchItem
+		);
 		if (checkAdjucationOrderNo) {
-
 			return res.send({ status: 1, data: checkAdjucationOrderNo });
 		} else {
 			return res.send({ status: 0, msg: "data Not found" });
@@ -459,8 +469,12 @@ const searchDataByAdjucationOrderNo = async (req, res) => {
 const getReportDataByGodownName = async (req, res) => {
 	try {
 		const godownName = req.body;
-		const godownItem = await db.performCaseInsensitiveSearch("receipt", { barcode: 0 },
-			"godownName.current", godownName.searchItem, godownName.page, godownName.limit);
+		const godownItem = await db.performCaseInsensitiveSearch(
+			"receipt",
+			{ barcode: 0 },
+			"godownName.current",
+			godownName.searchItem
+		);
 		if (godownItem) {
 			return res.send({ status: 1, data: godownItem });
 		} else {
@@ -476,8 +490,14 @@ const getReportDataByGodownName = async (req, res) => {
 const getReportDataByGodownCode = async (req, res) => {
 	try {
 		const godownCode = req.body;
-		const getGodownCode = await db.performCaseInsensitiveSearch("receipt", { barcode: 0 },
-			"godownCode.current", godownCode.searchItem, godownCode.page, godownCode.limit);
+		const getGodownCode = await db.performCaseInsensitiveSearch(
+			"receipt",
+			{ barcode: 0 },
+			"godownCode.current",
+			godownCode.searchItem,
+			godownCode.page,
+			godownCode.limit
+		);
 		if (getGodownCode) {
 			return res.send({ status: 1, data: getGodownCode });
 		} else {
@@ -493,8 +513,12 @@ const getReportDataByGodownCode = async (req, res) => {
 const reportOfPendingUnderSection = async (req, res) => {
 	try {
 		const pendingUnderSection = req.body;
-		const pendingSection = await db.performCaseInsensitiveSearch("receipt", { barcode: 0 },
-			"pendingUnderSection.current", pendingUnderSection.searchItem, pendingUnderSection.page, pendingUnderSection.limit);
+		const pendingSection = await db.performCaseInsensitiveSearch(
+			"receipt",
+			{ barcode: 0 },
+			"pendingUnderSection.current",
+			pendingUnderSection.searchItem
+		);
 		if (pendingSection) {
 			return res.send({ status: 1, data: pendingSection });
 		} else {
@@ -510,8 +534,12 @@ const reportOfPendingUnderSection = async (req, res) => {
 const reportOfRipeForDisposal = async (req, res) => {
 	try {
 		const ripeForDisposal = req.body;
-		const ripeDisposal = await db.performCaseInsensitiveSearch("receipt", { barcode: 0 },
-			"ripeForDisposal", ripeForDisposal.searchItem, ripeForDisposal.page, ripeForDisposal.limit);
+		const ripeDisposal = await db.performCaseInsensitiveSearch(
+			"receipt",
+			{ barcode: 0 },
+			"ripeForDisposal",
+			ripeForDisposal.searchItem
+		);
 		if (ripeDisposal) {
 			return res.send({ status: 1, data: ripeDisposal });
 		} else {
@@ -537,7 +565,8 @@ const updateReceipt = async (req, res) => {
 			return res.send({ status: 0, msg: "Invalid ReceiptID" });
 		}
 
-		delete updateReceptData.barcode
+		delete updateReceptData.barcode;
+		delete updateReceptData.reOpenUploadOrder;
 
 		if (updateReceptData.packageDetails) {
 			if (
@@ -676,6 +705,18 @@ const updateReceipt = async (req, res) => {
 			return res.send({ status: 0, msg: "Invalid E-Malkhana Number" });
 		}
 
+		if (getEmalkhanaPreviousData.status === 4) {
+			for (
+				let index = 0;
+				index < getEmalkhanaPreviousData.reOpenUploadOrder.length;
+				index++
+			) {
+				const file = getEmalkhanaPreviousData.reOpenUploadOrder[index];
+				await deleteFile(file.href);
+			}
+			updateReceptData.reOpenUploadOrder = [];
+		}
+
 		if (Array.isArray(req.files.documents) || req.files.documents != null) {
 			const previousDocuments = getEmalkhanaPreviousData.documents;
 			updateReceptData.documents = await uploadToAws(
@@ -772,7 +813,7 @@ const updateReceipt = async (req, res) => {
 			await db.findOneAndUpdate(
 				"eMalkhana",
 				{ eMalkhanaNo: getEmalkhanaPreviousData.eMalkhanaNo },
-				updateReceptData
+				{ ...updateReceptData, status: 2 }
 			);
 
 			return res.send({ status: 1, msg: "updated successfully" });
@@ -912,5 +953,5 @@ module.exports = {
 	updateReceipt,
 	getAllDataBasedOnEmalkhanaNumber,
 	getEmalkhanaDataBasedonWhackNo,
-	updateReceiptSpecificFeilds,
+	updateReceiptSpecificFields,
 };

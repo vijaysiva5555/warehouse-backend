@@ -239,31 +239,42 @@ const getAggregation = async (collection, filter) => {
 	}
 };
 
-const getPaginatedData = async (collection, filter, options, pageNumber, pageSize) => {
+const getPaginatedData = async (
+	collection,
+	filter,
+	options,
+	pageNumber,
+	pageSize
+) => {
 	try {
-	  let skipCount = (pageNumber - 1) * pageSize, totalCount, documents
-	  totalCount = await db[collection].countDocuments(filter)
-	  documents = await db[collection].find(filter, options).sort({ createdAt: -1 }).skip(skipCount).limit(pageSize)
-  
-	  return { totalCount, documents }
+		const skipCount = (pageNumber - 1) * pageSize;
+		const totalCount = await db[collection].countDocuments(filter);
+		const documents = await db[collection]
+			.find(filter, options)
+			.sort({ createdAt: -1 })
+			.skip(skipCount)
+			.limit(pageSize);
+
+		return { totalCount, documents };
 	} catch (error) {
-	  console.error("Error:", error);
+		console.error("Error:", error);
 	}
-  }
-  
-  const performCaseInsensitiveSearch = async (collection, options, fields, searchTerm, pageNumber, pageSize) => {
-	let skipCount = (pageNumber - 1) * pageSize, query, totalCount, documents
-	  query = { [fields]: { $regex: searchTerm, $options: 'i' } };
-	// query = {
-	//   $or: fields.map(field => ({ [field]: { $regex: searchTerm, $options: 'i' } }))
-	// };
-  
-	totalCount = await db[collection].countDocuments(query);
-  
-	documents = await db[collection].find(query, options).sort({ createdAt: -1 }).skip(skipCount).limit(pageSize)
-  
-	return { totalCount, documents }
-  };
+};
+
+const performCaseInsensitiveSearch = async (
+	collection,
+	options,
+	fields,
+	searchTerm
+) => {
+	const query = { [fields]: { $regex: searchTerm, $options: "i" } };
+	const totalCount = await db[collection].countDocuments(query);
+	const documents = await db[collection]
+		.find(query, options)
+		.sort({ createdAt: -1 });
+
+	return { totalCount, documents };
+};
 
 module.exports = {
 	updateDocument,
@@ -283,5 +294,5 @@ module.exports = {
 	deleteManyDocument,
 	getAggregation,
 	getPaginatedData,
-	performCaseInsensitiveSearch
+	performCaseInsensitiveSearch,
 };

@@ -225,14 +225,24 @@ const searchDataUsingeMalkhanaNo = async (req, res) => {
 
 const searchDataUsingfileNo = async (req, res) => {
 	try {
-		let fileNo = req.body, checkFileNo
-		checkFileNo = await db.performCaseInsensitiveSearch("eMalkhana", { fileNo: 1, eMalkhanaNo: 1, importerName: 1, importerAddress: 1, itemDesc: 1 },
-			"fileNo", fileNo.searchItem, fileNo.page, fileNo.limit);
+		const fileNo = req.body;
+		const checkFileNo = await db.performCaseInsensitiveSearch(
+			"eMalkhana",
+			{
+				fileNo: 1,
+				eMalkhanaNo: 1,
+				importerName: 1,
+				importerAddress: 1,
+				itemDesc: 1,
+				_id: 1,
+			},
+			"fileNo",
+			fileNo.searchItem
+		);
 		if (checkFileNo) {
-
-			return res.send({ status: 1, data: checkFileNo })
+			return res.send({ status: 1, data: checkFileNo });
 		} else {
-			return res.send({ status: 0, msg: "data Not found" })
+			return res.send({ status: 0, msg: "data Not found" });
 		}
 	} catch (error) {
 		return res.send(error.message);
@@ -244,8 +254,18 @@ const searchDataUsingfileNo = async (req, res) => {
 const searchDataUsingItemDesc = async (req, res) => {
 	try {
 		const itemDesc = req.body;
-		const checkItemDesc = await db.performCaseInsensitiveSearch("eMalkhana", { fileNo: 1, eMalkhanaNo: 1, importerName: 1, importerAddress: 1, itemDesc: 1 },
-			"itemDesc.current", itemDesc.searchItem, itemDesc.page, itemDesc.limit);
+		const checkItemDesc = await db.performCaseInsensitiveSearch(
+			"eMalkhana",
+			{
+				fileNo: 1,
+				eMalkhanaNo: 1,
+				importerName: 1,
+				importerAddress: 1,
+				itemDesc: 1,
+			},
+			"itemDesc.current",
+			itemDesc.searchItem
+		);
 
 		if (checkItemDesc) {
 			return res.send({ status: 1, data: checkItemDesc });
@@ -262,8 +282,19 @@ const searchDataUsingItemDesc = async (req, res) => {
 const searchDataUsingImporterName = async (req, res) => {
 	try {
 		const importerName = req.body;
-		const checkImporterName = await db.performCaseInsensitiveSearch("eMalkhana", { fileNo: 1, eMalkhanaNo: 1, importerName: 1, importerAddress: 1, itemDesc: 1 },
-			"importerName", importerName.searchItem, importerName.page, importerName.limit);
+		const checkImporterName = await db.performCaseInsensitiveSearch(
+			"eMalkhana",
+			{
+				fileNo: 1,
+				eMalkhanaNo: 1,
+				importerName: 1,
+				_id: 1,
+				importerAddress: 1,
+				itemDesc: 1,
+			},
+			"importerName",
+			importerName.searchItem
+		);
 
 		if (checkImporterName) {
 			return res.send({ status: 1, data: checkImporterName });
@@ -278,11 +309,20 @@ const searchDataUsingImporterName = async (req, res) => {
 const searchDataUsingImporterAddress = async (req, res) => {
 	try {
 		const importerAddress = req.body;
-		const checkImporterAddress = await db.performCaseInsensitiveSearch("eMalkhana", { fileNo: 1, eMalkhanaNo: 1, importerName: 1, importerAddress: 1, itemDesc: 1 },
-			"importerAddress", importerAddress.searchItem, importerAddress.page, importerAddress.limit);
+		const checkImporterAddress = await db.performCaseInsensitiveSearch(
+			"eMalkhana",
+			{
+				fileNo: 1,
+				eMalkhanaNo: 1,
+				importerName: 1,
+				importerAddress: 1,
+				itemDesc: 1,
+			},
+			"importerAddress",
+			importerAddress.searchItem
+		);
 
 		if (checkImporterAddress !== null) {
-
 			return res.send({ status: 1, data: checkImporterAddress });
 		} else {
 			return res.send({ status: 0, msg: "data not found" });
@@ -298,8 +338,12 @@ const searchDataUsingImporterAddress = async (req, res) => {
 const getReportUsingSeizingUnitWise = async (req, res) => {
 	try {
 		const seizingUnitName = req.body;
-		const seizedUnit = await db.performCaseInsensitiveSearch("eMalkhana", {reOpenUploadOrder: 0, documents: 0 },
-			"seizingUnitName", seizingUnitName.searchItem, seizingUnitName.page, seizingUnitName.limit);
+		const seizedUnit = await db.performCaseInsensitiveSearch(
+			"eMalkhana",
+			{ reOpenUploadOrder: 0, documents: 0 },
+			"seizingUnitName",
+			seizingUnitName.searchItem
+		);
 		if (seizedUnit !== null) {
 			return res.send({ status: 1, data: seizedUnit });
 		} else {
@@ -315,10 +359,13 @@ const getReportUsingSeizingUnitWise = async (req, res) => {
 const getReportUsingSeizingItemWise = async (req, res) => {
 	try {
 		const seizedItemName = req.body;
-		const seizedItem = await db.performCaseInsensitiveSearch("eMalkhana", { reOpenUploadOrder: 0, documents: 0 },
-			"seizedItemName.current", seizedItemName.searchItem, seizedItemName.page, seizedItemName.limit);
+		const seizedItem = await db.performCaseInsensitiveSearch(
+			"eMalkhana",
+			{ reOpenUploadOrder: 0, documents: 0 },
+			"seizedItemName.current",
+			seizedItemName.searchItem
+		);
 		if (seizedItem !== null) {
-
 			return res.send({ status: 1, data: seizedItem });
 		} else {
 			return res.send({ status: 0, msg: "data not found" });
@@ -433,6 +480,10 @@ const updateSpecficFieldByid = async (req, res) => {
 			}
 		}
 
+		delete updateData.status;
+		delete updateData.documents;
+		delete updateData.reOpenUploadOrder;
+
 		const eMalkhanaUpdateById = await db.findByIdAndUpdate(
 			"eMalkhana",
 			updateData.id,
@@ -471,35 +522,38 @@ const deleteDocumentBasedOnEmalkhanaNo = async (req, res) => {
 
 // _____Re-open UPDATE API------------------//
 
-const reOpenUpdateUsingMultipleeMalkhanaNo = async (req, res) => {
+const reOpenUpdateUsingMultipleWhAckNo = async (req, res) => {
 	try {
-		let {
-			inputReOpenData,
-			updateInputReOpenData,
-			updateMalkhanasNo = [],
+		const {
 			reOpenReason,
-			reOpenUploadOrder,
+			updateWhAckNos,
 			reOpenDate,
 			handOverOfficerName,
 			handOverOfficerDesignation,
-			newSealNo,
-			newOfficerName,
-			newOfficerDesignation,
-			updatesGivenData,
 		} = req.body;
 
-		updatesGivenData = {
+		let updateMalkhanasNo = [];
+
+		const updatesGivenData = {
 			reOpenReason,
-			reOpenUploadOrder,
 			reOpenDate,
 			handOverOfficerName,
 			handOverOfficerDesignation,
-			newSealNo,
-			newOfficerName,
-			newOfficerDesignation,
-			...inputReOpenData,
 		};
-		if (req.files) {
+
+		updateMalkhanasNo = await db.findDocuments(
+			"receipt",
+			{
+				whAckNo: { $in: updateWhAckNos },
+			},
+			{ eMalkhanaNo: 1 }
+		);
+
+		updateMalkhanasNo = updateMalkhanasNo.map(
+			(element) => element.eMalkhanaNo
+		);
+
+		if (req.files.reOpenUploadOrder != null) {
 			await Promise.all(
 				updateMalkhanasNo.map(async (ele) => {
 					updatesGivenData.reOpenUploadOrder = await uploadToAws(
@@ -513,7 +567,7 @@ const reOpenUpdateUsingMultipleeMalkhanaNo = async (req, res) => {
 
 		updatesGivenData.status = 4;
 		updatesGivenData.createdBy = res.locals.userData.userId;
-		updateInputReOpenData = await db.updateManyDocuments(
+		const updateInputReOpenData = await db.updateManyDocuments(
 			"eMalkhana",
 			{ eMalkhanaNo: { $in: updateMalkhanasNo } },
 			{ $set: updatesGivenData }
@@ -628,21 +682,44 @@ const getAllDataByEmalkhanaId = async (req, res) => {
 				);
 			}
 
-			if (getReceptData.barcode.length !== 0) {
-				getReceptData.barcode = await Promise.all(
-					getReceptData.barcode.map(async (file) => {
-						return {
-							...file,
-							actualPath: file.href,
-							href: await getSignedUrl(file.href),
-						};
-					})
-				);
+			if (
+				getReceptData != null &&
+				Object.keys(getReceptData).length > 0
+			) {
+				if (getReceptData.barcode.length !== 0) {
+					getReceptData.barcode = await Promise.all(
+						getReceptData.barcode.map(async (file) => {
+							return {
+								...file,
+								actualPath: file.href,
+								href: await getSignedUrl(file.href),
+							};
+						})
+					);
+				}
 			}
+
+			if (
+				getDisposalData != null &&
+				Object.keys(getDisposalData).length > 0
+			) {
+				if (getDisposalData.reOpenUploadOrder.length !== 0) {
+					getDisposalData.reOpenUploadOrder = await Promise.all(
+						getDisposalData.reOpenUploadOrder.map(async (file) => {
+							return {
+								...file,
+								actualPath: file.href,
+								href: await getSignedUrl(file.href),
+							};
+						})
+					);
+				}
+			}
+
 			allData = {
 				eMalkhanaData: getEmalkhanaData,
 				receiptData: getReceptData,
-				DisposalData: getDisposalData,
+				disposalData: getDisposalData,
 			};
 
 			return res.send({ status: 1, data: allData });
@@ -663,17 +740,47 @@ const getAlleMalkhanaNoUsingStatus = async (req, res) => {
 			{ status: inputData.status },
 			{ _id: 0, eMalkhanaNo: 1 }
 		);
-		if (getData.length !== 0) {
+		return res.send({
+			status: 1,
+			msg: "get data successfully",
+			data: getData.map((element) => element.eMalkhanaNo),
+		});
+	} catch (error) {
+		return res.send({ status: 0, msg: error.message });
+	}
+};
+
+const getAllWhNoUsingStatus = async (req, res) => {
+	try {
+		const inputData = req.query;
+		const getMalkhanaData = await db.findDocuments(
+			"eMalkhana",
+			{ status: inputData.status },
+			{ eMalkhanaNo: 1 }
+		);
+		if (getMalkhanaData != null && getMalkhanaData.length > 0) {
+			const malkhanaNumbers = getMalkhanaData.map(
+				(element) => element.eMalkhanaNo
+			);
+			const getData = await db.findDocuments(
+				"receipt",
+				{
+					eMalkhanaNo: { $in: malkhanaNumbers },
+				},
+				{ whAckNo: 1 }
+			);
 			return res.send({
 				status: 1,
-				msg: "get data successfully",
-				data: getData,
+				data: getData.map((element) => element.whAckNo),
 			});
 		} else {
-			return res.send({ status: 0, msg: "data not found" });
+			return res.send({
+				status: 1,
+				data: [],
+			});
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -690,10 +797,11 @@ module.exports = {
 	getReportUsingSeizingItemWise,
 	getReportUsingSeizingUnitWise,
 	deleteDocumentBasedOnEmalkhanaNo,
-	reOpenUpdateUsingMultipleeMalkhanaNo,
+	reOpenUpdateUsingMultipleWhAckNo,
 	getReportUsingYearWise,
 	getReceiptMalkhanaDataById,
 	getAllDataByEmalkhanaId,
 	updateSpecficFieldByid,
 	getAlleMalkhanaNoUsingStatus,
+	getAllWhNoUsingStatus,
 };

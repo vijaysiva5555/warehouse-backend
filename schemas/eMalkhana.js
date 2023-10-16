@@ -82,7 +82,9 @@ const eMalkhana = new mongoose.Schema(
 		},
 		reOpenDate: {
 			type: Date,
-			default: null,
+		},
+		reOpenReason: {
+			type: String,
 		},
 		handOverOfficerName: {
 			type: String,

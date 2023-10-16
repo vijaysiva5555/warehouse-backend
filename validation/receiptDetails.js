@@ -117,15 +117,7 @@ const checkIdFeilds = [
 	},
 ];
 const searchItem = [
-	check("searchItem")
-		.notEmpty()
-		.withMessage("searchItem should be required"),
-		check("page")
-		.notEmpty()
-		.withMessage("page should be required"),
-		check("limit")
-		.notEmpty()
-		.withMessage("limit should be required"),
+	check("searchItem").notEmpty().withMessage("searchItem should be required"),
 	(req, res, next) => {
 		const errors = validationResult(req).array();
 		if (errors.length > 0) {
@@ -263,5 +255,5 @@ module.exports = {
 	adjucationOrderNo,
 	receiptUpdateValidation,
 	receiptValidationSpecificFeilds,
-	searchItem
+	searchItem,
 };
