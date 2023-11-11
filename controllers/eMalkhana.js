@@ -530,6 +530,11 @@ const reOpenUpdateUsingMultipleWhAckNo = async (req, res) => {
 			reOpenDate,
 			handOverOfficerName,
 			handOverOfficerDesignation,
+			reOpenFileNo,
+			preOpenTrail,
+			sampleDrawnDetails,
+			sampleDrawn
+
 		} = req.body;
 
 		let updateMalkhanasNo = [];
@@ -539,6 +544,10 @@ const reOpenUpdateUsingMultipleWhAckNo = async (req, res) => {
 			reOpenDate,
 			handOverOfficerName,
 			handOverOfficerDesignation,
+			reOpenFileNo,
+			preOpenTrail,
+			sampleDrawnDetails,
+			sampleDrawn
 		};
 
 		updateMalkhanasNo = await db.findDocuments(

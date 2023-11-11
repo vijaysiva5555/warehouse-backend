@@ -21,6 +21,11 @@ const eMalkhana = new mongoose.Schema(
 			type: String,
 			require: true,
 		},
+		partyDetails: {
+			partyName: String,
+			partyAddress: String,
+			iecNo: String
+		},
 		importerName: {
 			type: String,
 			require: true,
@@ -111,6 +116,22 @@ const eMalkhana = new mongoose.Schema(
 			require: true,
 			ref: "user",
 		},
+		reOpenFileNo: {
+			type: Object,
+			default: null,
+		},
+		preOpenTrail: {
+			type: Number
+		}, //[note: '0 or 1']
+		preOpenTrailDetails: {
+			type: String
+		},
+		sampleDrawn: {
+			type: Number
+		}, // [note: '0 or 1']
+		sampleDrawnDetails: {
+			type: String
+		}
 	},
 	{ timestamps: true, versionKey: false }
 );

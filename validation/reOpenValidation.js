@@ -12,6 +12,21 @@ const reOpenValidation = [
 	check("handOverOfficerDesignation")
 		.notEmpty()
 		.withMessage("handOverOfficerDesignation is required"),
+	check("reOpenFileNo")
+		.notEmpty()
+		.withMessage("reOpenFileNo. is required"),
+	check("preOpenTrail")
+		.notEmpty()
+		.withMessage("preOpenTrail is required"),
+	check("preOpenTrailDetails")
+		.notEmpty()
+		.withMessage("preOpenTrailDetails is required"),
+	check("sampleDrawn")
+		.notEmpty()
+		.withMessage("sampleDrawn is required"),
+	check("sampleDrawnDetails")
+		.notEmpty()
+		.withMessage("sampleDrawnDetails is required"),
 	(req, res, next) => {
 		const errors = validationResult(req).array();
 		if (errors.length > 0) {

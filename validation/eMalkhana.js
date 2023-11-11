@@ -34,6 +34,13 @@ const eMalkhanaValidation = [
 	check("seizingOfficerSealNo")
 		.notEmpty()
 		.withMessage("seizingOfficerSealNo is required"),
+	check("partyDetails.partyName")
+		.notEmpty()
+		.withMessage("partyName is required"),
+	check("partyDetails.partyAddress")
+		.notEmpty()
+		.withMessage("partyAddress is required"),
+
 
 	(req, res, next) => {
 		const errors = validationResult(req).array();
