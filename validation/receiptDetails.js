@@ -28,7 +28,7 @@ const receiptValidation = [
 		.notEmpty()
 		.withMessage("ripeForDisposal is required"),
 	check("itemDesc.current")
-		.notEmpty()
+		.isString()
 		.withMessage("itemDesc-current is required"),
 	check("seizedItemName.current")
 		.notEmpty()
@@ -186,9 +186,8 @@ const receiptUpdateValidation = [
 	check("pendingUnderSection.current")
 		.notEmpty()
 		.withMessage("pendingUnderSection is required"),
-	// check('ripeForDisposal').notEmpty().withMessage('ripeForDisposal is required'),
 	check("itemDesc.current")
-		.notEmpty()
+		.isString()
 		.withMessage("itemDesc-current is required"),
 	check("seizedItemName.current")
 		.notEmpty()
@@ -229,9 +228,6 @@ const receiptValidationSpecificFeilds = [
 	check("handingOverOfficerDesignation.current")
 		.notEmpty()
 		.withMessage("handingOverOfficerDesignation is required"),
-	check("pendingUnderSection.current")
-		.notEmpty()
-		.withMessage("pendingUnderSection is required"),
 
 	(req, res, next) => {
 		const errors = validationResult(req).array();

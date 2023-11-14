@@ -2,6 +2,23 @@ const mongoose = require("mongoose");
 const { previousDataSchema } = require("./previousDataSchema");
 const { ObjectId } = require("mongodb");
 
+const partyDetailsSchema = new mongoose.Schema(
+	{
+		partyName: {
+			type: String,
+			require: true,
+		},
+		partyAddress: {
+			type: String,
+			require: true,
+		},
+		iecNo: {
+			type: String,
+		},
+	},
+	{ _id: false }
+);
+
 const eMalkhana = new mongoose.Schema(
 	{
 		eMalkhanaNo: {
@@ -21,19 +38,7 @@ const eMalkhana = new mongoose.Schema(
 			type: String,
 			require: true,
 		},
-		partyDetails: {
-			partyName: String,
-			partyAddress: String,
-			iecNo: String
-		},
-		importerName: {
-			type: String,
-			require: true,
-		},
-		importerAddress: {
-			type: String,
-			require: true,
-		},
+		partyDetails: [partyDetailsSchema],
 		placeOfSeizure: {
 			type: String,
 			require: true,
@@ -60,6 +65,13 @@ const eMalkhana = new mongoose.Schema(
 			previousData: [previousDataSchema(Number)],
 		},
 		itemDesc: {
+			current: {
+				type: String,
+				require: true,
+			},
+			previousData: [previousDataSchema(String)],
+		},
+		pendingUnderSection: {
 			current: {
 				type: String,
 				require: true,
@@ -116,22 +128,18 @@ const eMalkhana = new mongoose.Schema(
 			require: true,
 			ref: "user",
 		},
-		reOpenFileNo: {
-			type: Object,
-			default: null,
-		},
 		preOpenTrail: {
-			type: Number
-		}, //[note: '0 or 1']
+			type: Number,
+		}, // [note: '0 or 1']
 		preOpenTrailDetails: {
-			type: String
+			type: String,
 		},
 		sampleDrawn: {
-			type: Number
+			type: Number,
 		}, // [note: '0 or 1']
 		sampleDrawnDetails: {
-			type: String
-		}
+			type: String,
+		},
 	},
 	{ timestamps: true, versionKey: false }
 );

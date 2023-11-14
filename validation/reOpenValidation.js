@@ -1,9 +1,7 @@
 const { check, validationResult } = require("express-validator");
 
 const reOpenValidation = [
-	check("updateWhAckNos")
-		.notEmpty()
-		.withMessage("updateWhAckNos is required"),
+	check("updateFileNos").notEmpty().withMessage("updateFileNos is required"),
 	check("reOpenReason").notEmpty().withMessage("reOpenReason is required"),
 	check("reOpenDate").notEmpty().withMessage("reOpenDateis required"),
 	check("handOverOfficerName")
@@ -12,20 +10,15 @@ const reOpenValidation = [
 	check("handOverOfficerDesignation")
 		.notEmpty()
 		.withMessage("handOverOfficerDesignation is required"),
-	check("reOpenFileNo")
-		.notEmpty()
-		.withMessage("reOpenFileNo. is required"),
-	check("preOpenTrail")
-		.notEmpty()
-		.withMessage("preOpenTrail is required"),
+	check("preOpenTrail").notEmpty().withMessage("preOpenTrail is required"),
 	check("preOpenTrailDetails")
-		.notEmpty()
+		.exists()
+		.isString()
 		.withMessage("preOpenTrailDetails is required"),
-	check("sampleDrawn")
-		.notEmpty()
-		.withMessage("sampleDrawn is required"),
+	check("sampleDrawn").notEmpty().withMessage("sampleDrawn is required"),
 	check("sampleDrawnDetails")
-		.notEmpty()
+		.exists()
+		.isString()
 		.withMessage("sampleDrawnDetails is required"),
 	(req, res, next) => {
 		const errors = validationResult(req).array();

@@ -32,6 +32,7 @@ routes.get("/eMalkhana", eMalkhanaController.getEmakhalaDetails)
 routes.post("/getDataUsingeMalkhanaById", eMalkhanaValidation.checkId, eMalkhanaController.eMalkhanaDataById)
 routes.get("/geteMalkhanaNoUsingStatus", eMalkhanaController.getAlleMalkhanaNoUsingStatus)
 routes.get("/geteWhNoUsingStatus", eMalkhanaController.getAllWhNoUsingStatus)
+routes.get("/getfileNoUsingStatus", eMalkhanaController.getAllFileNoUsingStatus)
 
 // search  GET API
 routes.post("/getDataByeMalkhanaNo", eMalkhanaValidation.checkeMalkhanaNo, eMalkhanaController.searchDataUsingeMalkhanaNo)
@@ -57,7 +58,7 @@ routes.post("/deleteDocumentBasedOnEmalkhanaNo", eMalkhanaValidation.deleteDocum
 
 
 // --------------------------REOPEN UPDATE API---------------------------------------------------//
-routes.post("/updateReOpenApi", authorized, reOpenValidation.reOpenValidation, eMalkhanaController.reOpenUpdateUsingMultipleWhAckNo)
+routes.post("/updateReOpenApi", authorized, reOpenValidation.reOpenValidation, eMalkhanaController.reOpenUpdateUsingMultipleFileNo)
 
 // ------------------------------------receipt API---------------------------------//
 // post API

@@ -55,13 +55,6 @@ const receipt = new mongoose.Schema(
 			},
 			previousData: [previousDataSchema(String)],
 		},
-		pendingUnderSection: {
-			current: {
-				type: String,
-				require: true,
-			},
-			previousData: [previousDataSchema(String)],
-		},
 		adjucationOrderNo: {
 			type: String,
 		},

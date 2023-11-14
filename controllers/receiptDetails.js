@@ -170,7 +170,7 @@ const insertReceiptDetails = async (req, res) => {
 			});
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -183,7 +183,7 @@ const getReceiptDetails = async (req, res) => {
 			return res.send({ status: 1, data: getReceiptDetails });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -211,6 +211,7 @@ const updateReceiptSpecificFields = async (req, res) => {
 				const newPreviousData = {
 					data: getPreviousDataByID.packageDetails.current,
 					date: getPreviousDataByID.updatedAt,
+					reason: updateData.reason,
 				};
 				updateData.packageDetails.previousData = [
 					...getPreviousDataByID.packageDetails.previousData,
@@ -229,6 +230,7 @@ const updateReceiptSpecificFields = async (req, res) => {
 				const newPreviousData = {
 					data: getPreviousDataByID.godownName.current,
 					date: getPreviousDataByID.updatedAt,
+					reason: updateData.reason,
 				};
 				updateData.godownName.previousData = [
 					...getPreviousDataByID.godownName.previousData,
@@ -247,6 +249,7 @@ const updateReceiptSpecificFields = async (req, res) => {
 				const newPreviousData = {
 					data: getPreviousDataByID.godownCode.current,
 					date: getPreviousDataByID.updatedAt,
+					reason: updateData.reason,
 				};
 				updateData.godownCode.previousData = [
 					...getPreviousDataByID.godownCode.previousData,
@@ -265,6 +268,7 @@ const updateReceiptSpecificFields = async (req, res) => {
 				const newPreviousData = {
 					data: getPreviousDataByID.locationOfPackageInGodown.current,
 					date: getPreviousDataByID.updatedAt,
+					reason: updateData.reason,
 				};
 				updateData.locationOfPackageInGodown.previousData = [
 					...getPreviousDataByID.locationOfPackageInGodown
@@ -284,6 +288,7 @@ const updateReceiptSpecificFields = async (req, res) => {
 				const newPreviousData = {
 					data: getPreviousDataByID.handingOverOfficerName.current,
 					date: getPreviousDataByID.updatedAt,
+					reason: updateData.reason,
 				};
 				updateData.handingOverOfficerName.previousData = [
 					...getPreviousDataByID.handingOverOfficerName.previousData,
@@ -303,6 +308,7 @@ const updateReceiptSpecificFields = async (req, res) => {
 					data: getPreviousDataByID.handingOverOfficerDesignation
 						.current,
 					date: getPreviousDataByID.updatedAt,
+					reason: updateData.reason,
 				};
 				updateData.handingOverOfficerDesignation.previousData = [
 					...getPreviousDataByID.handingOverOfficerDesignation
@@ -311,24 +317,6 @@ const updateReceiptSpecificFields = async (req, res) => {
 				];
 			} else {
 				delete updateData.handingOverOfficerDesignation;
-			}
-		}
-
-		if (updateData.pendingUnderSection) {
-			if (
-				getPreviousDataByID.pendingUnderSection.current !==
-				updateData.pendingUnderSection.current
-			) {
-				const newPreviousData = {
-					data: getPreviousDataByID.pendingUnderSection.current,
-					date: getPreviousDataByID.updatedAt,
-				};
-				updateData.pendingUnderSection.previousData = [
-					...getPreviousDataByID.pendingUnderSection.previousData,
-					newPreviousData,
-				];
-			} else {
-				delete updateData.pendingUnderSection;
 			}
 		}
 
@@ -341,7 +329,7 @@ const updateReceiptSpecificFields = async (req, res) => {
 			return res.send({ status: 1, msg: "Updateted Sucessfully" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -374,7 +362,7 @@ const receiptDataById = async (req, res) => {
 			return res.send({ status: 0, msg: "data Not found" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -404,7 +392,7 @@ const searchDataUsingeMalkhanaNo = async (req, res) => {
 			return res.send({ status: 0, msg: "data Not found" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -433,7 +421,7 @@ const searchDataUsingWackNo = async (req, res) => {
 			return res.send({ status: 0, msg: "data Not found" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -459,7 +447,7 @@ const searchDataByAdjucationOrderNo = async (req, res) => {
 			return res.send({ status: 0, msg: "data Not found" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -481,7 +469,7 @@ const getReportDataByGodownName = async (req, res) => {
 			return res.send({ status: 0, msg: "data Not found" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -504,7 +492,7 @@ const getReportDataByGodownCode = async (req, res) => {
 			return res.send({ status: 0, msg: "data Not found" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -514,7 +502,7 @@ const reportOfPendingUnderSection = async (req, res) => {
 	try {
 		const pendingUnderSection = req.body;
 		const pendingSection = await db.performCaseInsensitiveSearch(
-			"receipt",
+			"eMalkhana",
 			{ barcode: 0 },
 			"pendingUnderSection.current",
 			pendingUnderSection.searchItem
@@ -525,7 +513,7 @@ const reportOfPendingUnderSection = async (req, res) => {
 			return res.send({ status: 0, msg: "data Not found" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -546,7 +534,7 @@ const reportOfRipeForDisposal = async (req, res) => {
 			return res.send({ status: 0, msg: "data Not found" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -679,24 +667,6 @@ const updateReceipt = async (req, res) => {
 			}
 		}
 
-		if (updateReceptData.pendingUnderSection) {
-			if (
-				getPreviousDataByID.pendingUnderSection.current !==
-				updateReceptData.pendingUnderSection.current
-			) {
-				const newPreviousData = {
-					data: getPreviousDataByID.pendingUnderSection.current,
-					date: getPreviousDataByID.updatedAt,
-				};
-				updateReceptData.pendingUnderSection.previousData = [
-					...getPreviousDataByID.pendingUnderSection.previousData,
-					newPreviousData,
-				];
-			} else {
-				delete updateReceptData.pendingUnderSection;
-			}
-		}
-
 		const getEmalkhanaPreviousData = await db.findSingleDocument(
 			"eMalkhana",
 			{ eMalkhanaNo: getPreviousDataByID.eMalkhanaNo }
@@ -804,6 +774,25 @@ const updateReceipt = async (req, res) => {
 			}
 		}
 
+		if (updateReceptData.pendingUnderSection) {
+			if (
+				getEmalkhanaPreviousData.pendingUnderSection.current !==
+				updateReceptData.pendingUnderSection.current
+			) {
+				const newPreviousData = {
+					data: getEmalkhanaPreviousData.pendingUnderSection.current,
+					date: getEmalkhanaPreviousData.updatedAt,
+				};
+				updateReceptData.pendingUnderSection.previousData = [
+					...getEmalkhanaPreviousData.pendingUnderSection
+						.previousData,
+					newPreviousData,
+				];
+			} else {
+				delete updateReceptData.pendingUnderSection;
+			}
+		}
+
 		const receiptUpdateById = await db.findByIdAndUpdate(
 			"receipt",
 			updateReceptData.id,
@@ -819,7 +808,7 @@ const updateReceipt = async (req, res) => {
 			return res.send({ status: 1, msg: "updated successfully" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -878,7 +867,7 @@ const getAllDataBasedOnEmalkhanaNumber = async (req, res) => {
 			return res.send({ status: 0, msg: "no data found" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -935,7 +924,7 @@ const getEmalkhanaDataBasedonWhackNo = async (req, res) => {
 			return res.send({ status: 1, data: allData });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 

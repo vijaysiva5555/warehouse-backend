@@ -6,15 +6,11 @@ const eMalkhanaValidation = [
 		.notEmpty()
 		.withMessage("seizingUnitName is required"),
 	check("fileNo").notEmpty().withMessage("fileNo is required"),
-	check("importerName").notEmpty().withMessage("importerName is required"),
-	check("importerAddress")
-		.notEmpty()
-		.withMessage("importerAddress is required"),
 	check("placeOfSeizure")
 		.notEmpty()
 		.withMessage(" placeOfSeizure is required"),
 	check("itemDesc.current")
-		.notEmpty()
+		.isString()
 		.withMessage("itemDesc-current is required"),
 	check("seizedItemName.current")
 		.notEmpty()
@@ -34,13 +30,12 @@ const eMalkhanaValidation = [
 	check("seizingOfficerSealNo")
 		.notEmpty()
 		.withMessage("seizingOfficerSealNo is required"),
-	check("partyDetails.partyName")
+	check("partyDetails.*.partyName")
 		.notEmpty()
 		.withMessage("partyName is required"),
-	check("partyDetails.partyAddress")
+	check("partyDetails.*.partyAddress")
 		.notEmpty()
 		.withMessage("partyAddress is required"),
-
 
 	(req, res, next) => {
 		const errors = validationResult(req).array();

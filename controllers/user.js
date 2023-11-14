@@ -25,7 +25,7 @@ const register = async (req, res) => {
 			return res.send({ status: 1, msg: "user successfully register" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 const loginUser = async (req, res) => {
@@ -62,7 +62,7 @@ const loginUser = async (req, res) => {
 			return res.send({ status: 0, msg: "invalid credentials" });
 		});
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 const userDataById = async (req, res) => {
@@ -81,7 +81,7 @@ const userDataById = async (req, res) => {
 		}
 		return res.send({ status: 1, data: [] });
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 

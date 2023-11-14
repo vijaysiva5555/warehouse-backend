@@ -39,7 +39,7 @@ const disposalDataDetails = async (req, res) => {
 			return res.send({ status: 0, msg: "Invalid Request" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -51,7 +51,7 @@ const getdisposalDetails = async (req, res) => {
 			return res.send({ status: 1, data: getdisposalDetails });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -90,7 +90,7 @@ const updateDisposalDetails = async (req, res) => {
 			return res.send({ status: 1, msg: "updated successfully" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -119,7 +119,7 @@ const disposalDataById = async (req, res) => {
 			return res.send({ status: 0, msg: "data Not found" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -147,7 +147,7 @@ const searchDataUsingeMalkhanaNo = async (req, res) => {
 			return res.send({ status: 0, msg: "data Not found" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -174,7 +174,7 @@ const searchDataUsingWackNo = async (req, res) => {
 			return res.send({ status: 0, msg: "data Not found" });
 		}
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
@@ -337,7 +337,7 @@ const getAllDataBasedOnWhackNo = async (req, res) => {
 		}
 		return res.send({ status: 0, msg: "data not found" });
 	} catch (error) {
-		return res.send(error.message);
+		return res.send({ status: 0, msg: error.message });
 	}
 };
 
