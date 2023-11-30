@@ -11,14 +11,19 @@ const disposalDataDetails = async (req, res) => {
 			eMalkhanaNo: insertDisposalData.eMalkhanaNo,
 		});
 		if (checkeMalkhanaNo === true) {
-			return res.send({ status: 0, msg: "E-malkhana NO Alreday Exists" });
+			return res.send({
+				status: 0,
+				msg: "Disposal details are Already entered for this entry",
+			});
 		}
 		insertDisposalData.createdBy = res.locals.userData.userId;
-		insertDisposalData.reOpenUploadOrder = await uploadToAws(
-			CONFIG.DISPOSALDOC,
-			insertDisposalData.eMalkhanaNo,
-			req.files.reOpenUploadOrder
-		);
+		if(req.files.reOpenUploadOrder != null){
+			insertDisposalData.reOpenUploadOrder = await uploadToAws(
+				CONFIG.DISPOSALDOC,
+				insertDisposalData.eMalkhanaNo,
+				req.files.reOpenUploadOrder
+			);
+		}
 
 		const disposalData = await db.insertSingleDocument(
 			"disposal",
