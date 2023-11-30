@@ -52,17 +52,24 @@ const eMalkhana = new mongoose.Schema(
 		},
 		seizedItemWeight: {
 			current: {
-				type: Number,
+				type: String,
 				require: true,
 			},
-			previousData: [previousDataSchema(Number)],
+			previousData: [previousDataSchema(String)],
 		},
 		seizedItemValue: {
 			current: {
-				type: Number,
+				type: String,
 				require: true,
 			},
-			previousData: [previousDataSchema(Number)],
+			previousData: [previousDataSchema(String)],
+		},
+		seizedItemUnit: {
+			current: {
+				type: String,
+				require: true,
+			},
+			previousData: [previousDataSchema(String)],
 		},
 		itemDesc: {
 			current: {

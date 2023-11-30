@@ -21,6 +21,9 @@ const eMalkhanaValidation = [
 	check("seizedItemValue.current")
 		.notEmpty()
 		.withMessage("seizedItemValue-current is required"),
+	check("seizedItemUnit.current")
+		.notEmpty()
+		.withMessage("seizedItemUnit-current is required"),
 	check("seizingOfficerName")
 		.notEmpty()
 		.withMessage("seizingOfficerName is required"),
@@ -167,6 +170,9 @@ const eMalkhanaValidationSpecificFeilds = [
 	check("seizedItemValue.current")
 		.notEmpty()
 		.withMessage("seizedItemValue-current is required"),
+	check("seizedItemUnit.current")
+		.notEmpty()
+		.withMessage("seizedItemUnit-current is required"),
 
 	(req, res, next) => {
 		const errors = validationResult(req).array();

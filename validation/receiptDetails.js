@@ -39,6 +39,9 @@ const receiptValidation = [
 	check("seizedItemValue.current")
 		.notEmpty()
 		.withMessage("seizedItemValue-current is required"),
+	check("seizedItemUnit.current")
+		.notEmpty()
+		.withMessage("seizedItemUnit-current is required"),
 
 	(req, res, next) => {
 		const errors = validationResult(req).array();

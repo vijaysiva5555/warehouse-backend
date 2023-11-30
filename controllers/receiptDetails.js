@@ -135,6 +135,24 @@ const insertReceiptDetails = async (req, res) => {
 			}
 		}
 
+		if (receiptInput.seizedItemUnit) {
+			if (
+				getPreviousDataByID.seizedItemUnit.current !==
+				receiptInput.seizedItemUnit.current
+			) {
+				const newPreviousData = {
+					data: getPreviousDataByID.seizedItemUnit.current,
+					date: getPreviousDataByID.updatedAt,
+				};
+				receiptInput.seizedItemUnit.previousData = [
+					...getPreviousDataByID.seizedItemUnit.previousData,
+					newPreviousData,
+				];
+			} else {
+				delete receiptInput.seizedItemUnit;
+			}
+		}
+
 		if (receiptInput.itemDesc) {
 			if (
 				getPreviousDataByID.itemDesc.current !==
@@ -756,6 +774,24 @@ const updateReceipt = async (req, res) => {
 			}
 		}
 
+		if (updateReceptData.seizedItemUnit) {
+			if (
+				getEmalkhanaPreviousData.seizedItemUnit.current !==
+				updateReceptData.seizedItemUnit.current
+			) {
+				const newPreviousData = {
+					data: getEmalkhanaPreviousData.seizedItemUnit.current,
+					date: getEmalkhanaPreviousData.updatedAt,
+				};
+				updateReceptData.seizedItemUnit.previousData = [
+					...getEmalkhanaPreviousData.seizedItemUnit.previousData,
+					newPreviousData,
+				];
+			} else {
+				delete updateReceptData.seizedItemUnit;
+			}
+		}
+
 		if (updateReceptData.itemDesc) {
 			if (
 				getEmalkhanaPreviousData.itemDesc.current !==
@@ -878,6 +914,12 @@ const getEmalkhanaDataBasedonWhackNo = async (req, res) => {
 		const getReceptData = await db.findSingleDocument("receipt", {
 			whAckNo: numberData.whAckNo,
 		});
+		if (getReceptData == null) {
+			return res.send({
+				status: 0,
+				msg: "Entry Not found, Please try other Warehouse Acknowledgement Numbers",
+			});
+		}
 		const getEmalkhanaData = await db.findSingleDocument("eMalkhana", {
 			eMalkhanaNo: getReceptData.eMalkhanaNo,
 		});

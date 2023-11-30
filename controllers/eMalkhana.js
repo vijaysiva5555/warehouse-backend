@@ -131,6 +131,24 @@ const updateMalkhana = async (req, res) => {
 			}
 		}
 
+		if (updateMalkhanData.seizedItemUnit) {
+			if (
+				getPreviousDataByID.seizedItemUnit.current !==
+				updateMalkhanData.seizedItemUnit.current
+			) {
+				const newPreviousData = {
+					data: getPreviousDataByID.seizedItemUnit.current,
+					date: getPreviousDataByID.updatedAt,
+				};
+				updateMalkhanData.seizedItemUnit.previousData = [
+					...getPreviousDataByID.seizedItemUnit.previousData,
+					newPreviousData,
+				];
+			} else {
+				delete updateMalkhanData.seizedItemUnit;
+			}
+		}
+
 		if (updateMalkhanData.itemDesc) {
 			if (
 				getPreviousDataByID.itemDesc.current !==
@@ -254,8 +272,6 @@ const searchDataUsingfileNo = async (req, res) => {
 			{
 				fileNo: 1,
 				eMalkhanaNo: 1,
-				importerName: 1,
-				importerAddress: 1,
 				itemDesc: 1,
 				_id: 1,
 			},
@@ -282,8 +298,6 @@ const searchDataUsingItemDesc = async (req, res) => {
 			{
 				fileNo: 1,
 				eMalkhanaNo: 1,
-				importerName: 1,
-				importerAddress: 1,
 				itemDesc: 1,
 			},
 			"itemDesc.current",
@@ -300,53 +314,38 @@ const searchDataUsingItemDesc = async (req, res) => {
 	}
 };
 
-// --------------Search data using Importer/Exporter Feild(importerName)------------------//
+// --------------Search data using Party Name------------------//
 
-const searchDataUsingImporterName = async (req, res) => {
+const searchDataUsingPartyName = async (req, res) => {
 	try {
 		const importerName = req.body;
-		const checkImporterName = await db.performCaseInsensitiveSearch(
-			"eMalkhana",
+		const checkImporterName = await db.getAggregation("eMalkhana", [
 			{
-				fileNo: 1,
-				eMalkhanaNo: 1,
-				importerName: 1,
-				_id: 1,
-				importerAddress: 1,
-				itemDesc: 1,
+				$match: {
+					partyDetails: {
+						$elemMatch: {
+							partyName: {
+								$regex: importerName.searchItem,
+							},
+						},
+					},
+				},
 			},
-			"importerName",
-			importerName.searchItem
-		);
+			{
+				$project: {
+					fileNo: 1,
+					eMalkhanaNo: 1,
+					itemDesc: 1,
+					_id: 1,
+				},
+			},
+			{
+				$limit: 50,
+			},
+		]);
 
 		if (checkImporterName) {
 			return res.send({ status: 1, data: checkImporterName });
-		} else {
-			return res.send({ status: 0, msg: "data not found" });
-		}
-	} catch (error) {
-		return res.send({ status: 0, msg: error.message });
-	}
-};
-
-const searchDataUsingImporterAddress = async (req, res) => {
-	try {
-		const importerAddress = req.body;
-		const checkImporterAddress = await db.performCaseInsensitiveSearch(
-			"eMalkhana",
-			{
-				fileNo: 1,
-				eMalkhanaNo: 1,
-				importerName: 1,
-				importerAddress: 1,
-				itemDesc: 1,
-			},
-			"importerAddress",
-			importerAddress.searchItem
-		);
-
-		if (checkImporterAddress !== null) {
-			return res.send({ status: 1, data: checkImporterAddress });
 		} else {
 			return res.send({ status: 0, msg: "data not found" });
 		}
@@ -457,7 +456,7 @@ const updateSpecficFieldByid = async (req, res) => {
 				const newPreviousData = {
 					data: getPreviousDataByID.seizedItemWeight.current,
 					date: getPreviousDataByID.updatedAt,
-					reason: updateData.reason
+					reason: updateData.reason,
 				};
 				updateData.seizedItemWeight.previousData = [
 					...getPreviousDataByID.seizedItemWeight.previousData,
@@ -476,7 +475,7 @@ const updateSpecficFieldByid = async (req, res) => {
 				const newPreviousData = {
 					data: getPreviousDataByID.seizedItemValue.current,
 					date: getPreviousDataByID.updatedAt,
-					reason: updateData.reason
+					reason: updateData.reason,
 				};
 				updateData.seizedItemValue.previousData = [
 					...getPreviousDataByID.seizedItemValue.previousData,
@@ -484,6 +483,25 @@ const updateSpecficFieldByid = async (req, res) => {
 				];
 			} else {
 				delete updateData.seizedItemValue;
+			}
+		}
+
+		if (updateData.seizedItemUnit) {
+			if (
+				getPreviousDataByID.seizedItemUnit.current !==
+				updateData.seizedItemUnit.current
+			) {
+				const newPreviousData = {
+					data: getPreviousDataByID.seizedItemUnit.current,
+					date: getPreviousDataByID.updatedAt,
+					reason: updateData.reason,
+				};
+				updateData.seizedItemUnit.previousData = [
+					...getPreviousDataByID.seizedItemUnit.previousData,
+					newPreviousData,
+				];
+			} else {
+				delete updateData.seizedItemUnit;
 			}
 		}
 
@@ -495,7 +513,7 @@ const updateSpecficFieldByid = async (req, res) => {
 				const newPreviousData = {
 					data: getPreviousDataByID.itemDesc.current,
 					date: getPreviousDataByID.updatedAt,
-					reason: updateData.reason
+					reason: updateData.reason,
 				};
 				updateData.itemDesc.previousData = [
 					...getPreviousDataByID.itemDesc.previousData,
@@ -851,8 +869,7 @@ module.exports = {
 	searchDataUsingeMalkhanaNo,
 	searchDataUsingfileNo,
 	searchDataUsingItemDesc,
-	searchDataUsingImporterName,
-	searchDataUsingImporterAddress,
+	searchDataUsingPartyName,
 	getReportUsingSeizingItemWise,
 	getReportUsingSeizingUnitWise,
 	deleteDocumentBasedOnEmalkhanaNo,
