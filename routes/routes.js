@@ -40,8 +40,7 @@ routes.post("/getDataByeMalkhanaNo", eMalkhanaValidation.checkeMalkhanaNo, eMalk
 // search  GET API
 routes.post("/getDataByeMalkhanaNo", eMalkhanaValidation.checkeMalkhanaNo, eMalkhanaController.searchDataUsingeMalkhanaNo)
 routes.post("/getDataByFileNo", eMalkhanaValidation.searchItem, eMalkhanaController.searchDataUsingfileNo)
-routes.post("/getDataByImporterName", eMalkhanaValidation.searchItem, eMalkhanaController.searchDataUsingImporterName)
-routes.post("/getDataByImporterAddress", eMalkhanaValidation.searchItem, eMalkhanaController.searchDataUsingImporterAddress)
+routes.post("/getDataByPartyName", eMalkhanaValidation.searchItem, eMalkhanaController.searchDataUsingPartyName)
 routes.post("/getDataByItemDesc", eMalkhanaValidation.searchItem, eMalkhanaController.searchDataUsingItemDesc)
 routes.post("/getReceiptMalkhanaDataById", eMalkhanaValidation.checkId, eMalkhanaController.getReceiptMalkhanaDataById)
 routes.post("/getAllDataByEmalkhanaId", eMalkhanaValidation.checkId, eMalkhanaController.getAllDataByEmalkhanaId)
