@@ -1,14 +1,40 @@
-const AWS = require("aws-sdk");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { Upload } = require("@aws-sdk/lib-storage");
+const {
+	GetObjectCommand,
+	S3,
+	S3Client,
+	HeadObjectCommand,
+} = require("@aws-sdk/client-s3");
 const config = require("../config/config");
 
-AWS.config.update({ region: config.REGION });
+const s3 = new S3({
+	credentials: {
+		accessKeyId: config.ACCESS_KEY,
+		secretAccessKey: config.SECRET_KEY,
+	},
+	region: config.REGION,
+});
 
-const s3 = new AWS.S3({
+const client = new S3Client({
+	region: config.REGION,
 	credentials: {
 		accessKeyId: config.ACCESS_KEY,
 		secretAccessKey: config.SECRET_KEY,
 	},
 });
+
+async function uploadFile(params, fileObject) {
+	try {
+		await new Upload({
+			client: s3,
+			params,
+		}).done();
+		return fileObject;
+	} catch (error) {
+		throw new Error(error.message);
+	}
+}
 
 const uploadToAws = async (mainFolder, folder, files) => {
 	// Check if the main folder exists
@@ -31,20 +57,10 @@ const uploadToAws = async (mainFolder, folder, files) => {
 			ContentType: "image/jpg/pdf/jpeg",
 		};
 
-		return new Promise((resolve, reject) => {
-			s3.upload(params, (error, data) => {
-				if (error) {
-					console.error(error);
-					// eslint-disable-next-line prefer-promise-reject-errors
-					reject(false);
-				} else {
-					resolve({
-						href: `${mainFolder}/${folder}/${file.name}`,
-						name: file.name,
-						size: file.size,
-					});
-				}
-			});
+		return uploadFile(params, {
+			href: `${mainFolder}/${folder}/${file.name}`,
+			name: file.name,
+			size: file.size,
 		});
 	});
 
@@ -61,11 +77,17 @@ const uploadToAws = async (mainFolder, folder, files) => {
 // Function to check if a folder exists
 const checkIfFolderExists = async (bucketName, folderName) => {
 	try {
-		await s3.headObject({ Bucket: bucketName, Key: folderName }).promise();
+		await client.send(
+			new HeadObjectCommand({ Bucket: bucketName, Key: folderName + "/" })
+		);
 		return true; // Folder exists
 	} catch (error) {
-		if (error.code === "NotFound") {
-			return false; // Folder does not exist
+		if (error.$metadata?.httpStatusCode === 404) {
+			// doesn't exist and permission policy includes s3:ListBucket
+			return false;
+		} else if (error.$metadata?.httpStatusCode === 403) {
+			// doesn't exist, permission policy WITHOUT s3:ListBucket
+			return false;
 		} else {
 			throw error; // Other error occurred
 		}
@@ -81,7 +103,10 @@ const createFolder = async (bucketName, folderName) => {
 	};
 
 	try {
-		await s3.upload(params).promise();
+		await new Upload({
+			client: s3,
+			params,
+		}).done();
 	} catch (error) {
 		console.error("Error creating folder:", error);
 		// Handle the error as needed
@@ -89,13 +114,18 @@ const createFolder = async (bucketName, folderName) => {
 	}
 };
 
-async function getSignedUrl(fileName) {
+async function getS3SignedUrl(fileName) {
 	try {
-		return await s3.getSignedUrlPromise("getObject", {
-			Bucket: config.BUCKET_NAME,
-			Key: fileName,
-			Expires: 60 * 60, // Set the expiration time to 1 hour (in seconds)
-		});
+		return await getSignedUrl(
+			s3,
+			new GetObjectCommand({
+				Bucket: config.BUCKET_NAME,
+				Key: fileName,
+			}),
+			{
+				expiresIn: 60 * 60,
+			}
+		);
 	} catch (error) {
 		throw new Error(error.message);
 	}
@@ -103,16 +133,19 @@ async function getSignedUrl(fileName) {
 
 const deleteFile = async (fileLocation) => {
 	try {
-		await s3
-			.deleteObject({
-				Bucket: config.BUCKET_NAME,
-				Key: fileLocation,
-			})
-			.promise();
+		await s3.deleteObject({
+			Bucket: config.BUCKET_NAME,
+			Key: fileLocation,
+		});
 		console.log("File deleted successfully");
 	} catch (error) {
 		throw new Error(error.message);
 	}
 };
 
-module.exports = { uploadToAws, deleteFile, createFolder, getSignedUrl };
+module.exports = {
+	uploadToAws,
+	deleteFile,
+	createFolder,
+	getSignedUrl: getS3SignedUrl,
+};
