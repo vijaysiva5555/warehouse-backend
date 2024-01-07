@@ -556,6 +556,30 @@ const reportOfRipeForDisposal = async (req, res) => {
 	}
 };
 
+// Get Reports of Malkhana based on Date Period
+const reportsBasedOnDate = async (req, res) => {
+	try {
+		const { from, to } = req.body;
+		const reportData = await db.findAndSelect(
+			"eMalkhana",
+			{
+				createdAt: {
+					$gte: moment(from).toDate(),
+					$lte: moment(to).toDate(),
+				},
+			},
+			{ documents: 0, createdBy: 0, reOpenUploadOrder: 0 }
+		);
+		if (reportData) {
+			return res.send({ status: 1, data: reportData });
+		} else {
+			return res.send({ status: 0, msg: "Entries Not found in this date period" });
+		}
+	} catch (error) {
+		return res.send({ status: 0, msg: error.message });
+	}
+};
+
 // update data Details of package received,Name/code of the godown,Location of package inside the godown, Pending under section .
 
 const updateReceipt = async (req, res) => {
@@ -985,4 +1009,5 @@ module.exports = {
 	getAllDataBasedOnEmalkhanaNumber,
 	getEmalkhanaDataBasedonWhackNo,
 	updateReceiptSpecificFields,
+	reportsBasedOnDate
 };
