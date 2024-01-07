@@ -405,14 +405,20 @@ const getReportUsingYearWise = async (req, res) => {
 		if (!inputYear) {
 			return res.send({
 				status: 0,
-				msg: "Missing 'createdAt' field in the request body",
+				msg: "Please Provide Year",
 			});
 		}
 
 		const yearWiseDataRequest = await db.getAggregation("eMalkhana", [
 			{
 				$addFields: {
-					extractedYear: { $year: "$createdAt" },
+					extractedYear: {
+						$year: {
+							$dateFromString: {
+								dateString: "$yearOfSeizure",
+							},
+						},
+					},
 				},
 			},
 			{
@@ -427,7 +433,7 @@ const getReportUsingYearWise = async (req, res) => {
 		} else {
 			return res.send({
 				status: 0,
-				msg: "Data not found for the specified year",
+				data: "No Entries found for this specified year",
 			});
 		}
 	} catch (error) {
@@ -566,11 +572,11 @@ const deleteDocumentBasedOnEmalkhanaNo = async (req, res) => {
 
 // _____Re-open UPDATE API------------------//
 
-const reOpenUpdateUsingMultipleFileNo = async (req, res) => {
+const reOpenUpdateUsingMultipleMalkhanaNo = async (req, res) => {
 	try {
 		const {
 			reOpenReason,
-			updateFileNos,
+			updateEmalkhanas,
 			reOpenDate,
 			handOverOfficerName,
 			handOverOfficerDesignation,
@@ -578,9 +584,8 @@ const reOpenUpdateUsingMultipleFileNo = async (req, res) => {
 			preOpenTrailDetails,
 			sampleDrawn,
 			sampleDrawnDetails,
+			reOpenOrderNo,
 		} = req.body;
-
-		let updateMalkhanasNo = [];
 
 		const updatesGivenData = {
 			reOpenReason,
@@ -591,12 +596,13 @@ const reOpenUpdateUsingMultipleFileNo = async (req, res) => {
 			preOpenTrailDetails,
 			sampleDrawnDetails,
 			sampleDrawn,
+			reOpenOrderNo,
 		};
 
-		updateMalkhanasNo = await db.findDocuments(
+		let updateMalkhanasNo = await db.findDocuments(
 			"eMalkhana",
 			{
-				fileNo: { $in: updateFileNos },
+				eMalkhanaNo: { $in: updateEmalkhanas },
 			},
 			{ eMalkhanaNo: 1 }
 		);
@@ -873,7 +879,7 @@ module.exports = {
 	getReportUsingSeizingItemWise,
 	getReportUsingSeizingUnitWise,
 	deleteDocumentBasedOnEmalkhanaNo,
-	reOpenUpdateUsingMultipleFileNo,
+	reOpenUpdateUsingMultipleMalkhanaNo,
 	getReportUsingYearWise,
 	getReceiptMalkhanaDataById,
 	getAllDataByEmalkhanaId,
