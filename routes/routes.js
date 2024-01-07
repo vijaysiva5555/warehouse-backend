@@ -57,7 +57,7 @@ routes.post("/deleteDocumentBasedOnEmalkhanaNo", eMalkhanaValidation.deleteDocum
 
 
 // --------------------------REOPEN UPDATE API---------------------------------------------------//
-routes.post("/updateReOpenApi", authorized, reOpenValidation.reOpenValidation, eMalkhanaController.reOpenUpdateUsingMultipleFileNo)
+routes.post("/updateReOpenApi", authorized, reOpenValidation.reOpenValidation, eMalkhanaController.reOpenUpdateUsingMultipleMalkhanaNo)
 
 // ------------------------------------receipt API---------------------------------//
 // post API
@@ -80,6 +80,7 @@ routes.post("/godownName", receiptValidation.searchItem, receiptController.getRe
 routes.post("/godownCode", receiptValidation.searchItem, receiptController.getReportDataByGodownCode)
 routes.post("/pendingSection", receiptValidation.searchItem, receiptController.reportOfPendingUnderSection)
 routes.post("/ripeDisposal", receiptValidation.searchItem, receiptController.reportOfRipeForDisposal)
+routes.post("/reportsBasedOnDate", receiptValidation.reportsBasedOnDate, receiptController.reportsBasedOnDate)
 
 // update API
 routes.post("/updateReceiptData", receiptValidation.receiptUpdateValidation, receiptController.updateReceipt)
