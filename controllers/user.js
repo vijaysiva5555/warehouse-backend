@@ -11,7 +11,7 @@ const register = async (req, res) => {
 			email: userRegistration.email,
 		});
 		if (checkEmail === true) {
-			return res.send({ status: 1, msg: "email Already Exists" });
+			return res.send({ status: 1, msg: "This Email Already Exists" });
 		}
 		userRegistration.password = bcrypt.hashSync(
 			userRegistration.password,
@@ -22,7 +22,7 @@ const register = async (req, res) => {
 			userRegistration
 		);
 		if (registration) {
-			return res.send({ status: 1, msg: "user successfully register" });
+			return res.send({ status: 1, msg: "User created successfully" });
 		}
 	} catch (error) {
 		return res.send({ status: 0, msg: error.message });
