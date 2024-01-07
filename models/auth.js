@@ -23,8 +23,12 @@ const authorized = async (req, res, next) => {
 				if (!checkcreator) {
 					return res.status(401).send("Unauthorized Access");
 				} else {
-					res.locals.userData = signToken;
-					next();
+					if (checkcreator.status !== 1) {
+						return res.status(401).send("Unauthorized Access");
+					} else {
+						res.locals.userData = signToken;
+						next();
+					}
 				}
 			}
 		}

@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema(
 			require: true,
 		},
 		status: {
-			type: Number,        //1- decative 2- active
+			type: Number,        // 1- decative 2- active
 			default: 1,
 		},
 		name: {

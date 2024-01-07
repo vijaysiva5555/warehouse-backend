@@ -54,14 +54,14 @@ const insertReceiptDetails = async (req, res) => {
 			return res.send({ status: 0, msg: "Invalid E-Malkhana Number" });
 		}
 
-		let jsonData = {
+		const jsonData = {
 			whAckNo: receiptInput.whAckNo,
 			eMalkhanaNo: receiptInput.eMalkhanaNo,
 			seizedItemUnit: getPreviousDataByID.seizedItemUnit,
 			seizedItemName: getPreviousDataByID.seizedItemName,
 			sealNo: getPreviousDataByID.newSealNo
 		}
-		let png = await generateQRCode(jsonData, `${receiptInput.whAckNo}.png`)
+		const png = await generateQRCode(jsonData, `${receiptInput.whAckNo}.png`)
 
 		// Upload the qrCode file to AWS
 		const barcodeFile = {

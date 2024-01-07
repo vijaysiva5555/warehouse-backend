@@ -2,12 +2,10 @@ const express = require("express");
 const mongoose = require("mongoose");
 const routes = require("./routes/routes");
 const app = express();
-const path = require("path");
 const CONFIG = require("./config/config");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
-const { authorized } = require("./models/auth");
 
 app.use(express.json());
 app.use(
@@ -24,11 +22,6 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: true }));
-app.use(
-	"/qrCodeFolder",
-	authorized,
-	express.static(path.join(__dirname, "/qrCodeFolder"), { etag: false })
-);
 mongoose
 	.connect(CONFIG.MONGOURL)
 	.then(() => {
