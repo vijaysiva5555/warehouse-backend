@@ -19,9 +19,9 @@ const reOpenValidation = require("../validation/reOpenValidation")
 // import API
 
 // User API
-routes.post("/register", userValidation.userValidation, userController.register)
 routes.post("/login", userValidation.loginnCreator, userController.loginUser)
 routes.post("/userDataById", userValidation.checkId, userController.userDataById)
+routes.post("/createUser", authorized, userValidation.userValidation, userController.createUser)
 
 // -------------------------eMalkhana API-------------------------------//
 // post api
