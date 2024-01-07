@@ -1,10 +1,10 @@
 const { check, validationResult } = require("express-validator");
 
 const userValidation = [
-	check("role").notEmpty().withMessage("role is required"),
-	check("name").notEmpty().withMessage("name is required"),
-	check("email").notEmpty().withMessage("email is required"),
-	check("password").notEmpty().withMessage("password is required"),
+	check("role").notEmpty().withMessage("Role is required"),
+	check("name").notEmpty().withMessage("Name is required"),
+	check("email").notEmpty().isEmail().withMessage("Email is required"),
+	check("password").notEmpty().withMessage("Password is required"),
 
 	(req, res, next) => {
 		const errors = validationResult(req).array();
