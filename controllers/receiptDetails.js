@@ -1,7 +1,8 @@
 const { default: mongoose } = require("mongoose");
 const db = require("../models/mongo");
 const moment = require("moment");
-const bwipjs = require("bwip-js");
+// const bwipjs = require("bwip-js");
+const { generateQRCode } = require("../models/common")
 const { uploadToAws, getSignedUrl, deleteFile } = require("../models/aws");
 const CONFIG = require("../config/config");
 
@@ -30,24 +31,39 @@ const insertReceiptDetails = async (req, res) => {
 		receiptInput.createdBy = res.locals.userData.userId;
 		receiptInput.status = 2; // for E-malkhana
 
-		const options = {
-			bcid: "code128",
-			text: receiptInput.whAckNo,
-			scale: 3,
-			height: 5,
-		};
+		// const options = {
+		// 	bcid: "code128",
+		// 	text: receiptInput.whAckNo,
+		// 	scale: 3,
+		// 	height: 5,
+		// };
 
-		const png = await new Promise((resolve, reject) => {
-			bwipjs.toBuffer(options, (err, png) => {
-				if (err) {
-					reject(err);
-				} else {
-					resolve(png);
-				}
-			});
+		// const png = await new Promise((resolve, reject) => {
+		// 	bwipjs.toBuffer(options, (err, png) => {
+		// 		if (err) {
+		// 			reject(err);
+		// 		} else {
+		// 			resolve(png);
+		// 		}
+		// 	});
+		// });
+		const getPreviousDataByID = await db.findSingleDocument("eMalkhana", {
+			eMalkhanaNo: receiptInput.eMalkhanaNo,
 		});
+		if (getPreviousDataByID === null) {
+			return res.send({ status: 0, msg: "Invalid E-Malkhana Number" });
+		}
 
-		// Upload the barcode file to AWS
+		let jsonData = {
+			whAckNo: receiptInput.whAckNo,
+			eMalkhanaNo: receiptInput.eMalkhanaNo,
+			seizedItemUnit: getPreviousDataByID.seizedItemUnit,
+			seizedItemName: getPreviousDataByID.seizedItemName,
+			sealNo: getPreviousDataByID.newSealNo
+		}
+		let png = await generateQRCode(jsonData, `${receiptInput.whAckNo}.png`)
+
+		// Upload the qrCode file to AWS
 		const barcodeFile = {
 			data: png,
 			name: `${receiptInput.whAckNo}.png`,
@@ -58,13 +74,7 @@ const insertReceiptDetails = async (req, res) => {
 			receiptInput.whAckNo,
 			barcodeFile
 		);
-		receiptInput.barcode = barcodeLocation[0];
-		const getPreviousDataByID = await db.findSingleDocument("eMalkhana", {
-			eMalkhanaNo: receiptInput.eMalkhanaNo,
-		});
-		if (getPreviousDataByID === null) {
-			return res.send({ status: 0, msg: "Invalid E-Malkhana Number" });
-		}
+		receiptInput.qrCode = barcodeLocation[0];
 
 		if (Array.isArray(req.files.documents) || req.files.documents != null) {
 			const previousDocuments = getPreviousDataByID.documents;
@@ -219,7 +229,7 @@ const updateReceiptSpecificFields = async (req, res) => {
 			return res.send({ status: 0, msg: "Invalid Receipt ID" });
 		}
 
-		delete updateData.barcode;
+		delete updateData.qrCode;
 
 		if (updateData.packageDetails) {
 			if (
@@ -363,9 +373,9 @@ const receiptDataById = async (req, res) => {
 			_id: new mongoose.Types.ObjectId(receiptId.id),
 		});
 		if (receiptData !== null) {
-			if (receiptData.barcode.length !== 0) {
-				receiptData.barcode = await Promise.all(
-					receiptData.barcode.map(async (file) => {
+			if (receiptData.qrCode.length !== 0) {
+				receiptData.qrCode = await Promise.all(
+					receiptData.qrCode.map(async (file) => {
 						return {
 							...file,
 							actualPath: file.href,
@@ -394,9 +404,9 @@ const searchDataUsingeMalkhanaNo = async (req, res) => {
 			eMalkhanaNo: eMalkhanaNo.eMalkhanaNo,
 		});
 		if (checkeMalkhanaNo !== null) {
-			if (checkeMalkhanaNo.barcode.length !== 0) {
-				checkeMalkhanaNo.barcode = await Promise.all(
-					checkeMalkhanaNo.barcode.map(async (file) => {
+			if (checkeMalkhanaNo.qrCode.length !== 0) {
+				checkeMalkhanaNo.qrCode = await Promise.all(
+					checkeMalkhanaNo.qrCode.map(async (file) => {
 						return {
 							...file,
 							actualPath: file.href,
@@ -423,9 +433,9 @@ const searchDataUsingWackNo = async (req, res) => {
 			whAckNo: whAckNo.whAckNo,
 		});
 		if (checkwhAckNo !== null) {
-			if (checkwhAckNo.barcode.length !== 0) {
-				checkwhAckNo.barcode = await Promise.all(
-					checkwhAckNo.barcode.map(async (file) => {
+			if (checkwhAckNo.qrCode.length !== 0) {
+				checkwhAckNo.qrCode = await Promise.all(
+					checkwhAckNo.qrCode.map(async (file) => {
 						return {
 							...file,
 							actualPath: file.href,
@@ -477,7 +487,7 @@ const getReportDataByGodownName = async (req, res) => {
 		const godownName = req.body;
 		const godownItem = await db.performCaseInsensitiveSearch(
 			"receipt",
-			{ barcode: 0 },
+			{ qrCode: 0 },
 			"godownName.current",
 			godownName.searchItem
 		);
@@ -498,7 +508,7 @@ const getReportDataByGodownCode = async (req, res) => {
 		const godownCode = req.body;
 		const getGodownCode = await db.performCaseInsensitiveSearch(
 			"receipt",
-			{ barcode: 0 },
+			{ qrCode: 0 },
 			"godownCode.current",
 			godownCode.searchItem,
 			godownCode.page,
@@ -521,7 +531,7 @@ const reportOfPendingUnderSection = async (req, res) => {
 		const pendingUnderSection = req.body;
 		const pendingSection = await db.performCaseInsensitiveSearch(
 			"eMalkhana",
-			{ barcode: 0 },
+			{ qrCode: 0 },
 			"pendingUnderSection.current",
 			pendingUnderSection.searchItem
 		);
@@ -542,7 +552,7 @@ const reportOfRipeForDisposal = async (req, res) => {
 		const ripeForDisposal = req.body;
 		const ripeDisposal = await db.performCaseInsensitiveSearch(
 			"receipt",
-			{ barcode: 0 },
+			{ qrCode: 0 },
 			"ripeForDisposal",
 			ripeForDisposal.searchItem
 		);
@@ -595,7 +605,7 @@ const updateReceipt = async (req, res) => {
 			return res.send({ status: 0, msg: "Invalid ReceiptID" });
 		}
 
-		delete updateReceptData.barcode;
+		delete updateReceptData.qrCode;
 		delete updateReceptData.reOpenUploadOrder;
 
 		if (updateReceptData.packageDetails) {
@@ -906,9 +916,9 @@ const getAllDataBasedOnEmalkhanaNumber = async (req, res) => {
 				);
 			}
 
-			if (getReceiptData.barcode.length !== 0) {
-				getReceiptData.barcode = await Promise.all(
-					getReceiptData.barcode.map(async (file) => {
+			if (getReceiptData.qrCode.length !== 0) {
+				getReceiptData.qrCode = await Promise.all(
+					getReceiptData.qrCode.map(async (file) => {
 						return {
 							...file,
 							actualPath: file.href,
@@ -971,9 +981,9 @@ const getEmalkhanaDataBasedonWhackNo = async (req, res) => {
 				);
 			}
 
-			if (getReceptData.barcode.length !== 0) {
-				getReceptData.barcode = await Promise.all(
-					getReceptData.barcode.map(async (file) => {
+			if (getReceptData.qrCode.length !== 0) {
+				getReceptData.qrCode = await Promise.all(
+					getReceptData.qrCode.map(async (file) => {
 						return {
 							...file,
 							actualPath: file.href,

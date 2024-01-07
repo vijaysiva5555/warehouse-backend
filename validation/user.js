@@ -28,6 +28,20 @@ const loginnCreator = [
 		return next();
 	},
 ];
+const changePasswordValidation = [
+	check("currentPassword").notEmpty().withMessage("currentPassword is required"),
+	check("confirmPassword").notEmpty().withMessage("confirm password is required"),
+	check("id").notEmpty().withMessage("id is required").isMongoId().withMessage("invalid Id"),
+	check("password").notEmpty().withMessage("password is required"),
+
+	(req, res, next) => {
+		const errors = validationResult(req).array();
+		if (errors.length > 0) {
+			return res.send({ status: 0, msg: errors[0].msg });
+		}
+		return next();
+	},
+];
 const checkId = [
 	check("id").notEmpty().withMessage("id should be required"),
 	(req, res, next) => {
@@ -38,4 +52,4 @@ const checkId = [
 		return next();
 	},
 ];
-module.exports = { userValidation, loginnCreator, checkId };
+module.exports = { userValidation, loginnCreator, checkId, changePasswordValidation };

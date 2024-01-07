@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema(
 	{
 		role: {
-			type: Number,
+			type: Number,              // admin:1,user:2
 			require: true,
 		},
 		status: {
-			type: Number,
+			type: Number,        //1- decative 2- active
 			default: 1,
 		},
 		name: {

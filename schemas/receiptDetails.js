@@ -13,48 +13,48 @@ const receipt = new mongoose.Schema(
 			type: String,
 			require: true,
 		},
-		packageDetails: {
-			current: {
-				type: String,
-				require: true,
-			},
-			previousData: [previousDataSchema(String)],
-		},
-		godownName: {
-			current: {
-				type: String,
-				require: true,
-			},
-			previousData: [previousDataSchema(String)],
-		},
-		godownCode: {
-			current: {
-				type: String,
-				require: true,
-			},
-			previousData: [previousDataSchema(String)],
-		},
-		locationOfPackageInGodown: {
-			current: {
-				type: String,
-				require: true,
-			},
-			previousData: [previousDataSchema(String)],
-		},
-		handingOverOfficerName: {
-			current: {
-				type: String,
-				require: true,
-			},
-			previousData: [previousDataSchema(String)],
-		},
-		handingOverOfficerDesignation: {
-			current: {
-				type: String,
-				require: true,
-			},
-			previousData: [previousDataSchema(String)],
-		},
+		// packageDetails: {
+		// 	current: {
+		// 		type: String,
+		// 		require: true,
+		// 	},
+		// 	previousData: [previousDataSchema(String)],
+		// },
+		// godownName: {
+		// 	current: {
+		// 		type: String,
+		// 		require: true,
+		// 	},
+		// 	previousData: [previousDataSchema(String)],
+		// },
+		// godownCode: {
+		// 	current: {
+		// 		type: String,
+		// 		require: true,
+		// 	},
+		// 	previousData: [previousDataSchema(String)],
+		// },
+		// locationOfPackageInGodown: {
+		// 	current: {
+		// 		type: String,
+		// 		require: true,
+		// 	},
+		// 	previousData: [previousDataSchema(String)],
+		// },
+		// handingOverOfficerName: {
+		// 	current: {
+		// 		type: String,
+		// 		require: true,
+		// 	},
+		// 	previousData: [previousDataSchema(String)],
+		// },
+		// handingOverOfficerDesignation: {
+		// 	current: {
+		// 		type: String,
+		// 		require: true,
+		// 	},
+		// 	previousData: [previousDataSchema(String)],
+		// },
 		adjucationOrderNo: {
 			type: String,
 		},
@@ -72,7 +72,7 @@ const receipt = new mongoose.Schema(
 			type: String,
 			require: true,
 		},
-		barcode: {
+		qrCode: {
 			type: Array, // type: Image,   error image is not defined.
 		},
 		createdBy: {

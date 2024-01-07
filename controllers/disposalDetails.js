@@ -224,9 +224,9 @@ const getAllDataByEmalkhanaNo = async (req, res) => {
 				getReceptData != null &&
 				Object.keys(getReceptData).length > 0
 			) {
-				if (getReceptData.barcode.length !== 0) {
-					getReceptData.barcode = await Promise.all(
-						getReceptData.barcode.map(async (file) => {
+				if (getReceptData.qrCode.length !== 0) {
+					getReceptData.qrCode = await Promise.all(
+						getReceptData.qrCode.map(async (file) => {
 							return {
 								...file,
 								actualPath: file.href,
@@ -303,9 +303,9 @@ const getAllDataBasedOnWhackNo = async (req, res) => {
 				);
 			}
 
-			if (getReceptData.barcode.length !== 0) {
-				getReceptData.barcode = await Promise.all(
-					getReceptData.barcode.map(async (file) => {
+			if (getReceptData.qrCode.length !== 0) {
+				getReceptData.qrCode = await Promise.all(
+					getReceptData.qrCode.map(async (file) => {
 						return {
 							...file,
 							actualPath: file.href,

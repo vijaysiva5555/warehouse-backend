@@ -677,9 +677,9 @@ const getReceiptMalkhanaDataById = async (req, res) => {
 					})
 				);
 			}
-			if (getReceiptData.barcode.length !== 0) {
-				getReceiptData.barcode = await Promise.all(
-					getReceiptData.barcode.map(async (file) => {
+			if (getReceiptData.qrCode.length !== 0) {
+				getReceiptData.qrCode = await Promise.all(
+					getReceiptData.qrCode.map(async (file) => {
 						return {
 							...file,
 							actualPath: file.href,
@@ -744,9 +744,9 @@ const getAllDataByEmalkhanaId = async (req, res) => {
 				getReceptData != null &&
 				Object.keys(getReceptData).length > 0
 			) {
-				if (getReceptData.barcode.length !== 0) {
-					getReceptData.barcode = await Promise.all(
-						getReceptData.barcode.map(async (file) => {
+				if (getReceptData.qrCode.length !== 0) {
+					getReceptData.qrCode = await Promise.all(
+						getReceptData.qrCode.map(async (file) => {
 							return {
 								...file,
 								actualPath: file.href,

@@ -25,9 +25,9 @@ app.use(
 
 app.use(express.urlencoded({ extended: true }));
 app.use(
-	"/barcodeFolder",
+	"/qrCodeFolder",
 	authorized,
-	express.static(path.join(__dirname, "/barcodeFolder"), { etag: false })
+	express.static(path.join(__dirname, "/qrCodeFolder"), { etag: false })
 );
 mongoose
 	.connect(CONFIG.MONGOURL)
