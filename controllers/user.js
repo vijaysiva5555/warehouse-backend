@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs").promises;
 const mongoose = require("mongoose");
 
-const register = async (req, res) => {
+const createUser = async (req, res) => {
 	try {
 		const userRegistration = req.body;
 		const checkEmail = await db.findOneDocumentExists("user", {
@@ -85,4 +85,4 @@ const userDataById = async (req, res) => {
 	}
 };
 
-module.exports = { register, loginUser, userDataById };
+module.exports = { createUser, loginUser, userDataById };
