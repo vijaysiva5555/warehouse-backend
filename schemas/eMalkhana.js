@@ -43,6 +43,10 @@ const eMalkhana = new mongoose.Schema(
 			type: String,
 			require: true,
 		},
+		yearOfSeizure: {
+			type: String,
+			require: true,
+		},
 		seizedItemName: {
 			current: {
 				type: String,
@@ -108,6 +112,9 @@ const eMalkhana = new mongoose.Schema(
 			type: Date,
 		},
 		reOpenReason: {
+			type: String,
+		},
+		reOpenOrderNo: {
 			type: String,
 		},
 		handOverOfficerName: {
