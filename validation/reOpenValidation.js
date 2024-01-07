@@ -1,25 +1,25 @@
 const { check, validationResult } = require("express-validator");
 
 const reOpenValidation = [
-	check("updateFileNos").notEmpty().withMessage("updateFileNos is required"),
-	check("reOpenReason").notEmpty().withMessage("reOpenReason is required"),
-	check("reOpenDate").notEmpty().withMessage("reOpenDateis required"),
+	check("updateEmalkhanas").notEmpty().withMessage("E-Malkhana Numbers are required to Reopen"),
+	check("reOpenReason").notEmpty().withMessage("Reason is required for reopen"),
+	check("reOpenDate").notEmpty().withMessage("Reopen date is required"),
 	check("handOverOfficerName")
 		.notEmpty()
-		.withMessage("handOverOfficerName is required"),
+		.withMessage("Receiving Officer Name is required"),
 	check("handOverOfficerDesignation")
 		.notEmpty()
-		.withMessage("handOverOfficerDesignation is required"),
-	check("preOpenTrail").notEmpty().withMessage("preOpenTrail is required"),
+		.withMessage("Receiving Officer Designation is required"),
+	check("preOpenTrail").notEmpty().withMessage("Pre OpenTrail is required"),
 	check("preOpenTrailDetails")
 		.exists()
 		.isString()
-		.withMessage("preOpenTrailDetails is required"),
-	check("sampleDrawn").notEmpty().withMessage("sampleDrawn is required"),
+		.withMessage("PreOpen Trail Details is required if preopen trail is yes"),
+	check("sampleDrawn").notEmpty().withMessage("Sample Drawn is required"),
 	check("sampleDrawnDetails")
 		.exists()
 		.isString()
-		.withMessage("sampleDrawnDetails is required"),
+		.withMessage("Sample Drawn Details is required if Sample Drawn is Yes"),
 	(req, res, next) => {
 		const errors = validationResult(req).array();
 		if (errors.length > 0) {
