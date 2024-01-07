@@ -20,7 +20,7 @@ const reOpenValidation = require("../validation/reOpenValidation")
 // import API
 
 // User API
-routes.post("/register", createAccountLimiter, userValidation.userValidation, userController.register)
+routes.post("/createUser", authorized, userValidation.userValidation, userController.createUser)
 routes.post("/login", createAccountLimiter, userValidation.loginnCreator, userController.loginUser)
 routes.post("/userDataById", createAccountLimiter, userValidation.checkId,checkAccess([2]),authorized, userController.userDataById)
 routes.get("/getUserList", createAccountLimiter, userController.getUserList)
